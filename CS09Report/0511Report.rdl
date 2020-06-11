@@ -1,0 +1,710 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSources>
+    <DataSource Name="CS09">
+      <DataSourceReference>CS09</DataSourceReference>
+      <rd:DataSourceID>d619f183-0dad-4f02-9dd2-40acddae9984</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <BottomMargin>2.5cm</BottomMargin>
+  <RightMargin>2.5cm</RightMargin>
+  <PageWidth>21cm</PageWidth>
+  <ReportParameters>
+    <ReportParameter Name="indatefrom">
+      <DataType>String</DataType>
+      <Prompt>indatefrom</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="indateto">
+      <DataType>String</DataType>
+      <Prompt>indateto</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="newway">
+      <DataType>String</DataType>
+      <Prompt>newway</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="factory">
+      <DataType>String</DataType>
+      <Prompt>factory</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="UrgencyFlg">
+      <DataType>String</DataType>
+      <Prompt>UrgencyFlg</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Enditem">
+      <DataType>String</DataType>
+      <Prompt>Enditem</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <rd:GridSpacing>0.25cm</rd:GridSpacing>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <Body>
+    <ColumnSpacing>1cm</ColumnSpacing>
+    <ReportItems>
+      <Table Name="table1">
+        <DataSetName>CS09</DataSetName>
+        <Width>26.3188cm</Width>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="indate1">
+                      <rd:DefaultName>indate1</rd:DefaultName>
+                      <ZIndex>8</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!indate1.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox11">
+                      <rd:DefaultName>textbox11</rd:DefaultName>
+                      <ZIndex>7</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!Merch_NAME.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="id">
+                      <rd:DefaultName>id</rd:DefaultName>
+                      <ZIndex>6</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!id.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CardNo">
+                      <rd:DefaultName>CardNo</rd:DefaultName>
+                      <ZIndex>5</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!CardNo.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="OldWay">
+                      <rd:DefaultName>OldWay</rd:DefaultName>
+                      <ZIndex>4</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!OldWay.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="NewWay">
+                      <rd:DefaultName>NewWay</rd:DefaultName>
+                      <ZIndex>3</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!NewWay.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="newmailno">
+                      <rd:DefaultName>newmailno</rd:DefaultName>
+                      <ZIndex>2</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!mailno.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="UpdDate">
+                      <rd:DefaultName>UpdDate</rd:DefaultName>
+                      <ZIndex>1</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!UpdDate.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="UpdUser">
+                      <rd:DefaultName>UpdUser</rd:DefaultName>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!UpdUser.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.53333cm</Height>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Header>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox2">
+                      <rd:DefaultName>textbox2</rd:DefaultName>
+                      <ZIndex>17</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>製卡日</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox1">
+                      <rd:DefaultName>textbox1</rd:DefaultName>
+                      <ZIndex>16</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>廠商</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox3">
+                      <rd:DefaultName>textbox3</rd:DefaultName>
+                      <ZIndex>15</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>身份證號碼</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox4">
+                      <rd:DefaultName>textbox4</rd:DefaultName>
+                      <ZIndex>14</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>卡號</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox5">
+                      <rd:DefaultName>textbox5</rd:DefaultName>
+                      <ZIndex>13</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>原取卡方式</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox7">
+                      <rd:DefaultName>textbox7</rd:DefaultName>
+                      <ZIndex>12</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>新取卡方式</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox8">
+                      <rd:DefaultName>textbox8</rd:DefaultName>
+                      <ZIndex>11</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>掛號號碼</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox9">
+                      <rd:DefaultName>textbox9</rd:DefaultName>
+                      <ZIndex>10</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>修改日期</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox10">
+                      <rd:DefaultName>textbox10</rd:DefaultName>
+                      <ZIndex>9</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>修改經辦</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.55873cm</Height>
+            </TableRow>
+          </TableRows>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>2.96562cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.99535cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.96562cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.96562cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.99535cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.5cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.96562cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.96562cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Height>1.09206cm</Height>
+      </Table>
+    </ReportItems>
+    <Height>1.25cm</Height>
+  </Body>
+  <rd:ReportID>2e357aa9-5a7b-4f44-bde3-c25422599db5</rd:ReportID>
+  <LeftMargin>2.5cm</LeftMargin>
+  <DataSets>
+    <DataSet Name="CS09">
+      <Query>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+        <CommandText>SELECT *
+FROM(
+--卡片異動
+select a.indate1,a.id,a.CardNo,
+(
+	case when b.OldWay='0' then '普掛' 
+	when b.OldWay='1' then '自取' 
+	when b.OldWay='2' then '卡交介' 
+	when b.OldWay='3' then '限掛' 
+	when b.OldWay='4' then '快遞' 
+	when b.OldWay='5' then '三天快速發卡' 
+	when b.OldWay='6' then '保留' 
+	when b.OldWay='7' then '其他' 
+	when b.OldWay='8' then '包裹' 
+	when b.OldWay='9' then '無法製卡' 
+	when b.OldWay='10' then '卡片碎卡' 
+	when b.OldWay='11' then '卡片註銷' 
+	when b.OldWay='21' then '預製卡-無帳號' 
+	when b.OldWay='22' then '預製卡-有帳號' 
+	when b.OldWay='23' then '郵寄分行' 
+	when b.OldWay='24' then '整批發薪' 
+	when b.OldWay='25' then 'RNMAIL' 
+	else '' end
+) as OldWay,
+b.oldMailno,
+(case when b.NewWay='0' then '普掛' 
+	when b.NewWay='1' then '自取' 
+	when b.NewWay='2' then '卡交介' 
+	when b.NewWay='3' then '限掛' 
+	when b.NewWay='4' then '快遞' 
+	when b.NewWay='5' then '三天快速發卡' 
+	when b.NewWay='6' then '保留' 
+	when b.NewWay='7' then '其他' 
+	when b.NewWay='8' then '包裹' 
+	when b.NewWay='9' then '無法製卡' 
+	when b.NewWay='10' then '卡片碎卡' 
+	when b.NewWay='11' then '卡片註銷' 
+	when b.NewWay='21' then '預製卡-無帳號' 
+	when b.NewWay='22' then '預製卡-有帳號' 
+	when b.NewWay='23' then '郵寄分行' 
+	when b.NewWay='24' then '整批發薪' 
+	when b.NewWay='25' then 'RNMAIL' 
+	else '' end) as NewWay,
+a.mailno,b.UpdDate,b.UpdUser ,
+CASE a.Merch_Code WHEN'A' THEN '宏通' WHEN 'B' THEN '台銘' WHEN 'C' THEN '金雅拓'  ENd AS Merch_NAME
+from tbl_Card_BaseInfo a right join tbl_Card_DataChange b 
+on a.id=b.id and a.CardNo=b.CardNo and a.action=b.action and a.Trandate = b.Trandate 
+where (@indatefrom is null or convert(datetime,a.indate1 ,120)&gt;=convert(datetime,@indatefrom ,120) )
+and (@indateto is null or convert(datetime,a.indate1 ,120)&lt;=convert(datetime,@indateto ,120) )
+and (b.UrgencyFlg=@UrgencyFlg or @UrgencyFlg='NULL')
+--and ((@newway = '00' and b.newway is not null)  or b.newway = @newway)
+ and (@newway = '00' or b.newway = @newway)
+ and (@factory = '00' or a.Merch_Code = @factory)
+and OutputFlg in ('S','Y' )
+and a.kind&lt;&gt;'9'
+and isnull(SourceType,'')&lt;&gt;'2'
+--union all
+)U
+ORDER BY  UpdDate DESC</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@indatefrom">
+            <Value>=Parameters!indatefrom.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@indateto">
+            <Value>=Parameters!indateto.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UrgencyFlg">
+            <Value>=Parameters!UrgencyFlg.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@newway">
+            <Value>=Parameters!newway.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@factory">
+            <Value>=Parameters!factory.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <DataSourceName>CS09</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="indate1">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>indate1</DataField>
+        </Field>
+        <Field Name="id">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>id</DataField>
+        </Field>
+        <Field Name="CardNo">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>CardNo</DataField>
+        </Field>
+        <Field Name="OldWay">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>OldWay</DataField>
+        </Field>
+        <Field Name="oldMailno">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>oldMailno</DataField>
+        </Field>
+        <Field Name="NewWay">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>NewWay</DataField>
+        </Field>
+        <Field Name="mailno">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>mailno</DataField>
+        </Field>
+        <Field Name="UpdDate">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>UpdDate</DataField>
+        </Field>
+        <Field Name="UpdUser">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>UpdUser</DataField>
+        </Field>
+        <Field Name="Merch_NAME">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>Merch_NAME</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Width>29.8188cm</Width>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <Language>zh-TW</Language>
+  <TopMargin>2.5cm</TopMargin>
+  <PageHeight>29.7cm</PageHeight>
+</Report>

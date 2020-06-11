@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+	<header>
+		<action type="establishSession"/>
+	</header>
+	
+	<!--
+		establish session時所傳入的資料
+		必含 userId ,passWord, branchNo, workstationNo, racfId, racfPassWord
+		
+		其它資料視情況自行傳入, 會存於Session Data之中
+		
+		signOnLU0, default=yes, value可為yes / no
+	-->
+	
+	<body>
+    <data id="applicationId" value="CSIP"/>
+    <data id="branchNo" value="0888"/>
+    <data id="userId" value="z00024974"/>
+    <data id="passWord" value=""/>    
+    <!--data id="workstationNo" value="081"/-->
+    <!-- RACFSignOn用的 userId -->
+    <data id="racfId" value="Z04858"/>
+    <data id="racfPassWord" value=""/>
+    <!-- 是否SignOn Lu0 -->
+    <data id="signOnLU0" value="no"/>
+  </body>
+</hostgateway>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+    <header>
+        <action type="transaction"/>
+        <data id="sessionId" value=""/>
+        <data id="applicationId" value="default"/>
+        <data id="luType" value="LU62"/>
+        <data id="transactionId" value="P4_JCAX"/>
+    </header>
+    <line no="1">
+       <msgBody>
+            <data id="TRAN_ID" value=""/>
+            <data id="PROGRAM_ID" value=""/>
+            <data id="USER_ID" value=""/>
+            <data id="RTN_CD" value="0001"/>
+            <data id="ERROR_DESC" value="NOT FOUND"/>
+            <data id="SOURCE_CODE" value=""/>
+            <data id="FUNCTION_CODE" value=""/>
+            <data id="ACCT_NBR" value=""/>
+            <data id="INHOUSE_INQ_FLAG" value=""/>
+            <data id="NCCC_INQ_FLAG" value=""/>
+            <data id="COUNTERFEIT_FLAG" value=""/>
+            <data id="OASA_BRAND" value=""/>
+            <data id="FILLER5" value=""/>
+            <data id="OASA_DEST1" value=""/>
+            <data id="OASA_DEST2" value=""/>
+            <data id="OASA_DEST3" value=""/>
+            <data id="OASA_DEST4" value=""/>
+            <data id="OASA_BLOCK_CODE" value="B"/>
+            <data id="OASA_PURGE_DATE" value="0115"/>
+            <data id="OASA_MEMO" value="123456"/>
+            <data id="OASA_REASON_CODE" value="a"/>
+            <data id="OASA_ACTION_CODE" value="b"/>
+            <data id="OASA_DATE_REPORT" value=""/>
+            <data id="OASA_TIME_REPORT" value=""/>
+            <data id="OASA_LAST_CHNG_DT" value=""/>
+            <data id="OASA_OPID" value=""/>
+            <data id="OASA_USER_ID" value=""/>
+            <data id="OASA_RTNCD1" value=""/>
+            <data id="OASA_RTNCD2" value=""/>
+            <data id="OASA_RTNCD3" value=""/>
+            <data id="OASA_RTNCD4" value=""/>
+            <data id="FILLER6" value=""/>
+            <data id="VISA_CWB_REGION1" value=""/>
+            <data id="VISA_CWB_REGION2" value=""/>
+            <data id="VISA_CWB_REGION3" value=""/>
+            <data id="VISA_CWB_REGION4" value=""/>
+            <data id="VISA_CWB_REGION5" value=""/>
+            <data id="VISA_CWB_REGION6" value=""/>
+            <data id="VISA_CWB_REGION7" value=""/>
+            <data id="VISA_CWB_REGION8" value=""/>
+            <data id="VISA_CWB_REGION9" value=""/>
+            <data id="GUAX_VISA_FILLER" value=""/>
+            <data id="MASTER_VIP_AMT" value=""/>
+            <data id="MASTER_USER_PURGE_DT1" value=""/>
+            <data id="MASTER_USER_PURGE_DT2" value=""/>
+            <data id="MASTER_USER_PURGE_DT3" value=""/>
+            <data id="MASTER_USER_PURGE_DT4" value=""/>
+            <data id="MASTER_USER_PURGE_DT5" value=""/>
+            <data id="MASTER_USER_PURGE_DT6" value=""/>
+            <data id="MASTER_M_EFT_DT1" value=""/>
+            <data id="MASTER_M_EFT_DT2" value=""/>
+            <data id="MASTER_M_EFT_DT3" value=""/>
+            <data id="MASTER_M_EFT_DT4" value=""/>
+            <data id="MASTER_M_EFT_DT5" value=""/>
+            <data id="MASTER_M_EFT_DT6" value=""/>
+            <data id="MASTER_M_PURGE_DT1" value=""/>
+            <data id="MASTER_M_PURGE_DT2" value=""/>
+            <data id="MASTER_M_PURGE_DT3" value=""/>
+            <data id="MASTER_M_PURGE_DT4" value=""/>
+            <data id="MASTER_M_PURGE_DT5" value=""/>
+            <data id="MASTER_M_PURGE_DT6" value=""/>
+            <data id="MASTER_FILLER" value=""/>
+            <data id="JCB_CRB_REGION1" value=""/>
+            <data id="JCB_CRB_REGION2" value=""/>
+            <data id="JCB_CRB_REGION3" value=""/>
+            <data id="JCB_CRB_REGION4" value=""/>
+            <data id="JCB_CRB_REGION5" value=""/>
+        </msgBody>
+    </line>
+</hostgateway>

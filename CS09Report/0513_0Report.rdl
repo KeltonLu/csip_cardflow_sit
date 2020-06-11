@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSources>
+    <DataSource Name="CS09">
+      <DataSourceReference>CS09</DataSourceReference>
+      <rd:DataSourceID>ce3c1b73-6bc2-4e9d-bc2d-32ea27696b8a</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <BottomMargin>2.5cm</BottomMargin>
+  <RightMargin>2.5cm</RightMargin>
+  <PageWidth>29.7cm</PageWidth>
+  <ReportParameters>
+    <ReportParameter Name="flag">
+      <DataType>String</DataType>
+      <Prompt>flag</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="OstartDate">
+      <DataType>String</DataType>
+      <Prompt>OstartDate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="OendDate">
+      <DataType>String</DataType>
+      <Prompt>OendDate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Ouser">
+      <DataType>String</DataType>
+      <Prompt>Ouser</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="num">
+      <DataType>String</DataType>
+      <Prompt>num</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <rd:GridSpacing>0.25cm</rd:GridSpacing>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <Body>
+    <ColumnSpacing>1cm</ColumnSpacing>
+    <ReportItems>
+      <Table Name="table1">
+        <Left>0.25cm</Left>
+        <DataSetName>CS09</DataSetName>
+        <Top>0.25cm</Top>
+        <Width>2.53968cm</Width>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Subreport Name="subreport1">
+                      <Parameters>
+                        <Parameter Name="flag">
+                          <Value>=Parameters!flag.Value</Value>
+                        </Parameter>
+                        <Parameter Name="OstartDate">
+                          <Value>=Parameters!OstartDate.Value</Value>
+                        </Parameter>
+                        <Parameter Name="OendDate">
+                          <Value>=Parameters!OendDate.Value</Value>
+                        </Parameter>
+                        <Parameter Name="Ouser">
+                          <Value>=Parameters!Ouser.Value</Value>
+                        </Parameter>
+                        <Parameter Name="num">
+                          <Value>=Parameters!num.Value</Value>
+                        </Parameter>
+                        <Parameter Name="BLKCode">
+                          <Value>=Fields!BLKCode.Value</Value>
+                        </Parameter>
+                      </Parameters>
+                      <ReportName>0513_1Report</ReportName>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Default>LightGrey</Default>
+                        </BorderColor>
+                      </Style>
+                    </Subreport>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.53333cm</Height>
+            </TableRow>
+          </TableRows>
+          <Grouping Name="table1_Details_Group">
+            <PageBreakAtEnd>true</PageBreakAtEnd>
+            <GroupExpressions>
+              <GroupExpression>=(RowNumber("table1") - 1) \ 1</GroupExpression>
+            </GroupExpressions>
+          </Grouping>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>2.53968cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Height>0.53333cm</Height>
+      </Table>
+    </ReportItems>
+    <Height>7cm</Height>
+  </Body>
+  <rd:ReportID>ae6f6eac-da51-4473-9f4f-fc81f079b67c</rd:ReportID>
+  <LeftMargin>2.5cm</LeftMargin>
+  <DataSets>
+    <DataSet Name="CS09">
+      <Query>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+        <CommandText>select distinct
+--(case when OBLKCode='X' and NBLKCode='B' then '強停(B)' when OBLKCode='X' and NBLKCode='R' then '管制(R)' 
+--when OBLKCode='X' and NBLKCode='S' then '強停(S)' when OBLKCode='R' then '解管(R)' else '' end) as BLKCode,
+(case when NBLKCode='B' then '強停(B)' when NBLKCode='R' then '管制(R)' 
+when NBLKCode='S' then '管制(S)' when OBLKCode='R' and  NBLKCode='X' then '解管(R)' else '' end) as BLKCode
+from tbl_CancelOASA_UD
+where FileCode in ('0','1','2')
+and Success_Flag = @flag
+and (File_Date BETWEEN @OstartDate and @OendDate OR @OstartDate='NULL' OR @OendDate='NULL')
+AND (@Ouser = 'NULL' or 1=1)
+AND (@num = 'NULL' or 1=1)
+order by BLKCode</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@flag">
+            <Value>=Parameters!flag.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@OstartDate">
+            <Value>=Parameters!OstartDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@OendDate">
+            <Value>=Parameters!OendDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@Ouser">
+            <Value>=Parameters!Ouser.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@num">
+            <Value>=Parameters!num.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <DataSourceName>CS09</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="BLKCode">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>BLKCode</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Width>23.5cm</Width>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <Language>zh-TW</Language>
+  <TopMargin>2.5cm</TopMargin>
+  <PageHeight>21cm</PageHeight>
+</Report>

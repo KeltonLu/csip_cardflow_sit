@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<hostgateway>
+	<header>
+		<action type="transaction"/>
+		<data id="sessionId" value="default84Gt3O1KLA_ZkNg0diO2GM0Z00050"/>
+		<data id="applicationId" value="default"/>
+		<data id="luType" value="LU0"/>
+		<data id="transactionId" value="067050"/>
+	</header>
+	<line no="1">
+		<msgHeader>
+			<data id="JNLNO" value="995426"/>
+			<data id="POSTDATE" value="0000"/>
+			<data id="FILLER4" value="0"/>
+			<data id="FLAG2" value="6"/>
+			<data id="FLAG1" value="0"/>
+			<data id="racfId" value="00050"/>
+			<data id="branchNo" value="0107"/>
+			<data id="transactionId" value="067000"/>
+			<data id="workstationNo" value="29"/>
+			<data id="HEADER_ONLINE" value="00F0F6F0F0"/>
+		</msgHeader>
+		<msgBody>
+			<data id="TLX_NO_EXT" value=""/>
+			<data id="FIRST_NAME" value="櫻櫻美代子"/>
+			<data id="TITLE_CODE" value="01"/>
+			<data id="DAYTEL_UPD_STS" value="10"/>
+			<data id="LANG_CODE" value="12"/>
+			<data id="CHANNEL" value=""/>
+			<data id="CIFBIL_ADDR_IND" value="1"/>
+			<data id="SEGMENT_CODE" value="2"/>
+			<data id="NATN_CODE" value="TW"/>
+			<data id="AFILCDE" value=""/>
+			<data id="ID_UPD_STS" value="00"/>
+			<data id="SURNAME" value="ABC"/>
+			<data id="FUND" value="1"/>
+			<data id="REVIEW_FLAG" value="Y"/>
+			<data id="CROSS_BORDER_RISK" value=""/>
+			<data id="MONIT_LMT_CUST_PA" value=""/>
+			<data id="NIGTEL_UPD_DATE" value="04102010"/>
+			<data id="MOBIL_UPD_DATE" value="04102010"/>
+			<data id="IGNORE_WARNING" value=""/>
+			<data id="ID_UPD_DATE" value="00000000"/>
+			<data id="BUS_CUST_NAME" value=""/>
+			<data id="PROMO_CODE" value=""/>
+			<data id="OTHER_MEMO" value=""/>
+			<data id="PAGER_UPD_STS" value="00"/>
+			<data id="ADDRS_MEMO" value="N"/>
+			<data id="RISK_RATING" value="00000"/>
+			<data id="NIGTEL_UPD_STS" value="00"/>
+			<data id="ADDR_UPD_STS" value="30"/>
+			<data id="PHONE_BUS" value="0255599888"/>
+			<data id="MONIT_LMT_INDU" value=""/>
+			<data id="TFN_IND" value="0"/>
+			<data id="HOME_BRANCH" value="00901"/>
+			<data id="CHECK_OBU_CUSTOMER" value=""/>
+			<data id="TAX_TYPE" value="1"/>
+			<data id="CREDIT_RATING" value="20700"/>
+			<data id="PHONE_RES_EXT" value="123116"/>
+			<data id="CUST_TYPE" value="01"/>
+			<data id="PHONE_RES" value="0227222001"/>
+			<data id="ADDRS_LINE_04" value=""/>
+			<data id="RM_NO" value="06751"/>
+			<data id="ADDRS_LINE_03" value=""/>
+			<data id="DOMESTIC_RISK" value=""/>
+			<data id="EMAIL_UPD_STS" value="50"/>
+			<data id="FAX_NO_EXT" value=""/>
+			<data id="ADDRS_LINE_02" value="松仁路８９號１５號１Ｆ"/>
+			<data id="ADDRS_LINE_01" value="台北市中山區"/>
+			<data id="CONFIRM_DATA_DATE" value="21102010"/>
+			<data id="BIRTH_DATE" value="02011977"/>
+			<data id="VIP_CODE" value="B"/>
+			<data id="EMAIL_UPD_DATE" value="16092010"/>
+			<data id="CIF_NO" value="09000000103067442"/>
+			<data id="COUNTRY_OF_RISK" value=""/>
+			<data id="outputCode" value="03"/>
+			<data id="MAIL_IND" value="5"/>
+			<data id="MONIT_LMT_CUST" value=""/>
+			<data id="POST_CODE" value="104"/>
+			<data id="FC_FLAG" value="Y"/>
+			<data id="LOCKER_HOLDER" value=""/>
+			<data id="PAGER_UPD_DATE" value="04102010"/>
+			<data id="AFLT_CODE" value="4020"/>
+			<data id="ID_TYPE" value="01"/>
+			<data id="MOBIL_UPD_STS" value="10"/>
+			<data id="DOMICILE" value="TW"/>
+			<data id="RISK_SCORE" value="8"/>
+			<data id="ID_ISSU_DATE" value="00000000"/>
+			<data id="MONIT_LMT_CTRY" value=""/>
+			<data id="ADDR_UPD_DATE" value="07102010"/>
+			<data id="KF_CUST_FLAG" value="N"/>
+			<data id="CAFLAG" value=""/>
+			<data id="MONIT_LMT_DAY_SETTL" value=""/>
+			<data id="ID_ISSU_PLAC" value=""/>
+			<data id="RELA_FLAG" value="N"/>
+			<data id="CUST_ID_NO" value="A123456789"/>
+			<data id="OCPY_CODE" value=""/>
+			<data id="CPS_CUST_FLAG" value="N"/>
+			<data id="SYNC_WITH_FITAS" value=""/>
+			<data id="FILLER5" value=""/>
+			<data id="PHONE_BUS_EXT" value=""/>
+			<data id="RESTRICT_STAT" value="000"/>
+			<data id="CONF_FLAG" value=""/>
+			<data id="DAYTEL_UPD_DATE" value="13102010"/>
+			<data id="E_MAIL_ADDR" value="huiping@chinatrust.com.tw"/>
+			<data id="INDUSTRY_CODE" value=""/>
+			<data id="FUND_CIF" value="Y"/>
+			<data id="FAX_NO" value="0928998065"/>
+			<data id="TLX_NO" value="0281926093"/>
+		</msgBody>
+	</line>
+</hostgateway>

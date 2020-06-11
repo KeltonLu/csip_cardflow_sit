@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+	<header>
+		<action type="closeSession"/>
+	</header>
+		
+	<body>
+		<data id="sessionId" value=""/>
+	</body>
+	
+</hostgateway>

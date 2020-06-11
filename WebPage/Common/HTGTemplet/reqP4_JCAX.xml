@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+    <header>
+        <action type="transaction"/>
+        <data id="sessionId" value=""/>
+        <data id="applicationId" value="CSIP"/>
+        <data id="luType" value="LU62"/>
+        <data id="transactionId" value="P4_JCAX"/>
+        <data id="lowValue" value="true" />
+    </header>
+    <body>       
+        <data id="USER_ID" value=""/>
+        <data id="RTN_CD" value=""/>
+        <data id="ERROR_DESC" value=""/>
+        <data id="SOURCE_CODE" value="Z"/>
+        <data id="FUNCTION_CODE" value=""/>
+        <data id="ACCT_NBR" value=""/>
+        <data id="INHOUSE_INQ_FLAG" value="N"/>
+        <data id="NCCC_INQ_FLAG" value="N"/>
+        <data id="COUNTERFEIT_FLAG" value="N"/>
+        <data id="OASA_BRAND" value=""/>
+        <data id="FILLER5" value=""/>
+        <data id="OASA_DEST1" value=""/>
+        <data id="OASA_DEST2" value=""/>
+        <data id="OASA_DEST3" value=""/>
+        <data id="OASA_DEST4" value=""/>
+        <data id="OASA_BLOCK_CODE" value=""/>
+        <data id="OASA_PURGE_DATE" value=""/>
+        <data id="OASA_MEMO" value=""/>
+        <data id="OASA_REASON_CODE" value=""/>
+        <data id="OASA_ACTION_CODE" value=""/>
+    </body>
+</hostgateway>

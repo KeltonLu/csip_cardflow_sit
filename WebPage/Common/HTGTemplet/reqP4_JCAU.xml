@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+    <header>
+        <action type="transaction"/>
+        <data id="sessionId" value=""/>
+        <data id="applicationId" value="CSIP"/>
+        <data id="luType" value="LU62"/>
+        <data id="transactionId" value="P4_JCAU"/>
+    </header>
+    <body>
+        
+        
+        <data id="USER_ID" value=""/>
+        <data id="MESSAGE_TYPE" value=""/>
+        <data id="FUNCTION_CODE" value=""/>
+        <data id="LINE_CNT" value=""/>
+        <data id="ACCT_NBR" value=""/>
+    </body>
+</hostgateway>

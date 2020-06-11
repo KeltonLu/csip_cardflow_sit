@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:s0="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="CreateProcessE00520">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="e520" type="s0:E00520" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="E00520">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:BaseInfo">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="CardList" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="OriRecvCard" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NewRecvCard" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="ChangeAddressYN" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="DeductCardYN" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="OthZipCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="OthAddress1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="OthAddress2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="OthAddress3" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReplyItem" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Memo" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="UserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="InitialRoleId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="InitialRoleName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="InitialDepId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="InitialDepName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CaseType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustLevel" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TelO" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TelH" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TelM1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TelM2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SourceSystem" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateProcessE00520Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateProcessE00520Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </types>
+  <message name="CreateProcessE00520SoapIn">
+    <part name="parameters" element="s0:CreateProcessE00520" />
+  </message>
+  <message name="CreateProcessE00520SoapOut">
+    <part name="parameters" element="s0:CreateProcessE00520Response" />
+  </message>
+  <portType name="CreateProcessSoap">
+    <operation name="CreateProcessE00520">
+      <input message="s0:CreateProcessE00520SoapIn" />
+      <output message="s0:CreateProcessE00520SoapOut" />
+    </operation>
+  </portType>
+  <binding name="CreateProcessSoap" type="s0:CreateProcessSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="CreateProcessE00520">
+      <soap:operation soapAction="http://tempuri.org/CreateProcessE00520" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="CreateProcess">
+    <port name="CreateProcessSoap" binding="s0:CreateProcessSoap">
+      <soap:address location="http://10.5.17.215/Sub/EMFS/webservice/CreateProcess.asmx" />
+    </port>
+  </service>
+</definitions>

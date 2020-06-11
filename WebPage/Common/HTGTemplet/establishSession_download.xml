@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+ <header>
+  <rc value="700"/>
+ </header>
+ <body>
+  <msg value="700 SESSION 建立成功" />
+  <data id="sessionId" value="FzhG2nOAXPuyEimiodAYUgI" />
+ </body>
+</hostgateway>

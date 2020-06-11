@@ -1,0 +1,3643 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSources>
+    <DataSource Name="CS09">
+      <DataSourceReference>CS09</DataSourceReference>
+      <rd:DataSourceID>add8de41-5c97-4cde-8ec3-3f28961165f5</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <BottomMargin>2.5cm</BottomMargin>
+  <RightMargin>2.5cm</RightMargin>
+  <PageWidth>21cm</PageWidth>
+  <ReportParameters>
+    <ReportParameter Name="cardno">
+      <DataType>String</DataType>
+      <Prompt>cardno</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="id">
+      <DataType>String</DataType>
+      <Prompt>id</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="action">
+      <DataType>String</DataType>
+      <Prompt>action</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <rd:GridSpacing>0.25cm</rd:GridSpacing>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <Body>
+    <ColumnSpacing>10cm</ColumnSpacing>
+    <ReportItems>
+      <Table Name="table1">
+        <Width>21.91112cm</Width>
+        <Style>
+          <FontFamily>新細明體</FontFamily>
+        </Style>
+        <Header>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox136">
+                      <ZIndex>49</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle54">
+                      <ReportItems>
+                        <Textbox Name="textbox137">
+                          <Left>4.75cm</Left>
+                          <Top>0.24868cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.76191cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>寫</Value>
+                        </Textbox>
+                        <Textbox Name="textbox138">
+                          <Left>3.5cm</Left>
+                          <Top>0.24868cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>填 </Value>
+                        </Textbox>
+                        <Textbox Name="textbox139">
+                          <Left>2.25cm</Left>
+                          <Top>0.25cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>局</Value>
+                        </Textbox>
+                        <Textbox Name="textbox140">
+                          <Left>1cm</Left>
+                          <Top>0.24736cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>寄</Value>
+                        </Textbox>
+                        <Textbox Name="textbox141">
+                          <Top>0.25cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>原        </Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>48</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle55">
+                      <ZIndex>47</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle56">
+                      <ReportItems>
+                        <Textbox Name="textbox142">
+                          <Left>0.49405cm</Left>
+                          <Top>0.24736cm</Top>
+                          <Width>0.75794cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <BorderColor>
+                              <Default>White</Default>
+                            </BorderColor>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>查</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>46</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle57">
+                      <ReportItems>
+                        <Textbox Name="textbox143">
+                          <Left>0.75cm</Left>
+                          <Top>0.24736cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>詢</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>45</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle58">
+                      <ReportItems>
+                        <Textbox Name="textbox144">
+                          <Left>1cm</Left>
+                          <Top>0.24736cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>人</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>44</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle59">
+                      <ReportItems>
+                        <Textbox Name="textbox155">
+                          <Left>0.5cm</Left>
+                          <Top>0.24736cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>填</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>43</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle60">
+                      <ReportItems>
+                        <Textbox Name="textbox156">
+                          <Left>0.5cm</Left>
+                          <Top>0.24736cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75529cm</Height>
+                          <Value>寫</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>42</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle61">
+                      <ZIndex>41</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle62">
+                      <ZIndex>40</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>1.25cm</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle23">
+                      <ReportItems>
+                        <Textbox Name="textbox135">
+                          <Left>0.25cm</Left>
+                          <Top>9.5cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>日</Value>
+                        </Textbox>
+                        <Textbox Name="textbox157">
+                          <Left>0.25cm</Left>
+                          <Top>8.25cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>月</Value>
+                        </Textbox>
+                        <Textbox Name="textbox158">
+                          <Left>0.25cm</Left>
+                          <Top>6.87831cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>年</Value>
+                        </Textbox>
+                        <Textbox Name="textbox159">
+                          <Left>0.25cm</Left>
+                          <Top>4.25cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>國</Value>
+                        </Textbox>
+                        <Textbox Name="textbox160">
+                          <Left>0.25cm</Left>
+                          <Top>3cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>民</Value>
+                        </Textbox>
+                        <Textbox Name="textbox161">
+                          <Left>0.25cm</Left>
+                          <Top>1.75cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>華</Value>
+                        </Textbox>
+                        <Textbox Name="textbox162">
+                          <Left>0.25cm</Left>
+                          <Top>0.5cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>中</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>39</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle26">
+                      <ReportItems>
+                        <Image Name="image2">
+                          <Sizing>Fit</Sizing>
+                          <Top>11cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Width>2cm</Width>
+                          <Source>Embedded</Source>
+                          <Style>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>1.74471cm</Height>
+                          <Value>image01</Value>
+                        </Image>
+                        <Textbox Name="textbox163">
+                          <Left>0.75cm</Left>
+                          <Top>6.75cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <BorderColor>
+                              <Default>White</Default>
+                            </BorderColor>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2cm</Height>
+                          <Value>經
+辦
+人
+‥</Value>
+                        </Textbox>
+                        <Textbox Name="textbox164">
+                          <Top>6.75cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2cm</Height>
+                          <Value>主
+
+管
+‥</Value>
+                        </Textbox>
+                        <Textbox Name="textbox165">
+                          <Top>2.25cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>郵局</Value>
+                        </Textbox>
+                        <Textbox Name="textbox166">
+                          <Left>1.5cm</Left>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.5cm</Height>
+                          <Value>詢
+見
+覆
+本
+局
+傳
+真
+號
+碼
+‥
+┏</Value>
+                        </Textbox>
+                        <Textbox Name="textbox167">
+                          <Left>2.25cm</Left>
+                          <Top>0.5cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>11cm</Height>
+                          <Value>查
+右
+列
+郵
+件
+,
+據
+受
+件
+人
+聲
+稱
+,
+並
+未
+寄
+到
+,
+請
+即
+迅
+為
+查</Value>
+                        </Textbox>
+                        <Textbox Name="textbox168">
+                          <Left>3.25cm</Left>
+                          <Top>0.25331cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>2.24736cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <BorderWidth>
+                              <Default>0.5pt</Default>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.5cm</Height>
+                          <Value>郵 回 查
+
+票 執 詢
+
+黏 費 或
+
+背 應 補
+
+面 用 發</Value>
+                        </Textbox>
+                        <Textbox Name="textbox169">
+                          <Left>0.75cm</Left>
+                          <Top>1cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>此致</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>38</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle27">
+                      <ReportItems>
+                        <Line Name="line4">
+                          <Top>2cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox170">
+                          <Left>0.25cm</Left>
+                          <Top>10.5cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75132cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>支局</Value>
+                        </Textbox>
+                        <Textbox Name="textbox171">
+                          <Left>0.25cm</Left>
+                          <Top>6.25cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75132cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>郵局</Value>
+                        </Textbox>
+                        <Textbox Name="textbox172">
+                          <Left>0.25cm</Left>
+                          <Top>0.17063cm</Top>
+                          <Width>1.00265cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>投遞　
+回執</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>37</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle28">
+                      <ReportItems>
+                        <Line Name="line11">
+                          <Top>2cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox173">
+                          <Left>0.5cm</Left>
+                          <Top>9.25cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>0.62103cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2.24735cm</Height>
+                          <Value>補
+發
+回
+執</Value>
+                        </Textbox>
+                        <Textbox Name="textbox174">
+                          <Left>0.5cm</Left>
+                          <Top>8.5cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.5cm</Height>
+                          <Value />
+                        </Textbox>
+                        <Textbox Name="textbox175">
+                          <Left>0.5cm</Left>
+                          <Top>6.5cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.62963cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>傳
+
+真</Value>
+                        </Textbox>
+                        <Textbox Name="textbox176">
+                          <Left>0.5cm</Left>
+                          <Top>5.75cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.5367cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.5cm</Height>
+                          <Value />
+                        </Textbox>
+                        <Textbox Name="textbox177">
+                          <Left>0.42063cm</Left>
+                          <Top>3.25cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2.25cm</Height>
+                          <Value>電話通知</Value>
+                        </Textbox>
+                        <Textbox Name="textbox178">
+                          <Left>0.52249cm</Left>
+                          <Top>2.50331cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.5cm</Height>
+                          <Value />
+                        </Textbox>
+                        <Textbox Name="textbox179">
+                          <Left>0.13228cm</Left>
+                          <Top>0.19709cm</Top>
+                          <Width>1.26324cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>結查
+
+果詢</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>36</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle29">
+                      <ReportItems>
+                        <Textbox Name="textbox4">
+                          <Left>0.12765cm</Left>
+                          <Top>1.19709cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>2cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.61731cm</Height>
+                          <Value>住址姓名</Value>
+                        </Textbox>
+                        <Textbox Name="textbox180">
+                          <Left>1.25cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>新細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>3cm</Height>
+                          <Value>=Fields!custname.Value</Value>
+                        </Textbox>
+                        <Textbox Name="textbox181">
+                          <Left>0.25cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>新細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.25cm</Height>
+                          <Value>=Fields!add1.Value+Fields!add2.Value+Fields!add3.Value</Value>
+                        </Textbox>
+                        <Line Name="line12">
+                          <Top>2cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line14">
+                          <Top>1cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox183">
+                          <Left>0.11772cm</Left>
+                          <Top>0.25cm</Top>
+                          <Width>2cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.61731cm</Height>
+                          <Value>收 件 人
+</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>35</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle31">
+                      <ReportItems>
+                        <Textbox Name="textbox9">
+                          <Left>1.15331cm</Left>
+                          <Top>10cm</Top>
+                          <ZIndex>15</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>3.75cm</Height>
+                          <Value>02
+|
+2
+7
+5
+6
+5
+4
+0
+5</Value>
+                        </Textbox>
+                        <Textbox Name="textbox8">
+                          <Left>1.17063cm</Left>
+                          <Top>8.90873cm</Top>
+                          <ZIndex>14</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>A</Value>
+                        </Textbox>
+                        <Textbox Name="textbox5">
+                          <Left>0.02646cm</Left>
+                          <Top>1.25cm</Top>
+                          <ZIndex>13</ZIndex>
+                          <Width>2.72896cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.61731cm</Height>
+                          <Value>電話住址姓名</Value>
+                        </Textbox>
+                        <Textbox Name="textbox3">
+                          <Left>0.40331cm</Left>
+                          <Top>0.2381cm</Top>
+                          <ZIndex>12</ZIndex>
+                          <Width>2cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.61731cm</Height>
+                          <Value>寄 件 人</Value>
+                        </Textbox>
+                        <Textbox Name="textbox70">
+                          <Left>1.75cm</Left>
+                          <Top>8.90608cm</Top>
+                          <ZIndex>11</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>X</Value>
+                        </Textbox>
+                        <Textbox Name="textbox71">
+                          <Left>0.5cm</Left>
+                          <Top>8.90873cm</Top>
+                          <ZIndex>10</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>F</Value>
+                        </Textbox>
+                        <Textbox Name="textbox67">
+                          <Left>1.75cm</Left>
+                          <Top>8.06481cm</Top>
+                          <ZIndex>9</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>人</Value>
+                        </Textbox>
+                        <Textbox Name="textbox68">
+                          <Left>1.15198cm</Left>
+                          <Top>8.06481cm</Top>
+                          <ZIndex>8</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>件</Value>
+                        </Textbox>
+                        <Textbox Name="textbox1">
+                          <Left>0.5cm</Left>
+                          <Top>8.06481cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>查</Value>
+                        </Textbox>
+                        <Line Name="line3">
+                          <Top>9.75cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>2.75132cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line2">
+                          <Top>8cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>2.75cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox184">
+                          <Left>1.92064cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.5cm</Height>
+                          <Value>台
+北
+市
+永
+吉
+路
+16
+號
+1
+樓</Value>
+                        </Textbox>
+                        <Textbox Name="textbox185">
+                          <Left>1.10582cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.5cm</Height>
+                          <Value>中國信託商業銀行</Value>
+                        </Textbox>
+                        <Textbox Name="textbox186">
+                          <Left>0.25cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.5cm</Height>
+                          <Value>02
+|
+2
+7
+6
+8
+0
+5
+0
+5
+分
+機
+3
+8
+4
+8</Value>
+                        </Textbox>
+                        <Line Name="line15">
+                          <Top>2cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>2.75cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line16">
+                          <Top>1cm</Top>
+                          <Width>2.75cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                      </ReportItems>
+                      <ZIndex>34</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle32">
+                      <ReportItems>
+                        <Textbox Name="textbox16">
+                          <Left>0.5cm</Left>
+                          <Top>7.25cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>日</Value>
+                        </Textbox>
+                        <Textbox Name="textbox79">
+                          <Left>0.5cm</Left>
+                          <Top>6.25cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>=Fields!day.Value</Value>
+                        </Textbox>
+                        <Textbox Name="textbox15">
+                          <Left>0.5cm</Left>
+                          <Top>5.25cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>月</Value>
+                        </Textbox>
+                        <Textbox Name="textbox78">
+                          <Left>0.5cm</Left>
+                          <Top>4.25cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>=Fields!month.Value</Value>
+                        </Textbox>
+                        <Textbox Name="textbox14">
+                          <Left>0.5cm</Left>
+                          <Top>3.25cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>年</Value>
+                        </Textbox>
+                        <Textbox Name="textbox77">
+                          <Left>0.25cm</Left>
+                          <Top>2.25cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>1.24974cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>
+=Fields!year.Value</Value>
+                        </Textbox>
+                        <Line Name="line1">
+                          <Top>2cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox12">
+                          <Left>0.25cm</Left>
+                          <Top>0.13228cm</Top>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>交寄　
+日期</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>33</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle33">
+                      <ReportItems>
+                        <Line Name="line18">
+                          <Top>9.75cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line17">
+                          <Top>8.5cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line13">
+                          <Top>6.25cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line10">
+                          <Top>5cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox39">
+                          <Left>0.5cm</Left>
+                          <Top>10.25cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.75132cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>信
+用
+卡</Value>
+                        </Textbox>
+                        <Textbox Name="textbox33">
+                          <Left>0.10582cm</Left>
+                          <Top>8.75cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>1.25cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.74074cm</Height>
+                          <Value>裝 內</Value>
+                        </Textbox>
+                        <Textbox Name="textbox25">
+                          <Left>0.14735cm</Left>
+                          <Top>5.25cm</Top>
+                          <rd:DefaultName>textbox25</rd:DefaultName>
+                          <ZIndex>1</ZIndex>
+                          <Width>1.25cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.74074cm</Height>
+                          <Value>量 重</Value>
+                        </Textbox>
+                        <Line Name="line8">
+                          <Top>2cm</Top>
+                          <Width>1.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                      </ReportItems>
+                      <ZIndex>32</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle34">
+                      <ReportItems>
+                        <Line Name="line7">
+                          <Top>7.5cm</Top>
+                          <ZIndex>7</ZIndex>
+                          <Width>2cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Line Name="line5">
+                          <Top>5cm</Top>
+                          <ZIndex>6</ZIndex>
+                          <Width>2cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox73">
+                          <Left>0.75cm</Left>
+                          <Top>8cm</Top>
+                          <rd:DefaultName>textbox73</rd:DefaultName>
+                          <ZIndex>5</ZIndex>
+                          <Width>0.25cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>新細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.75cm</Height>
+                          <Value>=Fields!mailno.Value</Value>
+                        </Textbox>
+                        <Textbox Name="textbox21">
+                          <Left>0.25608cm</Left>
+                          <Top>5.25cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>1.24816cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>1pt</PaddingLeft>
+                            <PaddingBottom>1pt</PaddingBottom>
+                            <FontFamily>新細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>1pt</PaddingRight>
+                            <PaddingTop>1pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2.25cm</Height>
+                          <Value>及郵
+號件
+碼種
+  類</Value>
+                        </Textbox>
+                        <Textbox Name="textbox62">
+                          <Left>1cm</Left>
+                          <Top>2.5cm</Top>
+                          <rd:DefaultName>textbox62</rd:DefaultName>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.76032cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontWeight>700</FontWeight>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>五
+十
+一</Value>
+                        </Textbox>
+                        <Textbox Name="textbox72">
+                          <Left>0.25cm</Left>
+                          <Top>2.5cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontWeight>700</FontWeight>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>支
+局</Value>
+                        </Textbox>
+                        <Line Name="line9">
+                          <Top>2cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>2cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>0cm</Height>
+                        </Line>
+                        <Textbox Name="textbox22">
+                          <Left>0.5cm</Left>
+                          <Top>0.17063cm</Top>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>宋体</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <BorderColor>
+                              <Default>White</Default>
+                            </BorderColor>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>原寄　
+局名</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>31</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontFamily>新細明體</FontFamily>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle63">
+                      <ReportItems>
+                        <Textbox Name="textbox26">
+                          <Left>0.74392cm</Left>
+                          <Top>3.5cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.99392cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>1pt</PaddingLeft>
+                            <PaddingBottom>1pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontWeight>Lighter</FontWeight>
+                            <FontSize>14pt</FontSize>
+                            <PaddingRight>1pt</PaddingRight>
+                            <PaddingTop>1pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>8.74735cm</Height>
+                          <Value>傳
+真
+查
+詢
+國
+內
+各
+項
+掛
+號
+郵
+件
+查
+單</Value>
+                        </Textbox>
+                        <Textbox Name="textbox24">
+                          <Left>1cm</Left>
+                          <Top>0.5cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.73784cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontWeight>700</FontWeight>
+                            <FontSize>14pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2.25cm</Height>
+                          <Value>催
+
+查</Value>
+                        </Textbox>
+                        <Textbox Name="textbox48">
+                          <Left>0.07937cm</Left>
+                          <Top>8cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>1pt</PaddingLeft>
+                            <PaddingBottom>1pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>1pt</PaddingRight>
+                            <PaddingTop>1pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>編列第</Value>
+                        </Textbox>
+                        <Textbox Name="textbox53">
+                          <Left>0.07937cm</Left>
+                          <Top>11.5cm</Top>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>1pt</PaddingLeft>
+                            <PaddingBottom>1pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <BorderColor>
+                              <Default>White</Default>
+                            </BorderColor>
+                            <PaddingRight>1pt</PaddingRight>
+                            <PaddingTop>1pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>號</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>30</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>14cm</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox6">
+                      <rd:DefaultName>textbox6</rd:DefaultName>
+                      <ZIndex>29</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox7">
+                      <rd:DefaultName>textbox7</rd:DefaultName>
+                      <ZIndex>28</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox11">
+                      <rd:DefaultName>textbox11</rd:DefaultName>
+                      <ZIndex>27</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox13">
+                      <rd:DefaultName>textbox13</rd:DefaultName>
+                      <ZIndex>26</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox40">
+                      <rd:DefaultName>textbox40</rd:DefaultName>
+                      <ZIndex>25</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox63">
+                      <rd:DefaultName>textbox63</rd:DefaultName>
+                      <ZIndex>24</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox64">
+                      <rd:DefaultName>textbox64</rd:DefaultName>
+                      <ZIndex>23</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox65">
+                      <rd:DefaultName>textbox65</rd:DefaultName>
+                      <ZIndex>22</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox66">
+                      <rd:DefaultName>textbox66</rd:DefaultName>
+                      <ZIndex>21</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox128">
+                      <rd:DefaultName>textbox128</rd:DefaultName>
+                      <ZIndex>20</ZIndex>
+                      <Style>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>新細明體</FontFamily>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>1cm</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle1">
+                      <ZIndex>19</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle2">
+                      <ZIndex>18</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle5">
+                      <ZIndex>17</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle13">
+                      <ReportItems>
+                        <Textbox Name="textbox29">
+                          <Left>0.39352cm</Left>
+                          <rd:DefaultName>textbox29</rd:DefaultName>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>投</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>16</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle17">
+                      <ZIndex>15</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle21">
+                      <ReportItems>
+                        <Textbox Name="textbox32">
+                          <Left>1cm</Left>
+                          <rd:DefaultName>textbox32</rd:DefaultName>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>遞</Value>
+                        </Textbox>
+                        <Textbox Name="textbox35">
+                          <Left>1cm</Left>
+                          <Top>0.75cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Value>二</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>14</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle24">
+                      <ZIndex>13</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle25">
+                      <ReportItems>
+                        <Textbox Name="textbox90">
+                          <Left>0.42381cm</Left>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>局</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>12</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle37">
+                      <ReportItems>
+                        <Textbox Name="textbox92">
+                          <Left>0.50516cm</Left>
+                          <Top>0.75cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Value>一</Value>
+                        </Textbox>
+                        <Textbox Name="textbox91">
+                          <Width>1.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>投遞局</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>11</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle50">
+                      <ZIndex>10</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>1.50265cm</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle3">
+                      <ReportItems>
+                        <Textbox Name="textbox19">
+                          <Left>0.25cm</Left>
+                          <rd:DefaultName>textbox19</rd:DefaultName>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>新細明體</FontFamily>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.5cm</Height>
+                          <Value>補補 到到 回回 執執 已已 收收 訖訖 ‥‥ 寄寄 件件 人人 簽簽 章章</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>9</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Left>Solid</Left>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Left>1pt</Left>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Left>Black</Left>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle4">
+                      <ReportItems>
+                        <Textbox Name="textbox28">
+                          <Left>4cm</Left>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.5cm</Height>
+                          <Value>妥
+投
+收
+據
+︵
+或
+影
+本
+︶
+貼
+此
+處</Value>
+                        </Textbox>
+                        <Textbox Name="textbox27">
+                          <Left>2.25cm</Left>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.5cm</Height>
+                          <Value>一
+併
+傳
+真
+至
+原
+查
+詢
+局
+後
+，</Value>
+                        </Textbox>
+                        <Textbox Name="textbox93">
+                          <Left>0.75cm</Left>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>4.5cm</Height>
+                          <Value>收
+據
+仍
+取
+下
+存
+檔
+。</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>8</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Left>Solid</Left>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Left>1pt</Left>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Left>Black</Left>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle11">
+                      <ReportItems>
+                        <Textbox Name="textbox100">
+                          <Left>0.12632cm</Left>
+                          <Top>6cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>日</Value>
+                        </Textbox>
+                        <Textbox Name="textbox80">
+                          <Left>0.12632cm</Left>
+                          <Top>4.75cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>月</Value>
+                        </Textbox>
+                        <Textbox Name="textbox98">
+                          <Left>0.12632cm</Left>
+                          <Top>3.25cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>年</Value>
+                        </Textbox>
+                        <Textbox Name="textbox97">
+                          <Left>0.12632cm</Left>
+                          <Width>1.00133cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>2.5cm</Height>
+                          <Value>中
+華
+民
+國</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>7</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle15">
+                      <ReportItems>
+                        <Image Name="image1">
+                          <Sizing>Fit</Sizing>
+                          <Left>0.01852cm</Left>
+                          <Top>8cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Source>Embedded</Source>
+                          <Style>
+                            <FontFamily>新細明體</FontFamily>
+                          </Style>
+                          <Height>1.75cm</Height>
+                          <Value>image01</Value>
+                        </Image>
+                        <Textbox Name="textbox101">
+                          <Left>0.75cm</Left>
+                          <Top>5.75cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>主
+管
+‥</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>6</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle19">
+                      <ReportItems>
+                        <Textbox Name="textbox102">
+                          <Top>5.75cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>經
+辦
+‥</Value>
+                        </Textbox>
+                        <Textbox Name="textbox31">
+                          <Left>0.75cm</Left>
+                          <Top>3.25cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>郵局</Value>
+                        </Textbox>
+                        <Textbox Name="textbox30">
+                          <Left>1.5cm</Left>
+                          <Top>1.75cm</Top>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.25cm</Height>
+                          <Value>此致</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>5</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle22">
+                      <ReportItems>
+                        <Textbox Name="textbox87">
+                          <Left>1.75cm</Left>
+                          <Top>1cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.5cm</Height>
+                          <Value>二
+、
+該
+件
+未
+投
+遞
+，
+原
+因
+如
+左
+‥</Value>
+                        </Textbox>
+                        <Textbox Name="textbox54">
+                          <Left>1.75cm</Left>
+                          <Top>0.25cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.5cm</Height>
+                          <Value />
+                        </Textbox>
+                        <Textbox Name="textbox86">
+                          <Left>0.5cm</Left>
+                          <Top>0.25cm</Top>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.75cm</Height>
+                          <Value>查該件</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>4</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle35">
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <Top>0.75cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.61058cm</Width>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>8.375cm</Height>
+                          <Value>妥
+投
+收
+據
+傳
+真
+如
+後
+，
+以
+為
+投
+到
+之
+據
+。</Value>
+                        </Textbox>
+                        <Textbox Name="textbox20">
+                          <Left>0.75cm</Left>
+                          <Top>0.75cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.75cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Value>一
+、
+查
+該
+件
+業
+於
+民
+國
+
+年
+
+月
+
+日
+妥
+投
+，</Value>
+                        </Textbox>
+                        <Textbox Name="textbox55">
+                          <Left>0.75cm</Left>
+                          <Top>0.25cm</Top>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.5cm</Height>
+                          <Value> </Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>3</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle36">
+                      <ReportItems>
+                        <Textbox Name="textbox105">
+                          <Left>0.42117cm</Left>
+                          <Width>0.75529cm</Width>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                            <PaddingLeft>1pt</PaddingLeft>
+                            <PaddingBottom>1pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>1pt</PaddingRight>
+                            <PaddingTop>1pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>6.75cm</Height>
+                          <Value>茲
+將
+最
+後
+查
+得
+結
+果
+如
+下
+︵ 
+︶ 
+‥</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>2</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                          <Top>Solid</Top>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                          <Top>1pt</Top>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                          <Top>Black</Top>
+                          <Right>Black</Right>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle38">
+                      <ReportItems>
+                        <Textbox Name="textbox104">
+                          <Left>1.5cm</Left>
+                          <Top>7cm</Top>
+                          <ZIndex>5</ZIndex>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1cm</Height>
+                          <Value>投
+遞</Value>
+                        </Textbox>
+                        <Textbox Name="textbox103">
+                          <Top>7cm</Top>
+                          <ZIndex>4</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>招
+領</Value>
+                        </Textbox>
+                        <Textbox Name="textbox99">
+                          <Left>0.75cm</Left>
+                          <Top>4cm</Top>
+                          <ZIndex>3</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>5.5cm</Height>
+                          <Value>日
+發
+往
+
+貴
+局
+
+
+請
+根
+查
+。</Value>
+                        </Textbox>
+                        <Textbox Name="textbox96">
+                          <Left>0.75cm</Left>
+                          <Top>3cm</Top>
+                          <ZIndex>2</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>月</Value>
+                        </Textbox>
+                        <Textbox Name="textbox95">
+                          <Left>0.75cm</Left>
+                          <Top>2cm</Top>
+                          <ZIndex>1</ZIndex>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>0.75cm</Height>
+                          <Value>年</Value>
+                        </Textbox>
+                        <Textbox Name="textbox94">
+                          <Left>0.75cm</Left>
+                          <Top>0.25cm</Top>
+                          <Width>0.5cm</Width>
+                          <Style>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>0.5pt</PaddingLeft>
+                            <PaddingBottom>0.5pt</PaddingBottom>
+                            <FontFamily>細明體</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <PaddingRight>0.5pt</PaddingRight>
+                            <PaddingTop>0.5pt</PaddingTop>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Height>1.5cm</Height>
+                          <Value>該
+件
+於</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <ZIndex>1</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontFamily>新細明體</FontFamily>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Rectangle Name="rectangle51">
+                      <Style>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>新細明體</FontFamily>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>10cm</Height>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.2381cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>5.7791cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.51455cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.52646cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.25cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.52646cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.52645cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.75cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Height>27.75265cm</Height>
+      </Table>
+    </ReportItems>
+    <Height>28.30555cm</Height>
+  </Body>
+  <rd:ReportID>f862c1c5-b47f-45b7-97a2-52d70882153b</rd:ReportID>
+  <LeftMargin>2.5cm</LeftMargin>
+  <EmbeddedImages>
+    <EmbeddedImage Name="image01">
+      <ImageData>/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABOAE4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+kd1jRndgqqMlicACkd1jRndgqKCWZjgAeprn4YW8TsLq7DDRw2ba1IwLkDpJIO6nqqdMYJySAoA7+277Vvl0C0Uwn/mI3issP1ROGl+o2qezGj/AIRmW8+bWNa1G9P/ADyhlNrEPosWGI/3mat+igDn/wDhB/DB+9olo57s
+6bifqTyaP+EM0WPmzhuLBx0ayupIcH/dVgp+hBFdBRQBgfZvEel/PBex6xbr1gu0WGfH+zIgCE+xQZ7sOtX9M1m11RpIkWaC6iA861uE2Sx56EjoRwcMpKnHBNaFUNT0mHUhG+94LuEkwXUWBJET1xngg4GVOQe4oA0KKy9J1Ka4kmsL9Uj1K2x5gQEJKh+7KmedpweOcEEc4BOpQBz+sf8AE41i30JebZFF1qHo0eSI4j/vsCSO6owP3q365/wp/pVvf6weTqV5JKh/6ZJiKP8AAqgb/gRroKACiiigAooooAKKKKAMbxFaTtbRanYxl9Q09jNEi9Zk/wCWkX/Al6dtwU9q1LO7gv7KC8tpBJbzxrJG46MpGQfyqWsDwx/ocmq6OeBZXjNEP+mUv71fwBZ0H+5QBJ4OjEXgjQYxyF063GfX92vNbdYPgp2bwXpEbn97b2y20vtJF+7cf99Ka3qACiiigAooooAKKKKACsC1+T4g6oo6SaZaMR7iW4GfyI/Kt+sDTf8ASPG+u3K8pDbWtnn/AG18yUj64mSgA0j/AIlviLVdLf5UuH/tC0HYq2BKB7iT5j/11Fb9Zet6dNdx291ZFRqFlJ5sBY4D9mjY9gy5GecHBwcVZ03UYdUskuYQy5JV43GHjcHDIw7EHg0AW6KKKACiiigAooooAhurqCxtJru5kWKCFDJI7dFUDJJ/CszwtazwaN9ou42ju76V7ydG+8hkbKofdV2p/wABqG+/4qDUl02PnT7OZZL2TtJIpDLCPXB2s3sAvO446CgArHvtMuIbx9T0llS7bHn28hxFdADA3f3XA4DjtgEEAY2KKAMvTtes9Rna1/eW1+gzJZ3K7JVHqB0Zf9pSV9606qajpVjq0CxX1skwQ7kblXjb+8jDBU+4INZf9h6vY/8AIK8QSlB0g1OL7Ug+jArJ+LO30oA36KwN3i9OPI0Ob/a86aL9Nrfzo+zeLLn5ZNQ0myQ9TBavM/4MzgA
+/VT9OeADbnuIbWB57iWOGGMbnkkYKqj1JPArE/tC68Q/utJMttp5/1moNGVaQekIYc/8AXQjb/d3dRJB4WsxOlzqE93qtwh3K99JuVW/vLGoEan3Cg+9blAEFlZW+n2cdrax+XDGPlGSTyckknkkkkknkkkmp6KKAP//Z</ImageData>
+      <MIMEType>image/jpeg</MIMEType>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <DataSets>
+    <DataSet Name="CS09">
+      <Query>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+        <CommandText>SELECT  tbl_Card_BaseInfo.ID,tbl_Card_BaseInfo.ACTION,      
+tbl_Card_BaseInfo.cardno,tbl_Card_BaseInfo.add1,tbl_Card_BaseInfo.add2,tbl_Card_BaseInfo.add3 , 
+--substring(tbl_Card_BaseInfo.mailno,1,6) mailno, 
+tbl_Card_BaseInfo.mailno,
+tbl_Card_BaseInfo.maildate, 
+tbl_Card_BaseInfo.custname, tbl_Post.Uid,
+substring(CONVERT(varchar(10),convert(datetime,tbl_Card_BaseInfo.maildate),112),1,4) as year,
+substring(CONVERT(varchar(10),convert(datetime,tbl_Card_BaseInfo.maildate),112),5,2) as month,
+substring(CONVERT(varchar(10),convert(datetime,tbl_Card_BaseInfo.maildate),112),7,2) as day
+FROM             tbl_Card_BaseInfo INNER JOIN
+                          tbl_Post ON tbl_Card_BaseInfo.cardno = tbl_Post.Cardno
+WHERE         (tbl_Card_BaseInfo.cardno = @cardno) AND (tbl_Card_BaseInfo.id = @id) AND 
+                          (tbl_Card_BaseInfo.action = @action)</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@cardno">
+            <Value>=Parameters!cardno.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@id">
+            <Value>=Parameters!id.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@action">
+            <Value>=Parameters!action.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <DataSourceName>CS09</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="ID">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>ID</DataField>
+        </Field>
+        <Field Name="ACTION">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>ACTION</DataField>
+        </Field>
+        <Field Name="cardno">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>cardno</DataField>
+        </Field>
+        <Field Name="add1">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>add1</DataField>
+        </Field>
+        <Field Name="add2">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>add2</DataField>
+        </Field>
+        <Field Name="add3">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>add3</DataField>
+        </Field>
+        <Field Name="mailno">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>mailno</DataField>
+        </Field>
+        <Field Name="maildate">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>maildate</DataField>
+        </Field>
+        <Field Name="custname">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>custname</DataField>
+        </Field>
+        <Field Name="Uid">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>Uid</DataField>
+        </Field>
+        <Field Name="year">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>year</DataField>
+        </Field>
+        <Field Name="month">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>month</DataField>
+        </Field>
+        <Field Name="day">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>day</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Code />
+  <Width>23.6545cm</Width>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <Language>zh-TW</Language>
+  <TopMargin>2.5cm</TopMargin>
+  <PageHeight>29.7cm</PageHeight>
+</Report>

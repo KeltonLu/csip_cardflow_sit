@@ -1,0 +1,122 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4496BB14-5797-45F9-8798-8779BA859624}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Entity</RootNamespace>
+    <AssemblyName>Entity</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EntityM_AutoJob.cs" />
+    <Compile Include="EntityM_CallMail.cs" />
+    <Compile Include="EntityM_LBatchLog.cs" />
+    <Compile Include="EntityM_PROPERTY_CODE.cs" />
+    <Compile Include="EntityM_PROPERTY_KEY.cs" />
+    <Compile Include="Entity_AffName.cs" />
+    <Compile Include="Entity_CancelOASA.cs" />
+    <Compile Include="Entity_CancelOASADetail.cs" />
+    <Compile Include="Entity_CancelOASAFileName.cs" />
+    <Compile Include="Entity_CancelOASASource.cs" />
+    <Compile Include="Entity_CancelOASAUd.cs" />
+    <Compile Include="Entity_CardBackInfo.cs" />
+    <Compile Include="Entity_CardBaseInfo.cs" />
+    <Compile Include="Entity_CardChange.cs" />
+    <Compile Include="Entity_CardDailyClose.cs" />
+    <Compile Include="Entity_CardDataChange.cs" />
+    <Compile Include="Entity_CardStockInfo.cs" />
+    <Compile Include="Entity_FileInfo.cs" />
+    <Compile Include="Entity_JobErrorInfo.cs" />
+    <Compile Include="Entity_Log.cs" />
+    <Compile Include="Entity_Post.cs" />
+    <Compile Include="Entity_SLetterInfoCallCust.cs" />
+    <Compile Include="Entity_UnableCard.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="EntityM_PostSend.cs" />
+    <Compile Include="EntityM_PostSendF.cs" />
+    <Compile Include="Entity_CPSFileName.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonModel\BusinessRules\BusinessRules.csproj">
+      <Project>{CE5C792C-F8FC-4D92-9576-0D96099508F8}</Project>
+      <Name>BusinessRules %28CommonModel\BusinessRules%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Framework.Common\Framework.Common.csproj">
+      <Project>{E4A10F71-A7D2-4F4C-ACF8-53E53D8169D5}</Project>
+      <Name>Framework.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Framework.Controls\WebControls\Framework.WebControls.csproj">
+      <Project>{671EB07B-A4FD-4E6D-AE5C-D185BEB526FB}</Project>
+      <Name>Framework.WebControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Framework.Data\OM\Framework.Data.OM.csproj">
+      <Project>{EFBB5F60-82AE-4C7F-A773-4E719EFDF037}</Project>
+      <Name>Framework.Data.OM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

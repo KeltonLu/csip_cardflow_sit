@@ -1,0 +1,504 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSources>
+    <DataSource Name="CS09">
+      <DataSourceReference>CS09</DataSourceReference>
+      <rd:DataSourceID>9d21ef3d-0bf6-4b6f-9199-982021f063a2</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <BottomMargin>2.5cm</BottomMargin>
+  <RightMargin>2.5cm</RightMargin>
+  <PageWidth>21cm</PageWidth>
+  <ReportParameters>
+    <ReportParameter Name="strFile">
+      <DataType>String</DataType>
+      <Prompt>strFile</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="strDate">
+      <DataType>String</DataType>
+      <Prompt>strDate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="strSource">
+      <DataType>String</DataType>
+      <Prompt>strSource</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <rd:GridSpacing>0.25cm</rd:GridSpacing>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <Body>
+    <ColumnSpacing>1cm</ColumnSpacing>
+    <ReportItems>
+      <Textbox Name="textbox2">
+        <Left>0.25cm</Left>
+        <Top>2.75cm</Top>
+        <ZIndex>9</ZIndex>
+        <Width>1.75cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>檔名：</Value>
+      </Textbox>
+      <Textbox Name="textbox3">
+        <Left>2.5cm</Left>
+        <Top>2.75cm</Top>
+        <ZIndex>8</ZIndex>
+        <Width>2.53968cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>=Fields!CancelOASAFile.Value</Value>
+      </Textbox>
+      <Table Name="table1">
+        <Left>0.25cm</Left>
+        <DataSetName>CS09</DataSetName>
+        <Top>3.5cm</Top>
+        <ZIndex>7</ZIndex>
+        <Width>17.75cm</Width>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CardNo">
+                      <rd:DefaultName>CardNo</rd:DefaultName>
+                      <ZIndex>3</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>DarkGray</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!CardNo.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BlockLog">
+                      <rd:DefaultName>BlockLog</rd:DefaultName>
+                      <ZIndex>2</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>DarkGray</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!BlockLog.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="MemoLog">
+                      <rd:DefaultName>MemoLog</rd:DefaultName>
+                      <ZIndex>1</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>DarkGray</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!MemoLog.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="SFFlgName">
+                      <rd:DefaultName>SFFlgName</rd:DefaultName>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>DarkGray</Default>
+                        </BorderColor>
+                        <BackgroundColor>=iif(RowNumber(nothing) mod 2 = 0, "#CEF9F9", "Transparent")</BackgroundColor>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!SFFlgName.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.53333cm</Height>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Header>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox4">
+                      <rd:DefaultName>textbox4</rd:DefaultName>
+                      <ZIndex>7</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>卡號</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox5">
+                      <rd:DefaultName>textbox5</rd:DefaultName>
+                      <ZIndex>6</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>BLOCK CODE</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox6">
+                      <rd:DefaultName>textbox6</rd:DefaultName>
+                      <ZIndex>5</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>備註</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox7">
+                      <rd:DefaultName>textbox7</rd:DefaultName>
+                      <ZIndex>4</ZIndex>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>700</FontWeight>
+                        <FontSize>9pt</FontSize>
+                        <BorderColor>
+                          <Default>#007e7a</Default>
+                        </BorderColor>
+                        <BackgroundColor>#a0cccc</BackgroundColor>
+                        <Color>#007e7a</Color>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value>註銷狀態</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.55873cm</Height>
+            </TableRow>
+          </TableRows>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>4.4375cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.4375cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.4375cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.4375cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Height>1.09206cm</Height>
+      </Table>
+      <Textbox Name="textbox28">
+        <Left>15.75cm</Left>
+        <Top>2.75cm</Top>
+        <rd:DefaultName>textbox28</rd:DefaultName>
+        <ZIndex>6</ZIndex>
+        <Width>2.25cm</Width>
+        <Style>
+          <TextAlign>Right</TextAlign>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>=Fields!PrintDate.Value</Value>
+      </Textbox>
+      <Textbox Name="textbox13">
+        <Left>13.5cm</Left>
+        <Top>2.75cm</Top>
+        <ZIndex>5</ZIndex>
+        <Width>2.25cm</Width>
+        <Style>
+          <TextAlign>Right</TextAlign>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>列印時間：</Value>
+      </Textbox>
+      <Textbox Name="textbox11">
+        <Left>0.25cm</Left>
+        <Top>2cm</Top>
+        <rd:DefaultName>textbox11</rd:DefaultName>
+        <ZIndex>4</ZIndex>
+        <Width>1.75cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>來源：</Value>
+      </Textbox>
+      <Textbox Name="textbox12">
+        <Left>2.5cm</Left>
+        <Top>2cm</Top>
+        <rd:DefaultName>textbox12</rd:DefaultName>
+        <ZIndex>3</ZIndex>
+        <Width>2.53968cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>=Fields!CancelOASASource.Value</Value>
+      </Textbox>
+      <Textbox Name="textbox10">
+        <Left>2.5cm</Left>
+        <Top>1.25cm</Top>
+        <rd:DefaultName>textbox10</rd:DefaultName>
+        <ZIndex>2</ZIndex>
+        <Width>2.53968cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>=Fields!CancelOASADate.Value</Value>
+      </Textbox>
+      <Textbox Name="textbox9">
+        <Left>0.25cm</Left>
+        <Top>1.25cm</Top>
+        <rd:DefaultName>textbox9</rd:DefaultName>
+        <ZIndex>1</ZIndex>
+        <Width>2.25cm</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>新細明體</FontFamily>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.63492cm</Height>
+        <Value>注銷時間：</Value>
+      </Textbox>
+      <Textbox Name="textbox1">
+        <Left>0.25cm</Left>
+        <Top>0.25cm</Top>
+        <rd:DefaultName>textbox1</rd:DefaultName>
+        <Width>17.77778cm</Width>
+        <Style>
+          <TextAlign>Center</TextAlign>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingBottom>2pt</PaddingBottom>
+          <FontFamily>Tahoma</FontFamily>
+          <FontWeight>700</FontWeight>
+          <FontSize>16pt</FontSize>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+        </Style>
+        <CanGrow>true</CanGrow>
+        <Height>0.91429cm</Height>
+        <Value>註銷記錄明細</Value>
+      </Textbox>
+    </ReportItems>
+    <Height>5.25cm</Height>
+  </Body>
+  <rd:ReportID>78d35bc9-8395-448b-b018-8cdf66e56323</rd:ReportID>
+  <LeftMargin>2.5cm</LeftMargin>
+  <DataSets>
+    <DataSet Name="CS09">
+      <Query>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+        <CommandText>select CancelOASAFile,CancelOASADate,
+case @strSource  when '0' then 'OU檔註銷' when '1' then '人工注銷' else '退件注銷' end as CancelOASASource,
+CardNo,BlockLog,MemoLog,
+case SFFlg when '0' then '未注銷' when '1' then '注銷成功' when '2' then '注銷失敗' when '3' then '人工注銷成功' end as SFFlgName,convert(varchar(10),getdate(),111) as PrintDate
+from dbo.tbl_CancelOASA_Detail
+where CancelOASAFile=@strFile and CancelOASADate=@strDate</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@strSource">
+            <Value>=Parameters!strSource.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@strFile">
+            <Value>=Parameters!strFile.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@strDate">
+            <Value>=Parameters!strDate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <DataSourceName>CS09</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="CancelOASAFile">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>CancelOASAFile</DataField>
+        </Field>
+        <Field Name="CancelOASADate">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>CancelOASADate</DataField>
+        </Field>
+        <Field Name="CancelOASASource">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>CancelOASASource</DataField>
+        </Field>
+        <Field Name="CardNo">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>CardNo</DataField>
+        </Field>
+        <Field Name="BlockLog">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>BlockLog</DataField>
+        </Field>
+        <Field Name="MemoLog">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>MemoLog</DataField>
+        </Field>
+        <Field Name="SFFlgName">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>SFFlgName</DataField>
+        </Field>
+        <Field Name="PrintDate">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>PrintDate</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Width>18.25cm</Width>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <Language>zh-TW</Language>
+  <TopMargin>2.5cm</TopMargin>
+  <PageHeight>29.7cm</PageHeight>
+</Report>

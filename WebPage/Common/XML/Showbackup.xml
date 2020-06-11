@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shows>
+  <!--common message&login 00-->
+  <Show id="0000">中國信托</Show>
+  <Show id="0001">KeyinGUI</Show>
+  <Show id="0002">Bonus</Show>
+  <Show id="0003">CardMaintain</Show>
+  <Show id="0004">PayCerfity</Show>
+  <Show id="0005">登錄</Show>
+  <Show id="0006">您沒有任何系統權限</Show>
+  <Show id="0007">登出</Show>
+  <Show id="0008">系統選擇</Show>
+  <Show id="0009">功能選擇</Show>
+  <Show id="0016">您還沒有登入，請先登入。</Show>
+
+
+  <!--Ldap message  01-->
+  <Show id="0101">收到Ldap 錯誤消息: 連線錯誤</Show>
+  <Show id="0102">收到Ldap 錯誤消息: 用戶錯誤</Show>
+  <Show id="0103">收到Ldap 錯誤消息: 密碼錯誤</Show>
+  <Show id="0104">收到Ldap 錯誤消息: 名字接收錯誤</Show>
+  <Show id="0105">收到Ldap 錯誤消息: 用戶名長度超過</Show>
+  <Show id="0106">收到Ldap 錯誤消息: 錯誤的 Roles </Show>
+
+  <!--permission message 02-->
+  <Show id="0200">是否啟用</Show>
+  <Show id="0201">是否顯示在菜單</Show>
+  <Show id="0202">上級功能</Show>
+  <Show id="0203">功能排序</Show>
+  <Show id="0204">頁面地址</Show>
+  <Show id="0205">功能名稱</Show>
+  <Show id="0206">功能層級</Show>
+  <Show id="0207">資料異動</Show>
+  <Show id="0208">資料查詢</Show>
+  <Show id="0209">資料新增</Show>
+  <Show id="0210">操作</Show>
+  <Show id="0211">功能ID</Show>
+
+  <!--角色維護 03-->
+  <Show id="0300">角色維護</Show>
+  <Show id="0301">角色代號：</Show>
+  <Show id="0302">角色名稱：</Show>
+  <Show id="0303">資料查詢</Show>
+  <Show id="0304">添加</Show>
+  <Show id="0305">修改</Show>
+  <Show id="0306">刪除</Show>
+  <Show id="0307">角色代號</Show>
+  <Show id="0308">角色名稱</Show>
+  <Show id="0309">取消</Show>
+  <Show id="0310">^[A-Za-z0-9]+$</Show>
+  <Show id="0311">^[A-Za-z0-9\u4e00-\u9fa5]+$</Show>
+
+  <!--角色權限維護 04-->
+  <Show id="0406">功能名稱</Show>
+  <Show id="0407">功能代碼</Show>
+  <Show id="0408">返回</Show>
+  <Show id="0409">確定</Show>
+  <Show id="0410">角色權限維護</Show>
+  <Show id="0411">角色代號</Show>
+  <Show id="0412">資料查詢</Show>
+  <Show id="0413">角色權限維護</Show>
+  <Show id="0414">選擇</Show>
+  <Show id="0415">角色名稱</Show>
+
+  <!--功能維護 05-->
+  <Show id="0500">功能維護</Show>
+  <Show id="0501">功能維護--添加</Show>
+  <Show id="0502">功能維護--修改</Show>
+  <Show id="0506">功能名稱</Show>
+  <Show id="0507">功能代碼</Show>
+  <Show id="0508">功能類型</Show>
+  <Show id="0509">功能級別</Show>
+  <Show id="0510">顯示順序</Show>
+  <Show id="0511">鏈結動作</Show>
+  <Show id="0512">操作</Show>
+  <Show id="0513">資料查詢</Show>
+  <Show id="0514">添加功能</Show>
+  <Show id="0515">修改</Show>
+  <Show id="0513">刪除</Show>
+  <Show id="0514">確定</Show>
+  <Show id="0515">返回</Show>
+  <Show id="0513">角色權限維護</Show>
+  <Show id="0514">選擇</Show>
+  <Show id="0515">角色名稱</Show>
+
+	<!--屬性維護 06-->
+	<Show id="0600">屬性維護</Show>
+	<Show id="0601">屬性標識</Show>
+	<Show id="0602">屬性描述</Show>
+	<Show id="0606">功能</Show>
+	<Show id="0607">屬性代碼維護</Show>
+	<Show id="0608">屬性代碼</Show>
+	<Show id="0609">代碼描述</Show>
+	<Show id="0610">顯示順序</Show>
+	<Show id="0611">注銷原因</Show>
+	<Show id="0612">添加</Show>
+	<Show id="0613">修改</Show>
+	<Show id="0614">刪除</Show>
+	<Show id="0615">確定</Show>
+	<Show id="0616">屬性代碼維護</Show>
+	<Show id="0617">屬性代碼</Show>
+	<Show id="0618">代碼描述</Show>
+	<Show id="0619">顯示順序</Show>
+	<Show id="0620">注銷原因</Show>
+
+</Shows>

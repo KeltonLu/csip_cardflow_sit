@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+ <header>
+  <action type="transaction"/>
+  <data id="sessionId" value="CSIMXfmny5ipwAo02jLs1fWFvJZ06924"/>
+  <data id="applicationId" value="default"/>
+  <data id="luType" value="LU62"/>
+  <data id="transactionId" value="P4_JCAS"/>
+ </header>
+ <line no="1">
+  <msgHeader/>
+  <msgBody>
+   <data id="RTL_BALANCE" value=" 00000006417"/>
+   <data id="LAST_PAY_DATE" value="20060423"/>
+   <data id="FREE_INT_NO" value=" 002"/>
+   <data id="BREAK_AMT" value=" 0000000"/>
+   <data id="TRAN_ID" value="JCAS"/>
+   <data id="FUNCTION_CODE" value="1"/>
+   <data id="PERIOD_AMT" value=" 000011635"/>
+   <data id="PRODUCT" value="01"/>
+   <data id="DATE" value="20050520"/>
+   <data id="CUST_ID" value="T222650610"/>
+   <data id="LATE_CHARGE" value=" 00000000000"/>
+   <data id="FEE_RATE" value="0.0000"/>
+   <data id="SHORT_NAME" value="曾莉雯"/>
+   <data id="SET_DATE" value="20060406"/>
+   <data id="PRE_SETTLE_DATE" value=""/>
+   <data id="USER_ID" value="Z06924"/>
+   <data id="TOT_BALANCE" value=" 00000438860"/>
+   <data id="PROJ_CODE" value="94050"/>
+   <data id="MATURITY_DATE" value="20100523"/>
+   <data id="PERIOD_NO" value=" 060"/>
+   <data id="PAID_CNT" value=" 011"/>
+   <data id="BLOCK_DATE" value="00000000"/>
+   <data id="BREAK_EXP_DATE" value="20060520"/>
+   <data id="LINE_CNT" value="0001"/>
+   <data id="ACCT_NBR" value="1234068000691256"/>
+   <data id="MESSAGE_TYPE" value="0001"/>
+   <data id="INT_DAY" value="23"/>
+   <data id="TOT_AMT" value=" 00000000000"/>
+   <data id="AMT" value=" 000500000"/>
+   <data id="RATE_DIS" value="0.0000"/>
+   <data id="SETTLE_MAIN_DATE" value="00000000"/>
+   <data id="PERIOD_NO_DIS" value=" 000"/>
+   <data id="PROGRAM_ID" value="JCGU619"/>
+   <data id="BLOCK_CODE" value=""/>
+   <data id="CURR_BALANCE" value=" 000432443"/>
+   <data id="NEST_PAY_DATE" value="20060523"/>
+   <data id="FEE" value=" 000005000"/>
+   <data id="LAST_TXN_DATE" value="20060331"/>
+   <data id="NEW_CARD_NO" value="0000000000000000"/>
+   <data id="CASH_BALANCE" value=" 00000005218"/>
+   <data id="CARD_NO" value="1234068000691256"/>
+   <data id="BREAK_RATE" value="0.0300"/>
+   <data id="PERIOD_AMT_DIS" value="0000000000"/>
+   <data id="RATE" value="0.1400"/>
+   <data id="SETTLE_DATE" value=""/>
+   <data id="RATE_DIF" value="000003000"/>
+  </msgBody>
+ </line>
+</hostgateway>

@@ -1,0 +1,82 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB13EEB6-015A-48E0-A9BA-07F12E675467}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BusinessRulesNew</RootNamespace>
+    <AssemblyName>BusinessRulesNew</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Entity, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Entity\bin\Debug\Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BRM_SLetterInfoCallCust.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonModel\BaseItem\BaseItem.csproj">
+      <Project>{EE192BCC-4665-406D-BA88-76863B4B6853}</Project>
+      <Name>BaseItem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonModel\BusinessRules\BusinessRules.csproj">
+      <Project>{1A02033E-F12E-46BB-8AE2-25FE5781260E}</Project>
+      <Name>BusinessRules %28CommonModel\BusinessRules%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonModel\Entity\Entity.csproj">
+      <Project>{E2D629A1-9848-43D9-BF7E-3A18A31CC7A4}</Project>
+      <Name>Entity %28CommonModel\Entity%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Framework.Common\Framework.Common.csproj">
+      <Project>{E4A10F71-A7D2-4F4C-ACF8-53E53D8169D5}</Project>
+      <Name>Framework.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Framework.Data\OM\Framework.Data.OM.csproj">
+      <Project>{EFBB5F60-82AE-4C7F-A773-4E719EFDF037}</Project>
+      <Name>Framework.Data.OM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BusinessRules\BusinessRules.csproj">
+      <Project>{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}</Project>
+      <Name>BusinessRules %28CardImport\BusinessRules%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

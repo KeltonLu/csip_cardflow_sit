@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+	<header>
+		<action type="transaction"/>
+		<data id="sessionId" value=""/>
+		<data id="applicationId" value="default"/>
+		<data id="luType" value="LU0"/>
+		<data id="transactionId" value="067050"/>
+	</header>
+	<body>
+		<data id="applicationId" value="CSIP"/>
+                <data id="CUST_NO" value=""/>
+		<data id="OPTN" value="1"/>
+		<data id="CUST_ID_NO" value="A123456789"/>
+		<data id="ID_TYPE" value=""/>
+	</body>
+</hostgateway>

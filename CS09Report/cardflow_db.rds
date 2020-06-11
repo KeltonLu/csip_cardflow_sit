@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>cardflow_db</Name>
+  <DataSourceID>cf1d696e-e4b6-4062-bf74-906691bc6095</DataSourceID>
+  <ConnectionProperties>
+    <Extension>SQL</Extension>
+    <ConnectString>Data Source=192.168.33.39,1803;Initial Catalog=CFDB_SIT</ConnectString>
+  </ConnectionProperties>
+</RptDataSource>

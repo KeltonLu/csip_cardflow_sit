@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+ <header>
+  <rc value="702"/>
+ </header>
+ <body>
+  <msg value="702 CLOSE SESSION 成功"/>
+  <data id="HOST_OUTPUT_CODE"/>
+  <data id="HOST_RETURN_CODE"/>
+  <data id="HOST_MSG"/>
+ </body>
+</hostgateway>
+

@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<hostgateway>
+  <header>
+    <action type="transaction"/>
+    <data id="sessionId" value="CSIMXDMnRMnGLNJirCGmqRLl7mZ03770"/>
+    <data id="applicationId" value="CSIP"/>
+    <data id="luType" value="LU62"/>
+    <data id="transactionId" value="P4_JCHN"/>
+  </header>
+  <line no="1">
+    <msgBody>
+            <data id="TRAN_ID" value="JCHN"/>
+            <data id="PROGRAM_ID" value="JCGU727"/>
+            <data id="USER_ID" value=""/>
+            <data id="MESSAGE_TYPE" value="0000"/>
+            <data id="FUNCTION_CODE" value="1"/>
+            <data id="LINE_CNT" value="0005"/>
+						<data id="LAST_KEY" value="" />
+						<data id="IDNO" value="A123456789" />
+						<data id="NAME" value="楊過" />
+						<data id="ADDR1" value="台北市中山區中南路7號中商廣場27樓" />
+						<data id="ADDR2" value="台北市中正區忠孝東路17號" />
+						<data id="STAS" value="3" />
+						<data id="STASD" value="20091001" />
+						<data id="BALAMT" value="90" />
+						<data id="LPAYD" value="20091101" />
+						<data id="LPAYT" value="500" />
+            <data id="CARDNUM1" value="1234000200030001"/>
+            <data id="CARDNUM2" value="1234000200030002"/>
+            <data id="CARDNUM3" value="1234000200030003"/>
+            <data id="CARDNUM4" value="1234000200030004"/>
+            <data id="CARDNUM5" value="1234000200030005"/>
+            <data id="CARDNUM6" value=""/>
+            <data id="CARDNUM7" value=""/>
+            <data id="CARDNUM8" value=""/>
+            <data id="CARDNUM9" value=""/>
+            <data id="CARDNUM10" value=""/>
+            <data id="CARDNUM11" value=""/>
+            <data id="CARDNUM12" value=""/>
+            <data id="CARDNUM13" value=""/>
+            <data id="CARDNUM14" value=""/>
+            <data id="CARDNUM15" value=""/>
+            <data id="CARDNUM16" value=""/>
+            <data id="CARDNUM17" value=""/>
+            <data id="CARDNUM18" value=""/>
+            <data id="CARDNUM19" value=""/>
+            <data id="CARDNUM20" value=""/>
+            <data id="CARDNUM21" value=""/>
+            <data id="CARDNUM22" value=""/>
+            <data id="CARDNUM23" value=""/>
+            <data id="CARDNUM24" value=""/>
+            <data id="CARDNUM25" value=""/>
+            <data id="CARDNUM26" value=""/>
+            <data id="CARDNUM27" value=""/>
+            <data id="CARDNUM28" value=""/>
+            <data id="CARDNUM29" value=""/>
+            <data id="CARDNUM30" value=""/>
+            <data id="CARDDTE1" value="20090501"/>
+            <data id="CARDDTE2" value="20090502"/>
+            <data id="CARDDTE3" value="20090503"/>
+            <data id="CARDDTE4" value="20090504"/>
+            <data id="CARDDTE5" value="20090505"/>
+            <data id="CARDDTE6" value=""/>
+            <data id="CARDDTE7" value=""/>
+            <data id="CARDDTE8" value=""/>
+            <data id="CARDDTE9" value=""/>
+            <data id="CARDDTE10" value=""/>
+            <data id="CARDDTE11" value=""/>
+            <data id="CARDDTE12" value=""/>
+            <data id="CARDDTE13" value=""/>
+            <data id="CARDDTE14" value=""/>
+            <data id="CARDDTE15" value=""/>
+            <data id="CARDDTE16" value=""/>
+            <data id="CARDDTE17" value=""/>
+            <data id="CARDDTE18" value=""/>
+            <data id="CARDDTE19" value=""/>
+            <data id="CARDDTE20" value=""/>
+            <data id="CARDDTE21" value=""/>
+            <data id="CARDDTE22" value=""/>
+            <data id="CARDDTE23" value=""/>
+            <data id="CARDDTE24" value=""/>
+            <data id="CARDDTE25" value=""/>
+            <data id="CARDDTE26" value=""/>
+            <data id="CARDDTE27" value=""/>
+            <data id="CARDDTE28" value=""/>
+            <data id="CARDDTE29" value=""/>
+            <data id="CARDDTE30" value=""/>            
+            <data id="ALID1" value="A123456789"/>
+            <data id="ALID2" value="A123456789"/>
+            <data id="ALID3" value="A123456789"/>
+            <data id="ALID4" value="A123456789"/>
+            <data id="ALID5" value="A123456789"/>
+            <data id="ALID6" value=""/>
+            <data id="ALID7" value=""/>
+            <data id="ALID8" value=""/>
+            <data id="ALID9" value=""/>
+            <data id="ALID10" value=""/>
+            <data id="ALID11" value=""/>
+            <data id="ALID12" value=""/>
+            <data id="ALID13" value=""/>
+            <data id="ALID14" value=""/>
+            <data id="ALID15" value=""/>
+            <data id="ALID16" value=""/>
+            <data id="ALID17" value=""/>
+            <data id="ALID18" value=""/>
+            <data id="ALID19" value=""/>
+            <data id="ALID20" value=""/>    
+            <data id="ALID21" value=""/>
+            <data id="ALID22" value=""/>
+            <data id="ALID23" value=""/>
+            <data id="ALID24" value=""/>
+            <data id="ALID25" value=""/>
+            <data id="ALID26" value=""/>
+            <data id="ALID27" value=""/>
+            <data id="ALID28" value=""/>
+            <data id="ALID29" value=""/>
+            <data id="ALID30" value=""/>                                            
+            <data id="STOPREC1" value="1"/>
+            <data id="STOPREC2" value="1"/>
+            <data id="STOPREC3" value="1"/>
+            <data id="STOPREC4" value="1"/>
+            <data id="STOPREC5" value="1"/>
+            <data id="STOPREC6" value=""/>
+            <data id="STOPREC7" value=""/>
+            <data id="STOPREC8" value=""/>
+            <data id="STOPREC9" value=""/>
+            <data id="STOPREC10" value=""/>
+            <data id="STOPREC11" value=""/>
+            <data id="STOPREC12" value=""/>
+            <data id="STOPREC13" value=""/>
+            <data id="STOPREC14" value=""/>
+            <data id="STOPREC15" value=""/>
+            <data id="STOPREC16" value=""/>
+            <data id="STOPREC17" value=""/>
+            <data id="STOPREC18" value=""/>
+            <data id="STOPREC19" value=""/>
+            <data id="STOPREC20" value=""/>  
+            <data id="STOPREC21" value=""/>
+            <data id="STOPREC22" value=""/>
+            <data id="STOPREC23" value=""/>
+            <data id="STOPREC24" value=""/>
+            <data id="STOPREC25" value=""/>
+            <data id="STOPREC26" value=""/>
+            <data id="STOPREC27" value=""/>
+            <data id="STOPREC28" value=""/>
+            <data id="STOPREC29" value=""/>
+            <data id="STOPREC30" value=""/>                                              
+            <data id="CUSTID1" value="A123456789"/>
+            <data id="CUSTID2" value="A123456789"/>
+            <data id="CUSTID3" value="A123456789"/>
+            <data id="CUSTID4" value="A123456789"/>
+            <data id="CUSTID5" value="A123456789"/>
+            <data id="CUSTID6" value=""/>
+            <data id="CUSTID7" value=""/>
+            <data id="CUSTID8" value=""/>
+            <data id="CUSTID9" value=""/>
+            <data id="CUSTID10" value=""/>
+            <data id="CUSTID11" value=""/>
+            <data id="CUSTID12" value=""/>
+            <data id="CUSTID13" value=""/>
+            <data id="CUSTID14" value=""/>
+            <data id="CUSTID15" value=""/>
+            <data id="CUSTID16" value=""/>
+            <data id="CUSTID17" value=""/>
+            <data id="CUSTID18" value=""/>
+            <data id="CUSTID19" value=""/>
+            <data id="CUSTID20" value=""/>
+            <data id="CUSTID21" value=""/>
+            <data id="CUSTID22" value=""/>
+            <data id="CUSTID23" value=""/>
+            <data id="CUSTID24" value=""/>
+            <data id="CUSTID25" value=""/>
+            <data id="CUSTID26" value=""/>
+            <data id="CUSTID27" value=""/>
+            <data id="CUSTID28" value=""/>
+            <data id="CUSTID29" value=""/>
+            <data id="CUSTID30" value=""/>                                                
+    </msgBody>
+  </line>
+</hostgateway>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+ <header>
+  <action type="transaction"/>
+  <data id="sessionId" value="CSLNUbE6Td42Vqco7fQIzsJdxsBZ99913"/>
+  <data id="applicationId" value="default"/>
+  <data id="luType" value="LU62"/>
+  <data id="transactionId" value="P4_JCFK"/>
+  <data id="lowValue" value="true"/>
+ </header>
+ <body>
+  <data id="TRAN_ID" value="JCFK"/>
+  <data id="PROGRAM_ID" value="JCGU682"/>
+  <data id="MESSAGE_TYPE" value=""/>
+  <data id="USER_ID" value=""/>
+  <data id="FUNCTION_CODE" value="1"/>
+  <data id="LINE_CNT" value="0000"/>
+  <data id="ACCT_NBR" value="G220955578"/>
+ </body>
+</hostgateway>

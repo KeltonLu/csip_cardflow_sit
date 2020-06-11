@@ -1,0 +1,143 @@
+﻿//******************************************************************
+//*  功能說明：OASA注銷Log檔處理業務邏輯層       為了空檔寫入0及無檔案寫入NA複寫此方法
+//*  作    者：zhiyuan
+//*  創建日期：2010/05/27
+//*  修改記錄：
+//*<author>            <time>            <TaskID>            <desc>
+//*******************************************************************
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Framework.Data.OM;
+using Framework.Data.OM.Collections;
+using Framework.Data.OM.Transaction;
+using EntityLayer;
+using System.Data.SqlClient;
+using System.Data;
+using BusinessRules;
+/// <summary>
+/// BR_CancelOASA 的摘要描述
+/// </summary>
+public class BR_CancelOASA : BRBase<Entity_CancelOASA>
+{
+    public BR_CancelOASA()
+    {
+        //
+        // TODO: 在這裡新增建構函式邏輯
+        //
+    }
+
+    /// <summary>
+    /// 進入點 進入後判斷是否有資料存在，再決定是新增還是UPDDATE
+    /// </summary>
+    /// <param name="inData"></param>
+    /// <returns></returns>
+    public static bool InsertCancelOASA(Entity_CancelOASA inData)
+    {
+        bool result = false;
+        if (!IsExist(inData))
+        {
+            result = Insert(inData);
+        }
+        else
+        {
+            //有筆數才更新，不然維持原狀
+            if (inData.TotalCount > 0)
+            {
+                result = Update(inData);
+            }
+            else
+            {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private static bool IsExist(Entity_CancelOASA inData)
+    {
+        bool result = false;
+        string strSQL = @"SELECT TOP 1 [CancelOASAFile],[CancelOASADate],[CancelOASAUser],[TotalCount]
+	                    ,[SCount],[FCount],[CancelOASASource],[Stauts] 
+	                    FROM [tbl_CancelOASA]";
+        try
+        {
+            strSQL += " where CancelOASAFile='" + inData.CancelOASAFile + "'and  CancelOASADate='" + inData.CancelOASADate + "' ";
+
+            SqlCommand sqlcmd = new SqlCommand();
+            sqlcmd.CommandType = CommandType.Text;
+            sqlcmd.CommandText = strSQL;
+            DataSet ds = SearchOnDataSet(sqlcmd);
+            if (ds != null)
+            {
+                System.Data.DataTable dtOASACardInfo = ds.Tables[0];
+                if (dtOASACardInfo.Rows.Count > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+
+            }
+            else
+            {
+                result = false;
+            }
+        }
+        catch (Exception exp)
+        {
+            SaveLog(exp.Message);
+            result = false;
+        }
+
+
+        return result;
+    }
+
+    private static bool Insert(Entity_CancelOASA paramObj)
+    {
+
+        bool result = false;
+        string strSQL = @"Insert into tbl_CancelOASA 
+(CancelOASAFile,CancelOASADate,CancelOASAUser,TotalCount,SCount,FCount,CancelOASASource)
+VALUES(@CancelOASAFile,@CancelOASADate,@CancelOASAUser,@TotalCount,@SCount,@FCount,@CancelOASASource);
+
+";
+        SqlCommand sqlcmd = new SqlCommand();
+        sqlcmd.CommandType = CommandType.Text;
+
+        sqlcmd.CommandText = strSQL;
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAFile", paramObj.CancelOASAFile));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASADate", paramObj.CancelOASADate));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAUser", paramObj.CancelOASAUser));
+        sqlcmd.Parameters.Add(new SqlParameter("@TotalCount", paramObj.TotalCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASASource", paramObj.CancelOASASource));
+        result = Add(sqlcmd);
+        return result;
+    }
+
+    private static bool Update(Entity_CancelOASA paramObj)
+    {
+        bool result = false;
+        string strSQL = @" update tbl_CancelOASA
+set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource = @CancelOASASource 
+ 
+";
+        strSQL += " where CancelOASAFile='" + paramObj.CancelOASAFile + "'and  CancelOASADate='" + paramObj.CancelOASADate + "' ";
+        SqlCommand sqlcmd = new SqlCommand();
+        sqlcmd.CommandType = CommandType.Text; 
+        sqlcmd.CommandText = strSQL;
+       
+        sqlcmd.Parameters.Add(new SqlParameter("@TotalCount", paramObj.TotalCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASASource", paramObj.CancelOASASource));
+        result = Update(sqlcmd);
+        return result;
+    }
+
+}

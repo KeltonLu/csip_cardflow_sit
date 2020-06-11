@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BusinessRules</RootNamespace>
+    <AssemblyName>BusinessRules</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CSIPCommonModel.BaseItem">
+      <HintPath>..\CommonDll\CSIPCommonModel.BaseItem.dll</HintPath>
+    </Reference>
+    <Reference Include="CSIPCommonModel.BusinessRules">
+      <HintPath>..\CommonDll\CSIPCommonModel.BusinessRules.dll</HintPath>
+    </Reference>
+    <Reference Include="CSIPCommonModel.EntityLayer">
+      <HintPath>..\CommonDll\CSIPCommonModel.EntityLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework.Common">
+      <HintPath>..\CommonDll\Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework.Data.OM">
+      <HintPath>..\CommonDll\Framework.Data.OM.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework.WebControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CommonDll\Framework.WebControls.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BRBase.cs" />
+    <Compile Include="BRM_AffName.cs" />
+    <Compile Include="BRM_AutoJob.cs" />
+    <Compile Include="BRM_CancelOASA.cs" />
+    <Compile Include="BRM_CancelOASADetail.cs" />
+    <Compile Include="BRM_CancelOASAFileName.cs" />
+    <Compile Include="BRM_CancelOASASource.cs" />
+    <Compile Include="BRM_CancelOASAUd.cs" />
+    <Compile Include="BRM_CardBackInfo.cs" />
+    <Compile Include="BRM_CardBaseInfo.cs" />
+    <Compile Include="BRM_CardChange.cs" />
+    <Compile Include="BRM_CardDailyClose.cs" />
+    <Compile Include="BRM_CardDataChange.cs" />
+    <Compile Include="BRM_CardStockInfo.cs" />
+    <Compile Include="BRM_FileInfo.cs" />
+    <Compile Include="BRM_InOutFile.cs" />
+    <Compile Include="BRM_JobErrorInfo.cs" />
+    <Compile Include="BRM_LBatchLog.cs" />
+    <Compile Include="BRM_Log.cs" />
+    <Compile Include="BRM_Post.cs" />
+    <Compile Include="BRM_Report.cs" />
+    <Compile Include="BRM_SLetterInfoCallCust.cs" />
+    <Compile Include="BRM_TCardBaseInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BRM_UnableCard.cs" />
+    <Compile Include="BRM_User.cs" />
+    <Compile Include="MainFrameInfo.cs" />
+    <Compile Include="MainFrameInfoOASA.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="BRM_PostSend.cs" />
+    <Compile Include="BRM_PostSendF.cs" />
+    <Compile Include="BRM_CPSFileName.cs" />
+    <Compile Include="BRM_CallMail.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entity\Entity.csproj">
+      <Project>{4496BB14-5797-45F9-8798-8779BA859624}</Project>
+      <Name>Entity %28CS09\Entity%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

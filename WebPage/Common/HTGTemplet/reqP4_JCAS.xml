@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+    <header>
+        <action type="transaction"/>
+        <data id="sessionId" value=""/>
+        <data id="applicationId" value="CSIP"/>
+        <data id="luType" value="LU62"/>
+        <data id="transactionId" value="P4_JCAS"/>
+    </header>
+    <body>
+            <data id="USER_ID" value=""/>
+            <data id="MESSAGE_TYPE" value=""/>
+            <data id="FUNCTION_CODE" value="1"/>
+            <data id="LINE_CNT" value=""/>
+            <data id="ACCT_NBR" value=""/>
+            <data id="SET_DATE" value=""/>
+            <data id="CARD_NO" value=""/>
+            <data id="NEW_CARD_NO" value=""/>
+            <data id="AMT" value=""/>
+            <data id="DATE" value=""/>
+            <data id="PERIOD_AMT" value=""/>
+            <data id="PERIOD_NO" value=""/>
+            <data id="PAID_CNT" value=""/>
+            <data id="FREE_INT_NO" value=""/>
+            <data id="PERIOD_NO_DIS" value=""/>
+            <data id="CURR_BALANCE" value=""/>
+            <data id="RTL_BALANCE" value=""/>
+            <data id="TOT_BALANCE" value=""/>
+            <data id="LATE_CHARGE" value=""/>
+            <data id="CASH_BALANCE" value=""/>
+            <data id="BREAK_AMT" value=""/>
+            <data id="SHORT_NAME" value=""/>
+            <data id="RATE" value=""/>
+            <data id="MATURITY_DATE" value=""/>
+            <data id="LAST_PAY_DATE" value=""/>
+            <data id="LAST_TXN_DATE" value=""/>
+            <data id="BREAK_EXP_DATE" value=""/>
+            <data id="BREAK_RATE" value=""/>
+            <data id="CUST_ID" value=""/>
+            <data id="PERIOD_AMT_DIS" value=""/>
+            <data id="RATE_DIS" value=""/>
+            <data id="INT_DAY" value=""/>
+            <data id="NEST_PAY_DATE" value=""/>
+            <data id="SETTLE_DATE" value=""/>
+            <data id="SETTLE_MAIN_DATE" value=""/>
+            <data id="PRODUCT" value=""/>
+            <data id="PROJ_CODE" value=""/>
+            <data id="BLOCK_CODE" value=""/>
+            <data id="BLOCK_DATE" value=""/>
+            <data id="FEE" value=""/>
+            <data id="FEE_RATE" value=""/>
+            <data id="PRE_SETTLE_DATE" value=""/>
+            <data id="TOT_AMT" value=""/>
+    </body>
+</hostgateway>

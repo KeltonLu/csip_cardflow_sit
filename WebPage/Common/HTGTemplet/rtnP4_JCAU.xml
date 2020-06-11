@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hostgateway>
+	<header>
+		<action type="transaction" />
+		<data id="sessionId" value="" />
+		<data id="applicationId" value="CSI" />
+		<data id="luType" value="LU62" />
+		<data id="transactionId" value="P4_JCAU" />
+	</header>
+	<line no="1">
+		<msgBody>
+			<data id="TRAN_ID" value="" />
+			<data id="PROGRAM_ID" value="" />
+			<data id="USER_ID" value="" />
+			<data id="MESSAGE_TYPE" value="0001" />
+			<data id="FUNCTION_CODE" value="" />
+			<data id="LINE_CNT" value="" />
+			<data id="ACCT_NBR" value="" />
+			<data id="DIS_CC1" value="1" />
+			<data id="DIS_CC2" value="2" />
+			<data id="DIS_CC3" value="" />
+			<data id="DIS_CC4" value="" />
+			<data id="DIS_CC5" value="" />
+			<data id="DIS_CC6" value="" />
+			<data id="DIS_CC7" value="" />
+			<data id="DIS_CC8" value="" />
+			<data id="DIS_CC9" value="" />
+			<data id="DIS_CC10" value="" />
+			<data id="DIS_CC11" value="" />
+			<data id="DIS_CC12" value="" />
+			<data id="DIS_CC13" value="" />
+			<data id="DIS_VC1" value="2" />
+			<data id="DIS_VC2" value="" />
+			<data id="DIS_VC3" value="" />
+			<data id="DIS_VC4" value="" />
+			<data id="DIS_VC5" value="" />
+			<data id="DIS_VC6" value="" />
+			<data id="DIS_VC7" value="" />
+			<data id="DIS_VC8" value="" />
+			<data id="DIS_VC9" value="" />
+			<data id="DIS_VC10" value="" />
+			<data id="DIS_VC11" value="" />
+			<data id="DIS_VC12" value="" />
+			<data id="DIS_VC13" value="2" />
+			<data id="DIS_MC1" value="999999999" />
+			<data id="DIS_MC2" value="999999999" />
+			<data id="DIS_MC3" value="999999999" />
+			<data id="DIS_MC4" value="999999999" />
+			<data id="DIS_MC5" value="999999999" />
+			<data id="DIS_MC6" value="999999999" />
+			<data id="DIS_MC7" value="999999999" />
+			<data id="DIS_MC8" value="999999999" />
+			<data id="DIS_MC9" value="999999999" />
+			<data id="DIS_MC10" value="" />
+			<data id="DIS_MC11" value="" />
+			<data id="DIS_MC12" value="" />
+			<data id="DIS_MC13" value="" />
+			<data id="DIS_JC1" value="111111111" />
+			<data id="DIS_JC2" value="111111111" />
+			<data id="DIS_JC3" value="111111111" />
+			<data id="DIS_JC4" value="111111111" />
+			<data id="DIS_JC5" value="111111111" />
+			<data id="DIS_JC6" value="111111111" />
+			<data id="DIS_JC7" value="111111111" />
+			<data id="DIS_JC8" value="111111111" />
+			<data id="DIS_JC9" value="111111111" />
+			<data id="DIS_JC10" value="111111111" />
+			<data id="DIS_JC11" value="111111111" />
+			<data id="DIS_JC12" value="111111111" />
+			<data id="DIS_JC13" value="111111111" />
+			<data id="DIS_TOT1" value="123456789" />
+			<data id="DIS_TOT2" value="123456789" />
+			<data id="DIS_TOT3" value="123456789" />
+			<data id="DIS_TOT4" value="123456789" />
+			<data id="DIS_TOT5" value="123456789" />
+			<data id="DIS_TOT6" value="123456789" />
+			<data id="DIS_TOT7" value="123456789" />
+			<data id="DIS_TOT8" value="123456789" />
+			<data id="DIS_TOT9" value="123456789" />
+			<data id="DIS_TOT10" value="123456789" />
+			<data id="DIS_TOT11" value="123456789" />
+			<data id="DIS_TOT12" value="123456789" />
+			<data id="DIS_TOT13" value="123456789" />
+		</msgBody>
+	</line>
+</hostgateway>

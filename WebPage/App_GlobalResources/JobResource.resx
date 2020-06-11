@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Job0000001" xml:space="preserve">
+    <value>解壓成功</value>
+  </data>
+  <data name="Job0000002" xml:space="preserve">
+    <value>解壓失敗</value>
+  </data>
+  <data name="Job0000003" xml:space="preserve">
+    <value>解壓文件失敗，失敗原因:</value>
+  </data>
+  <data name="Job0000004" xml:space="preserve">
+    <value>在local創建目錄成功</value>
+  </data>
+  <data name="Job0000005" xml:space="preserve">
+    <value>在local創建目錄失敗，失敗原因:</value>
+  </data>
+  <data name="Job0000006" xml:space="preserve">
+    <value>成功發送mail</value>
+  </data>
+  <data name="Job0000007" xml:space="preserve">
+    <value>發送mail中發生以下異常:</value>
+  </data>
+  <data name="Job0000008" xml:space="preserve">
+    <value>FTP連接失敗</value>
+  </data>
+  <data name="Job0000009" xml:space="preserve">
+    <value>第</value>
+  </data>
+  <data name="Job0000010" xml:space="preserve">
+    <value>列</value>
+  </data>
+  <data name="Job0000011" xml:space="preserve">
+    <value>檔案名稱不能為中文檔名，請修改為英文或數字檔名後再試，謝謝!</value>
+  </data>
+  <data name="Job0000012" xml:space="preserve">
+    <value>檔案不存在,請重新指定上傳之檔案</value>
+  </data>
+  <data name="Job0000013" xml:space="preserve">
+    <value>操作失敗,請聯繫管理員.</value>
+  </data>
+  <data name="Job0000014" xml:space="preserve">
+    <value>檔案格式錯誤,請重新指定上傳之檔案</value>
+  </data>
+  <data name="Job0000015" xml:space="preserve">
+    <value>該匯入檢核無類型判斷數據</value>
+  </data>
+  <data name="Job0000016" xml:space="preserve">
+    <value>檔案讀取失敗</value>
+  </data>
+  <data name="Job0000017" xml:space="preserve">
+    <value>檔案內容筆數不得超過15000筆,請重新指定上傳之檔案</value>
+  </data>
+  <data name="Job0000018" xml:space="preserve">
+    <value>列欄位個數不正確</value>
+  </data>
+  <data name="Job0000019" xml:space="preserve">
+    <value>欄位長度不正確</value>
+  </data>
+  <data name="Job0000020" xml:space="preserve">
+    <value>欄位類型不正確</value>
+  </data>
+  <data name="Job0000021" xml:space="preserve">
+    <value>欄位整數位長度不正確</value>
+  </data>
+  <data name="Job0000022" xml:space="preserve">
+    <value>欄位小數位長度不正確</value>
+  </data>
+  <data name="Job0000023" xml:space="preserve">
+    <value>列欄位長度不正確</value>
+  </data>
+  <data name="Job0000024" xml:space="preserve">
+    <value>成功檔總數:</value>
+  </data>
+  <data name="Job0000025" xml:space="preserve">
+    <value>失敗檔總數:</value>
+  </data>
+  <data name="Job0000026" xml:space="preserve">
+    <value>失敗檔案有:</value>
+  </data>
+  <data name="Job0000026_1" xml:space="preserve">
+    <value>今日已執行完畢，無需執行總數:</value>
+  </data>
+  <data name="Job0000026_2" xml:space="preserve">
+    <value>今日已執行完畢，無需執行檔案有:</value>
+  </data>
+  <data name="Job0000027" xml:space="preserve">
+    <value>Job{0}（{1}），更新資料庫表{2}成功！</value>
+  </data>
+  <data name="Job0000028" xml:space="preserve">
+    <value>Job{0}（{1}），更新資料庫表{2}失敗！</value>
+  </data>
+  <data name="Job0000029" xml:space="preserve">
+    <value>{0}匯出txt檔成功！</value>
+  </data>
+  <data name="Job0000030" xml:space="preserve">
+    <value>{0}匯出txt檔失敗！</value>
+  </data>
+  <data name="Job0000031" xml:space="preserve">
+    <value>檔案：{0}壓縮成功！</value>
+  </data>
+  <data name="Job0000032" xml:space="preserve">
+    <value>檔案：{0}壓縮失敗！</value>
+  </data>
+  <data name="Job0000033" xml:space="preserve">
+    <value>檔案：{0}上傳成功！</value>
+  </data>
+  <data name="Job0000034" xml:space="preserve">
+    <value>檔案：{0}上傳失敗！</value>
+  </data>
+  <data name="Job0000035" xml:space="preserve">
+    <value>檔案:{0}不存在本地路徑</value>
+  </data>
+  <data name="Job0000036" xml:space="preserve">
+    <value>內容格式錯誤</value>
+  </data>
+  <data name="Job0000037" xml:space="preserve">
+    <value>檔案:{0}匯入錯誤</value>
+  </data>
+  <data name="Job0000038" xml:space="preserve">
+    <value>檔案名稱:{0}</value>
+  </data>
+  <data name="Job0000039" xml:space="preserve">
+    <value>執行時間:{0}</value>
+  </data>
+  <data name="Job0000040" xml:space="preserve">
+    <value>檢核失敗</value>
+  </data>
+  <data name="Job0000041" xml:space="preserve">
+    <value>檔案不存在</value>
+  </data>
+  <data name="Job0000042" xml:space="preserve">
+    <value>無法上傳檔案</value>
+  </data>
+  <data name="Job0000043" xml:space="preserve">
+    <value>無法下載檔案</value>
+  </data>
+  <data name="Job0000044" xml:space="preserve">
+    <value>招領</value>
+  </data>
+  <data name="Job0000045" xml:space="preserve">
+    <value>退件</value>
+  </data>
+  <data name="Job0000046" xml:space="preserve">
+    <value>有重復的資料，請核對后重新匯入。</value>
+  </data>
+  <data name="Job0000047" xml:space="preserve">
+    <value>無法製卡</value>
+  </data>
+  <data name="Job0000048" xml:space="preserve">
+    <value>換卡異動</value>
+  </data>
+  <data name="Job0000101" xml:space="preserve">
+    <value>自動化大宗檔匯入</value>
+  </data>
+  <data name="Job000010101" xml:space="preserve">
+    <value>自動化大宗檔匯入-信用卡</value>
+  </data>
+  <data name="Job000010102" xml:space="preserve">
+    <value>自動化大宗檔匯入-金融卡</value>
+  </data>
+  <data name="Job0000102" xml:space="preserve">
+    <value>自動化大宗回饋檔匯入</value>
+  </data>
+  <data name="Job0000103" xml:space="preserve">
+    <value>自動化缺卡大宗檔匯入</value>
+  </data>
+  <data name="Job000010301" xml:space="preserve">
+    <value>自動化缺卡大宗檔匯入-信用卡</value>
+  </data>
+  <data name="Job000010302" xml:space="preserve">
+    <value>自動化缺卡大宗檔匯入-金融卡</value>
+  </data>
+  <data name="Job0000104" xml:space="preserve">
+    <value>自動化異動資料通知</value>
+  </data>
+  <data name="Job0000105" xml:space="preserve">
+    <value>自動化異動回饋檔匯入</value>
+  </data>
+  <data name="Job0000106" xml:space="preserve">
+    <value>自動化無法製卡檔匯入</value>
+  </data>
+  <data name="Job0000107" xml:space="preserve">
+    <value>自動化換卡異動檔匯入</value>
+  </data>
+  <data name="Job0000108" xml:space="preserve">
+    <value>自動卡片管制/解管</value>
+  </data>
+  <data name="Job0000109" xml:space="preserve">
+    <value>自動化卡片註銷</value>
+  </data>
+  <data name="Job0000110" xml:space="preserve">
+    <value>自動化郵局退件通知</value>
+  </data>
+  <data name="Job0000111" xml:space="preserve">
+    <value>查詢郵寄資訊</value>
+  </data>
+  <data name="Job0000112" xml:space="preserve">
+    <value>自動化卡回註銷</value>
+  </data>
+  <data name="Job0000113" xml:space="preserve">
+    <value>自動化退件處理通知</value>
+  </data>
+  <data name="Job0000114" xml:space="preserve">
+    <value>自動化退件處理回饋檔匯入</value>
+  </data>
+  <data name="Job0000115" xml:space="preserve">
+    <value>每日新制卡郵寄檔獲取</value>
+  </data>
+  <data name="Job0000116" xml:space="preserve">
+    <value>自動化認同代碼匯入</value>
+  </data>
+  <data name="Job0101001" xml:space="preserve">
+    <value>大宗檔:{0}不存在</value>
+  </data>
+  <data name="Job0101002" xml:space="preserve">
+    <value>檔案:{0}匯入成功</value>
+  </data>
+  <data name="Job0101003" xml:space="preserve">
+    <value>檔案:{0}匯入失敗</value>
+  </data>
+  <data name="Job0101004" xml:space="preserve">
+    <value>檔案:{0}不存在本地路徑</value>
+  </data>
+  <data name="Job010200" xml:space="preserve">
+    <value>異動資料文字檔上傳成功。</value>
+    <comment>06_01020000_000</comment>
+  </data>
+  <data name="Job0102001" xml:space="preserve">
+    <value>大宗回饋檔:{0}不存在</value>
+  </data>
+  <data name="Job010201" xml:space="preserve">
+    <value>異動資料文字檔上傳失敗，請手動重傳。</value>
+    <comment>06_01020000_001</comment>
+  </data>
+  <data name="Job010202" xml:space="preserve">
+    <value>大宗回饋檔中的： 身分證號:{0}、卡號{1}、卡別{2}、製卡日期:{3}條件查詢卡片基本資料表無資料</value>
+    <comment>06_01020000_001</comment>
+  </data>
+  <data name="Job010300" xml:space="preserve">
+    <value>缺卡大宗檔:{0}不存在</value>
+    <comment>06_01010000_000</comment>
+  </data>
+  <data name="Job0103000" xml:space="preserve">
+    <value>FTP連接失敗</value>
+    <comment>06_01000000_000</comment>
+  </data>
+  <data name="Job0103001" xml:space="preserve">
+    <value>成功發送mail</value>
+    <comment>06_01000000_001</comment>
+  </data>
+  <data name="Job0103002" xml:space="preserve">
+    <value>發送mail中發生以下異常:</value>
+    <comment>06_01000000_003</comment>
+  </data>
+  <data name="Job0103003" xml:space="preserve">
+    <value>解壓文件成功</value>
+    <comment>06_01000000_004</comment>
+  </data>
+  <data name="Job0103004" xml:space="preserve">
+    <value>解壓文件失敗</value>
+    <comment>06_01000000_005</comment>
+  </data>
+  <data name="Job0103005" xml:space="preserve">
+    <value>解壓文件失敗，失敗原因:</value>
+    <comment>06_01000000_006</comment>
+  </data>
+  <data name="Job010301" xml:space="preserve">
+    <value>檔案:{0}匯入成功</value>
+    <comment>06_01010000_001</comment>
+  </data>
+  <data name="Job010302" xml:space="preserve">
+    <value>檔案:{0}匯入失敗</value>
+    <comment>06_01010000_002</comment>
+  </data>
+  <data name="Job010303" xml:space="preserve">
+    <value>檔案:{0}不存在本地路徑</value>
+    <comment>06_01010000_003</comment>
+  </data>
+  <data name="Job010304" xml:space="preserve">
+    <value>成功檔總數:</value>
+    <comment>06_01010000_004</comment>
+  </data>
+  <data name="Job010305" xml:space="preserve">
+    <value>失敗檔總數:</value>
+    <comment>06_01010000_005</comment>
+  </data>
+  <data name="Job010306" xml:space="preserve">
+    <value>失敗檔案有:</value>
+    <comment>06_01010000_006</comment>
+  </data>
+  <data name="Job010307" xml:space="preserve">
+    <value>檔解壓失敗:</value>
+    <comment>06_01010000_007</comment>
+  </data>
+  <data name="Job010308" xml:space="preserve">
+    <value>壓縮包{0}檔案{1}格式錯誤</value>
+    <comment>06_01010000_008</comment>
+  </data>
+  <data name="Job010309" xml:space="preserve">
+    <value>檔案:{0}匯入錯誤</value>
+    <comment>06_01010000_009</comment>
+  </data>
+  <data name="Job010310" xml:space="preserve">
+    <value>檔案名稱:</value>
+    <comment>6_01010000_010</comment>
+  </data>
+  <data name="Job010311" xml:space="preserve">
+    <value>執行時間:</value>
+    <comment>06_01010000_011</comment>
+  </data>
+  <data name="Job010312" xml:space="preserve">
+    <value>說明:匯入的{0}筆資料有誤，自動化缺卡大宗回饋檔匯入失敗！</value>
+    <comment>06_01010000_012</comment>
+  </data>
+  <data name="Job010500" xml:space="preserve">
+    <value>異動回饋檔:{0}不存在</value>
+    <comment>06_01030000_000</comment>
+  </data>
+  <data name="Job010501" xml:space="preserve">
+    <value>檔案{1}格式錯誤</value>
+    <comment>06_01030000_001</comment>
+  </data>
+  <data name="Job010502" xml:space="preserve">
+    <value>異動回饋檔匯入成功</value>
+    <comment>06_01030000_002</comment>
+  </data>
+  <data name="Job010503" xml:space="preserve">
+    <value>異動回饋檔匯入失敗，請進入異動回饋檔錯誤處理頁面下載後修正。</value>
+    <comment>06_01030000_003</comment>
+  </data>
+  <data name="Job0107001" xml:space="preserve">
+    <value>自動化換卡異動檔:{0}不存在</value>
+  </data>
+  <data name="Job01070011" xml:space="preserve">
+    <value>換卡異動檔：{0}不存在</value>
+  </data>
+  <data name="Job0107002" xml:space="preserve">
+    <value>在卡片基本資料檔中找不到卡號為{0}的資料</value>
+  </data>
+  <data name="Job0107003" xml:space="preserve">
+    <value>換卡異動檔：{0}為空檔</value>
+  </data>
+  <data name="Job0107004" xml:space="preserve">
+    <value>卡號為{0}的資料,BLOCK CODE欄沒有值！</value>
+  </data>
+  <data name="Job0108001" xml:space="preserve">
+    <value>自動化卡片管制解管：{0}不存在</value>
+  </data>
+  <data name="Job0108002" xml:space="preserve">
+    <value>檔案{0}，已經執行過匯入</value>
+  </data>
+  <data name="Job0108003" xml:space="preserve">
+    <value>記錄資料注銷信息失敗，檔案{0}、日期{1}、卡號{2}。</value>
+  </data>
+  <data name="Job0109001" xml:space="preserve">
+    <value>自動化卡片註銷檔：{0}不存在</value>
+  </data>
+  <data name="Job0109002" xml:space="preserve">
+    <value>第{0}筆</value>
+  </data>
+  <data name="Job0110000" xml:space="preserve">
+    <value>退件通知檔壓縮包：{0}不存在</value>
+  </data>
+  <data name="Job0110004" xml:space="preserve">
+    <value>自動化郵局退件通知檢核資料不正確,請核對后重新輸入</value>
+  </data>
+  <data name="Job0110005" xml:space="preserve">
+    <value>退件檔匯入時，對應不到卡片資料,檔案錯誤</value>
+  </data>
+  <data name="Job011100" xml:space="preserve">
+    <value>自動化郵寄資訊檔:{0}不存在</value>
+    <comment>06_01110000_000</comment>
+  </data>
+  <data name="Job011101" xml:space="preserve">
+    <value>檔案{1}格式錯誤</value>
+    <comment>06_01110000_001</comment>
+  </data>
+  <data name="Job011102" xml:space="preserve">
+    <value>自動化郵寄資訊檔匯入成功</value>
+    <comment>06_01110000_002</comment>
+  </data>
+  <data name="Job011103" xml:space="preserve">
+    <value>自動化郵寄資訊檔失敗，請修正。</value>
+    <comment>06_01110000_003</comment>
+  </data>
+  <data name="Job0112001" xml:space="preserve">
+    <value>{0}信用卡結案失敗</value>
+  </data>
+  <data name="Job0112002" xml:space="preserve">
+    <value>{0}金融卡結案失敗</value>
+  </data>
+  <data name="Job0112003" xml:space="preserve">
+    <value>{0}現金卡結案失敗</value>
+  </data>
+  <data name="Job0112004" xml:space="preserve">
+    <value>{0}e-Cash卡結案失敗</value>
+  </data>
+  <data name="Job0112005" xml:space="preserve">
+    <value>記錄注銷檔名{0}失敗</value>
+  </data>
+  <data name="Job0112006" xml:space="preserve">
+    <value>{0}信用卡結案成功</value>
+  </data>
+  <data name="Job0112007" xml:space="preserve">
+    <value>{0}金融卡結案成功</value>
+  </data>
+  <data name="Job0112008" xml:space="preserve">
+    <value>{0}現金卡結案成功</value>
+  </data>
+  <data name="Job0112009" xml:space="preserve">
+    <value>{0}e-Cash卡結案成功</value>
+  </data>
+  <data name="Job0113000" xml:space="preserve">
+    <value>已完成總檔案數{0}筆：</value>
+  </data>
+  <data name="Job0113001" xml:space="preserve">
+    <value>今日無需要匯出的退件處理通知檔資料!</value>
+  </data>
+  <data name="Job0113002" xml:space="preserve">
+    <value>今日無需要匯出的大宗掛號單、大宗掛號地址條資料!</value>
+  </data>
+  <data name="Job0113003" xml:space="preserve">
+    <value>今日無需要執行OASA註銷的資料！</value>
+  </data>
+  <data name="Job0113011" xml:space="preserve">
+    <value>信用卡</value>
+  </data>
+  <data name="Job0113012" xml:space="preserve">
+    <value>金融卡</value>
+  </data>
+  <data name="Job0113013" xml:space="preserve">
+    <value>VD卡</value>
+  </data>
+  <data name="Job0113014" xml:space="preserve">
+    <value>現金卡</value>
+  </data>
+  <data name="Job0113015" xml:space="preserve">
+    <value>E-Cash卡</value>
+  </data>
+  <data name="Job0114000" xml:space="preserve">
+    <value>退件處理回饋檔:{0}FTP档案不存在</value>
+  </data>
+  <data name="Job0114001" xml:space="preserve">
+    <value>說明:匯入的{0}筆資料有誤，自動化退件處理檔匯入失敗！</value>
+  </data>
+  <data name="Job011600" xml:space="preserve">
+    <value>自動化認同代碼檔:{0}不存在</value>
+    <comment>06_01160000_000</comment>
+  </data>
+  <data name="Job011601" xml:space="preserve">
+    <value>檔案{1}格式錯誤</value>
+    <comment>06_01160000_001</comment>
+  </data>
+  <data name="Job011602" xml:space="preserve">
+    <value>自動化認同代碼檔匯入成功</value>
+    <comment>06_01160000_002</comment>
+  </data>
+  <data name="Job011603" xml:space="preserve">
+    <value>自動化認同代碼檔匯入失敗，請修正。</value>
+    <comment>06_01160000_003</comment>
+  </data>
+  <data name="Job1000115" xml:space="preserve">
+    <value>自動化CSI檔匯出</value>
+  </data>
+  <data name="Job2000115" xml:space="preserve">
+    <value>自動化主機回覆檔匯入</value>
+  </data>
+  <data name="Job2010115" xml:space="preserve">
+    <value>簡訊處理主機回覆檔：{0}不存在</value>
+  </data>
+  <data name="Job3000115" xml:space="preserve">
+    <value>自動化簡訊檔匯出</value>
+  </data>
+  <data name="Job4000115" xml:space="preserve">
+    <value>自動化語音檔匯出</value>
+  </data>
+  <data name="Job4010115" xml:space="preserve">
+    <value>異動前地址一：</value>
+  </data>
+  <data name="Job4020115" xml:space="preserve">
+    <value>，異動後地址一：</value>
+  </data>
+  <data name="Job4030115" xml:space="preserve">
+    <value>異動前地址二：</value>
+  </data>
+  <data name="Job4040115" xml:space="preserve">
+    <value>，異動後地址二：</value>
+  </data>
+  <data name="Job4050115" xml:space="preserve">
+    <value>異動前地址三：</value>
+  </data>
+  <data name="Job4060115" xml:space="preserve">
+    <value>，異動後地址三：</value>
+  </data>
+  <data name="Job4070115" xml:space="preserve">
+    <value>，</value>
+  </data>
+  <data name="Job5000115" xml:space="preserve">
+    <value>自動化通知主機檔匯出</value>
+  </data>
+  <data name="JobDEL_HistoryData001" xml:space="preserve">
+    <value>成功刪除過期資料筆數：</value>
+  </data>
+</root>
