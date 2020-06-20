@@ -6,24 +6,14 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
-using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
-using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 using System.Configuration;
+using System.IO;
 
 public partial class P060517000001 : PageBase
 {
@@ -98,40 +88,51 @@ public partial class P060517000001 : PageBase
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        string strMsgID = string.Empty;
-        if (!CheckCondition(ref strMsgID))
+        string strMsgId = string.Empty;
+        if (!CheckCondition(ref strMsgId))
         {
             // this.ReportViewer0517.Visible = false;
-            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgId) + "')");
             return;
         }
 
         try
         {
-            // this.ReportViewer0517.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0517.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0517Report";
-            // this.ReportViewer0517.Visible = true;
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
 
-            //初始化報表參數,為Report View賦值參數
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[3];
+            // 退件日期起日
+            String MstatrDate = dateFrom.Text.Trim();
+            param.Add("MstatrDate",MstatrDate);
 
-            // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("MstatrDate", dateFrom.Text.Trim());
-            // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("MendDate", dateTo.Text.Trim());
+            // 退件日期迄日
+            String MendDate = dateTo.Text.Trim();
+            param.Add("MendDate", MendDate);
 
-            if (ddlAction.SelectedValue.Equals("0"))
+            // 卡別
+            param.Add("Action", ddlAction.SelectedValue.Equals("0") ? "NULL" : ddlAction.SelectedValue.Trim());
+
+
+            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0517Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("Action", "NULL");
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
             }
             else
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("Action", ddlAction.SelectedValue.Trim());
+                MessageHelper.ShowMessage(this, strMsgId);
             }
-           
-            // this.ReportViewer0517.ServerReport.SetParameters(Paras);
         }
         catch (Exception exp)
         {
-            // this.ReportViewer0517.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_05170000_003");
         }

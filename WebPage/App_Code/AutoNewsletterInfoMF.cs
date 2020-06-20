@@ -74,6 +74,8 @@ public class AutoNewsletterInfoMF : Quartz.IJob
             JobHelper.strJobId = strJobId;
             //strJobId = "0115_1";
 
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
             #endregion
@@ -99,6 +101,7 @@ public class AutoNewsletterInfoMF : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -106,7 +109,8 @@ public class AutoNewsletterInfoMF : Quartz.IJob
             #region 檢測JOB今日是否為工作日，工作日才要執行
             if (!BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
             {
-                // 返回不在執行           
+                JobHelper.SaveLog(DateTime.Now.ToString("yyyyMMdd") + "今日非工作日！", LogState.Info);
+                // 返回不在執行
                 return;
             }
             #endregion
@@ -114,6 +118,7 @@ public class AutoNewsletterInfoMF : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -130,6 +135,7 @@ public class AutoNewsletterInfoMF : Quartz.IJob
             //*無JOB交換當信息或查詢失敗
             if (!JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
                 return;
             }
 
@@ -179,12 +185,14 @@ public class AutoNewsletterInfoMF : Quartz.IJob
                 {
                     //*更新上載狀態為S
                     dtLocalFile.Rows[j]["UploadStates"] = "S";
+                    JobHelper.SaveLog(string.Format(Resources.JobResource.Job0000033, dtLocalFile.Rows[j]["LocalFilePath"].ToString()), LogState.Info);
                 }
                 else
                 {
                     errMsg += (errMsg == "" ? "" : "、") + dtLocalFile.Rows[j]["TxtFileName"].ToString();
                     //*更新上載狀態為F
                     dtLocalFile.Rows[j]["UploadStates"] = "F";
+                    JobHelper.SaveLog(string.Format(Resources.JobResource.Job0000034, dtLocalFile.Rows[j]["LocalFilePath"].ToString()));
                     //*發送登陸FTP失敗郵件
                     // SendMail(dtLocalFile.Rows[j]["TxtFileName"].ToString(), Resources.JobResource.Job0000008);
                 }
@@ -212,6 +220,7 @@ public class AutoNewsletterInfoMF : Quartz.IJob
 
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

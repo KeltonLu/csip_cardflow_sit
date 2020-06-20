@@ -77,11 +77,14 @@ public class AutoBackInfoClose : Quartz.IJob
 
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
+
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -89,6 +92,7 @@ public class AutoBackInfoClose : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -192,6 +196,7 @@ public class AutoBackInfoClose : Quartz.IJob
 
             if (JobHelper.SearchFileInfo(ref dtFileInfoOASA, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfoOASA.Rows.Count > 0)
                 {
                     string strBlkCode = dtFileInfoOASA.Rows[0]["BLKCode"].ToString().Trim();
@@ -264,6 +269,10 @@ public class AutoBackInfoClose : Quartz.IJob
 
                 }
             }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             MainFrameInfoOASA.ClearHtgSessionJob(ref strSessionId);
             //}
             #endregion
@@ -276,6 +285,7 @@ public class AutoBackInfoClose : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

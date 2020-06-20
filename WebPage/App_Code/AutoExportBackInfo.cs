@@ -80,6 +80,8 @@ public class AutoExportBackInfo : Quartz.IJob
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString().Trim();
             JobHelper.strJobId = strJobId;
             //strJobId = "0113";
+
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
             #region 获取本地路徑
@@ -118,6 +120,7 @@ public class AutoExportBackInfo : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -125,6 +128,7 @@ public class AutoExportBackInfo : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -166,6 +170,7 @@ public class AutoExportBackInfo : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
@@ -531,6 +536,10 @@ public class AutoExportBackInfo : Quartz.IJob
                     #endregion
                 }
             }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             #endregion
 
             #region 壓縮檔案
@@ -619,6 +628,7 @@ public class AutoExportBackInfo : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

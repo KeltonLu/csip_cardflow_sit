@@ -218,7 +218,7 @@ public partial class P060208000001 : PageBase
         {
             for (int i = 0; i < dtDetail.Rows.Count; i++)
             {
-                DataRow[] dr = dtCardType.Select("PROPERTY_CODE=" + dtDetail.Rows[i][strCardType].ToString());
+                DataRow[] dr = dtCardType.Select("PROPERTY_CODE='" + dtDetail.Rows[i][strCardType].ToString() + "'");
                 if (dr.Length > 0)
                 {
                     dtDetail.Rows[i][strCardType] = dr[0]["PROPERTY_NAME"].ToString();

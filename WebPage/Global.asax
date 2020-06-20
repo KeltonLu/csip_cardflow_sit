@@ -62,7 +62,7 @@
 							jobDataMap.Put("racfPassWord", des.DecryptString(dtblAutoJob.Rows[i]["RUN_USER_RACFPWD"].ToString()));
 							jobDataMap.Put("mail", dtblAutoJob.Rows[i]["MAIL_TO"].ToString());
 							jobDataMap.Put("title", dtblAutoJob.Rows[i]["DESCRIPTION"].ToString());
-							jobDataMap.Put("JOBID", dtblAutoJob.Rows[i]["JOB_ID"].ToString().Substring(0, 4));
+							jobDataMap.Put("JOBID", dtblAutoJob.Rows[i]["JOB_ID"].ToString());
 							job.JobDataMap = jobDataMap;
 							//* 時間表達式
 							string cronExpr = dtblAutoJob.Rows[i]["RUN_SECONDS"].ToString().Trim() + " " +

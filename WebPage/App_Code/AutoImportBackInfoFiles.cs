@@ -73,6 +73,8 @@ public class AutoImportBackInfoFiles : Quartz.IJob
             //strJobId = "0110";
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
+
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
             #region 記錄job啟動時間的分段
@@ -111,6 +113,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -119,7 +122,8 @@ public class AutoImportBackInfoFiles : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
-                // 返回不在執行           
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
+                // 返回不在執行
                 return;
             }
             else
@@ -136,6 +140,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
             String errMsg = "";
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //*創建子目錄名稱，存放下載文件
@@ -158,6 +163,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
                             {
@@ -175,6 +181,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                                 //row["Trandate"] = GetTrandate(rowFileInfo["AMPMFlg"].ToString()); //轉檔日設定
                                 //加密 RedirectHelper.GetEncryptParam(rowFileInfo["ZipPwd"].ToString());
                                 dtLocalFile.Rows.Add(row);
+                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                             }
                         }
                         //*檔案不存在
@@ -193,6 +200,10 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     }
                 }
             }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             #endregion
 
             #region 處理本地壓縮檔
@@ -206,6 +217,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".txt");
+                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
@@ -213,6 +225,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     errMsg += (errMsg == "" ? "" : "、") + rowLocalFile["ZipFileName"].ToString();
                     rowLocalFile["ZipStates"] = "F";
                     // SendMail(rowLocalFile["ZipFileName"].ToString(), Resources.JobResource.Job0000002);
+                    JobHelper.SaveLog("解壓縮檔案失敗！");
                 }
             }
             if (errMsg != "")
@@ -252,8 +265,10 @@ public class AutoImportBackInfoFiles : Quartz.IJob
 
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("ZipStates='S' and FormatStates='S'");
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             if (Row != null && Row.Length > 0)
             {
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 //*讀取檔名正確資料
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
@@ -263,7 +278,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
-
+                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
                         int No = 0;                                //*匯入之錯誤編號
                         ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
                         DataTable dtDetail = null;                 //檢核結果列表
@@ -272,6 +287,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                         //*檢核成功
                         if (UploadCheck(strPath, strFunctionName, strCardType, ref No, ref strMailErr, ref arrayErrorMsg, ref dtDetail))
                         {
+                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             Row[rowcount]["CheckStates"] = "S";
                             //*正式匯入
                             if (ImportToDB(dtDetail, strFileName))
@@ -288,6 +304,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                         //*檢核失敗
                         else
                         {
+                            JobHelper.SaveLog("檢核檔案失敗！");
                             if (arrayErrorMsg.Count > 0)
                             {
                                 for (int i = 0; i < arrayErrorMsg.Count; i++)
@@ -316,8 +333,8 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     {
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job0000035, strPath));
                     }
-
                 }
+                JobHelper.SaveLog("結束讀取要匯入的檔案資料！", LogState.Info);
             }
             #endregion
 
@@ -326,6 +343,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());//*路徑未設置
+                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
             }
             #endregion
 
@@ -367,6 +385,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                 JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             }
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

@@ -6,21 +6,15 @@
 
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+
 using System;
 using System.Data;
 using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
-using Framework.Data.OM;
+using System.Collections.Generic;
+using System.IO;
 using Framework.Common.Message;
 using Framework.Common.Logging;
-using BusinessRules;
+using Framework.Common.JavaScript;
 
 public partial class P060518000001 : PageBase
 {
@@ -42,7 +36,7 @@ public partial class P060518000001 : PageBase
     /// <param name="e"></param>
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        string strMsgID = string.Empty;
+        string strMsgId = string.Empty;
 
         if (txtMaildateStart.Text.Trim().Equals(""))
         {
@@ -50,6 +44,7 @@ public partial class P060518000001 : PageBase
             txtMaildateStart.Focus();
             return;
         }
+
         if (txtMaildateEnd.Text.Trim().Equals(""))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06051800_000");
@@ -57,34 +52,50 @@ public partial class P060518000001 : PageBase
             return;
         }
 
-        if (!ValidateHelper.IsValidDate(txtMaildateStart.Text.Trim(), DateTime.Now.ToString("yyyy/MM/dd"), ref strMsgID) || !ValidateHelper.IsValidDate(txtMaildateEnd.Text.Trim(), DateTime.Now.ToString("yyyy/MM/dd"), ref strMsgID))
+        if (!ValidateHelper.IsValidDate(txtMaildateStart.Text.Trim(), DateTime.Now.ToString("yyyy/MM/dd"),
+            ref strMsgId) || !ValidateHelper.IsValidDate(txtMaildateEnd.Text.Trim(),
+            DateTime.Now.ToString("yyyy/MM/dd"), ref strMsgId))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06051800_002");
             return;
         }
 
-
         try
         {
-            // this.ReportViewer0518.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0518.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0518Report";
-            // this.ReportViewer0518.Visible = true;
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
 
-            //初始化報表參數,為Report View賦值參數
+            // 查詢日期起日
+            param.Add("datefrom", txtMaildateStart.Text.Trim());
 
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[3];
+            // 查詢日期迄日
+            param.Add("dateto", txtMaildateEnd.Text.Trim());
 
-            // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("datefrom", txtMaildateStart.Text.Trim());
+            // 卡別
+            param.Add("backtype", ddlState.SelectedValue);
 
-            // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("dateto", txtMaildateEnd.Text.Trim());
 
-            // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("backtype", ddlState.SelectedValue);
+            string strServerPathFile =
+                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
 
-            // this.ReportViewer0518.ServerReport.SetParameters(Paras);
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0518Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
         }
         catch (Exception exp)
         {
-            // this.ReportViewer0518.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_06051800_001");
         }
@@ -92,7 +103,6 @@ public partial class P060518000001 : PageBase
 
     /// <summary>
     /// 功能說明:加載狀態選項
-
     /// 作    者:JUN HU
     /// 創建時間:2010/07/02
     /// 修改記錄:

@@ -6,36 +6,33 @@
 
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+
 using System;
-using System.Data;
 using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
+using System.Collections.Generic;
+using System.IO;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using CSIPCommonModel.EntityLayer;
+using Framework.Common.JavaScript;
 
 public partial class P060520000001 : PageBase
 {
     //Talas 20191003 SOC修改
-    private EntityAGENT_INFO eAgentInfo;//*記錄登陸Session訊息
-    private structPageInfo sPageInfo;//*記錄網頁訊息
+    private EntityAGENT_INFO eAgentInfo; //*記錄登陸Session訊息
+    private structPageInfo sPageInfo; //*記錄網頁訊息
 
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
-            txtUpdStart.Text=DateTime.Now.ToString("yyyy/MM/dd");
+            txtUpdStart.Text = DateTime.Now.ToString("yyyy/MM/dd");
             txtUpdEnd.Text = DateTime.Now.ToString("yyyy/MM/dd");
         }
+
         //Talas 20191003 SOC修改
-        eAgentInfo = (EntityAGENT_INFO)this.Session["Agent"]; //*Session變數集合
-        sPageInfo = (structPageInfo)this.Session["PageInfo"];//*記錄網頁訊息
+        eAgentInfo = (EntityAGENT_INFO) this.Session["Agent"]; //*Session變數集合
+        sPageInfo = (structPageInfo) this.Session["PageInfo"]; //*記錄網頁訊息
     }
 
     /// <summary>
@@ -50,15 +47,17 @@ public partial class P060520000001 : PageBase
     {
         //------------------------------------------------------
         //AuditLog to SOC
-        CSIPCommonModel.EntityLayer_new.EntityL_AP_LOG log = BRL_AP_LOG.getDefaultValue(eAgentInfo, sPageInfo.strPageCode);
+        CSIPCommonModel.EntityLayer_new.EntityL_AP_LOG log =
+            BRL_AP_LOG.getDefaultValue(eAgentInfo, sPageInfo.strPageCode);
         log.Customer_Id = this.txtId.Text;
         BRL_AP_LOG.Add(log);
         //------------------------------------------------------
-        if (txtUpdStart.Text.Trim().Equals("")||txtUpdEnd.Text.Trim().Equals(""))
+        if (txtUpdStart.Text.Trim().Equals("") || txtUpdEnd.Text.Trim().Equals(""))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06052000_000");
             return;
         }
+
         if (!this.txtMailNo.Text.Trim().Equals(""))
         {
             if (this.txtMailNo.Text.Trim().Length < 20)
@@ -68,6 +67,7 @@ public partial class P060520000001 : PageBase
                 return;
             }
         }
+
         if (!this.txtId.Text.Trim().Equals(""))
         {
             if (ValidateHelper.IsChinese(this.txtId.Text.Trim()))
@@ -91,54 +91,46 @@ public partial class P060520000001 : PageBase
     /// <param name="e"></param>
     private void LoadReport()
     {
+        string strMsgId = string.Empty;
+
         try
         {
-            // this.ReportViewer0520.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0520.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0520Report";
-            // this.ReportViewer0520.Visible = true;
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
 
-            //初始化報表參數,為Report View賦值參數
+            // 異動日期起
+            param.Add("strUpdFrom", txtUpdStart.Text.Trim().Equals("") ? "NULL" : txtUpdStart.Text.Trim());
 
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[4];
+            // 異動日期迄
+            param.Add("strUpdTo", txtUpdEnd.Text.Trim().Equals("") ? "NULL" : txtUpdEnd.Text.Trim());
 
-            if (txtUpdStart.Text.Trim().Equals(""))
+            // 掛號號碼 
+            param.Add("strMailNo", txtMailNo.Text.Trim().Equals("") ? "NULL" : txtMailNo.Text.Trim());
+
+            // 身分證字號
+            param.Add("strId", txtId.Text.Trim().Equals("") ? "NULL" : txtId.Text.Trim());
+
+            string strServerPathFile =
+                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0520Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("strUpdFrom", "NULL");
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
             }
             else
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("strUpdFrom", txtUpdStart.Text.Trim());
+                MessageHelper.ShowMessage(this, strMsgId);
             }
-            if (txtUpdEnd.Text.Trim().Equals(""))
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("strUpdTo", "NULL");
-            }
-            else
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("strUpdTo", txtUpdEnd.Text.Trim());
-            }
-            if (txtMailNo.Text.Trim().Equals(""))
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("strMailNo", "NULL");
-            }
-            else
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("strMailNo", txtMailNo.Text.Trim());
-            }
-            if (txtId.Text.Trim().Equals(""))
-            {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("strId", "NULL");
-            }
-            else
-            {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("strId", txtId.Text.Trim());
-            }
-
-            // this.ReportViewer0520.ServerReport.SetParameters(Paras);
         }
         catch (Exception exp)
         {
-            // this.ReportViewer0520.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_06052000_003");
         }

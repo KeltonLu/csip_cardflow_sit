@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1169
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebPage(1)", "..\WebPage\", "{71C2F369-4A07-46C6-864B-49237CE3F2E0}"
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = ""
+		SccAuxPath = ""
+		SccLocalPath = ""
+		SccProvider = ""
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.2"
+		ProjectReferences = "{95ecc0cf-d83c-47f3-9c22-f75bae40e952}|BusinessRules.dll;{4496BB14-5797-45F9-8798-8779BA859624}|Entity.dll;{ab13eeb6-015a-48e0-a9ba-07f12e675467}|BusinessRulesNew.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_8706"
+		Debug.AspNetCompiler.PhysicalPath = "..\WebPage\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_8706\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_8706"
+		Release.AspNetCompiler.PhysicalPath = "..\WebPage\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_8706\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "8706"
+		VWDDynamicPort = "false"
+		VWDVirtualPath = "/"
+		SlnRelativePath = "..\WebPage\"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4496BB14-5797-45F9-8798-8779BA859624} = {4496BB14-5797-45F9-8798-8779BA859624}
+		{AB13EEB6-015A-48E0-A9BA-07F12E675467} = {AB13EEB6-015A-48E0-A9BA-07F12E675467}
+		{95ECC0CF-D83C-47F3-9C22-F75BAE40E952} = {95ECC0CF-D83C-47F3-9C22-F75BAE40E952}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessRules", "..\BusinessRules\BusinessRules.csproj", "{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessRulesNew", "..\BusinessRulesNew\BusinessRulesNew.csproj", "{AB13EEB6-015A-48E0-A9BA-07F12E675467}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "..\Entity\Entity.csproj", "{4496BB14-5797-45F9-8798-8779BA859624}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71C2F369-4A07-46C6-864B-49237CE3F2E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71C2F369-4A07-46C6-864B-49237CE3F2E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71C2F369-4A07-46C6-864B-49237CE3F2E0}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{71C2F369-4A07-46C6-864B-49237CE3F2E0}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95ECC0CF-D83C-47F3-9C22-F75BAE40E952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB13EEB6-015A-48E0-A9BA-07F12E675467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB13EEB6-015A-48E0-A9BA-07F12E675467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB13EEB6-015A-48E0-A9BA-07F12E675467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB13EEB6-015A-48E0-A9BA-07F12E675467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4496BB14-5797-45F9-8798-8779BA859624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4496BB14-5797-45F9-8798-8779BA859624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4496BB14-5797-45F9-8798-8779BA859624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4496BB14-5797-45F9-8798-8779BA859624}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76348035-F212-47AB-A968-D7AF9FD5E508}
+	EndGlobalSection
+EndGlobal
