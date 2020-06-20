@@ -48,6 +48,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSIPCommonModel.BusinessRules">
+      <HintPath>..\CommonDll\CSIPCommonModel.BusinessRules.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework.Data.OM">
+      <HintPath>..\CommonDll\Framework.Data.OM.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -102,16 +108,6 @@
     <Compile Include="EntityM_PostSend.cs" />
     <Compile Include="EntityM_PostSendF.cs" />
     <Compile Include="Entity_CPSFileName.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\CSIP_CommonModel\BusinessRules\CommonBusinessRules.csproj">
-      <Project>{1a02033e-f12e-46bb-8ae2-25fe5781260e}</Project>
-      <Name>CommonBusinessRules</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CSIP_CommonModel\Framework.Data\OM\Framework.Data.OM.csproj">
-      <Project>{efbb5f60-82ae-4c7f-a773-4e719efdf037}</Project>
-      <Name>Framework.Data.OM</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
