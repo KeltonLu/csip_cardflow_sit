@@ -48,30 +48,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSIPCommonModel.BaseItem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\CSIPCommonModel.BaseItem.dll</HintPath>
-    </Reference>
-    <Reference Include="CSIPCommonModel.BusinessRules, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\CSIPCommonModel.BusinessRules.dll</HintPath>
-    </Reference>
-    <Reference Include="CSIPCommonModel.EntityLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\CSIPCommonModel.EntityLayer.dll</HintPath>
-    </Reference>
-    <Reference Include="Framework.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\Framework.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Framework.Data.OM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\Framework.Data.OM.dll</HintPath>
-    </Reference>
-    <Reference Include="Framework.WebControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CommonDll\Framework.WebControls.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -137,13 +113,37 @@
     <Compile Include="BRM_CallMail.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Entity\Entity.csproj">
-      <Project>{4496bb14-5797-45f9-8798-8779ba859624}</Project>
-      <Name>Entity</Name>
-    </ProjectReference>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <ProjectReference Include="..\..\CSIP_CommonModel\BaseItem\CommonBaseItem.csproj">
+      <Project>{ee192bcc-4665-406d-ba88-76863b4b6853}</Project>
+      <Name>CommonBaseItem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSIP_CommonModel\BusinessRules\CommonBusinessRules.csproj">
+      <Project>{1a02033e-f12e-46bb-8ae2-25fe5781260e}</Project>
+      <Name>CommonBusinessRules</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSIP_CommonModel\Entity\CommonEntity.csproj">
+      <Project>{e2d629a1-9848-43d9-bf7e-3a18a31cc7a4}</Project>
+      <Name>CommonEntity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSIP_CommonModel\Framework.Common\Framework.Common.csproj">
+      <Project>{e4a10f71-a7d2-4f4c-acf8-53e53d8169d5}</Project>
+      <Name>Framework.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSIP_CommonModel\Framework.Controls\WebControls\Framework.WebControls.csproj">
+      <Project>{671eb07b-a4fd-4e6d-ae5c-d185beb526fb}</Project>
+      <Name>Framework.WebControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSIP_CommonModel\Framework.Data\OM\Framework.Data.OM.csproj">
+      <Project>{efbb5f60-82ae-4c7f-a773-4e719efdf037}</Project>
+      <Name>Framework.Data.OM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entity\Entity_Developer.csproj">
+      <Project>{4496bb14-5797-45f9-8798-8779ba859624}</Project>
+      <Name>Entity_Developer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
