@@ -1,8 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="P060506000001.aspx.cs" Inherits="P060506000001" %>
-
 <%@ Register Assembly="Framework.WebControls" Namespace="Framework.WebControls" TagPrefix="cc1" %>
-<%--<%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
-    Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %>--%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -115,20 +112,10 @@
                                     ShowID="06_06050600_005" OnClick="btnSearch_Click" />&nbsp;&nbsp;
                             </td>
                         </tr>
-                        <%--<tr>
-                            <td colspan="4">
-                                <rsweb:ReportViewer ID="ReportViewer0506" runat="server" Height="430px" Width="100%"
-                                    Font-Names="Verdana" Font-Size="8pt" ProcessingMode="Remote" ShowParameterPrompts="False"
-                                    SizeToReportContent="True" ShowDocumentMapButton="False" ShowExportControls="True"
-                                    ShowFindControls="False" ShowPageNavigationControls="False" ShowPrintButton="True"
-                                    ShowPromptAreaButton="False" ShowRefreshButton="False" ShowZoomControl="False">
-                                    <ServerReport ReportServerUrl="" />
-                                </rsweb:ReportViewer>
-                            </td>
-                        </tr>--%>
+                       
                 </table>
-<%--            </ContentTemplate>
-        </asp:UpdatePanel>--%>
+            </ContentTemplate>
+        </asp:UpdatePanel>
     </form>
 </body>
 </html>

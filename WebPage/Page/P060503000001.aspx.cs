@@ -9,6 +9,7 @@ using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -98,24 +99,24 @@ public partial class P060503000001 : PageBase
         {
             #region 查詢條件參數
 
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
+
             //*匯入日期起日
-            String startDate = this.txtImportStart.Text.Trim();
+            param.Add("startDate",txtImportStart.Text.Trim());
 
             //*匯入日期訖日
-            String endDate = this.txtImportEnd.Text.Trim();
+            param.Add("endDate",txtImportEnd.Text.Trim());
 
             //狀態
-            String outFlg = this.ddlState.SelectedValue;
-            if (ddlState.SelectedValue.Equals("0"))
-            {
-                outFlg = "NULL";
-            }
+            param.Add("outFlg", ddlState.SelectedValue.Equals("0") ? "NULL" : this.ddlState.SelectedValue);
+
             #endregion
 
             string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
 
             //產生報表
-            bool result = BR_Excel_File.CreateExcelFile_0503Report(startDate, endDate,  outFlg, ref strServerPathFile, ref strMsgID);
+            bool result = BR_Excel_File.CreateExcelFile_0503Report(param, ref strServerPathFile, ref strMsgID);
 
             if (result)
             {

@@ -9,6 +9,8 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
@@ -17,6 +19,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
+using Framework.Common.Message;
 using Framework.Common.Utility;
 
 public partial class P060510000002 : PageBase
@@ -36,53 +39,39 @@ public partial class P060510000002 : PageBase
     /// <param name="e"></param>
     private void LoadReport()
     {
+        string strMsgId = string.Empty;
+        
         try
         {
-            // this.ReportViewer0510.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0510.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0510Report";
-            // this.ReportViewer0510.Visible = true;
+             // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            
+            // 製卡日期
+            param.Add("indatefrom", Request.QueryString["indatefrom"].Equals("") ? "NULL" : RedirectHelper.GetDecryptString(Request.QueryString["indatefrom"]));
+            param.Add("indateto", Request.QueryString["indateto"].Equals("") ? "NULL" : RedirectHelper.GetDecryptString(Request.QueryString["indateto"]));
+            
+            // 扣卡日期
+            param.Add("maildate", Request.QueryString["maildate"].Equals("") ? "NULL" : RedirectHelper.GetDecryptString(Request.QueryString["maildate"]));
+            param.Add("maildate1", Request.QueryString["maildate1"].Equals("") ? "NULL" : RedirectHelper.GetDecryptString(Request.QueryString["maildate1"]));
+            
 
-            //初始化報表參數,為Report View賦值參數
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[4];
+            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
 
-            if (Request.QueryString["indatefrom"].Equals(""))
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0510Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatefrom", "NULL");
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
             }
             else
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatefrom", RedirectHelper.GetDecryptString(Request.QueryString["indatefrom"]));
+                MessageHelper.ShowMessage(this, strMsgId);
             }
-            if (Request.QueryString["indateto"].Equals(""))
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateto", "NULL");
-            }
-            else
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateto", RedirectHelper.GetDecryptString(Request.QueryString["indateto"]));
-            }
-
-
-            if (Request.QueryString["maildate"].Equals(""))
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("UpdDatefrom", "NULL");
-            }
-            else
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("UpdDatefrom", RedirectHelper.GetDecryptString(Request.QueryString["maildate"]));
-            }
-
-            if (Request.QueryString["maildate1"].Equals(""))
-            {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("UpdDateto", "NULL");
-            }
-            else
-            {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("UpdDateto", RedirectHelper.GetDecryptString(Request.QueryString["maildate1"]));
-            }
-
-
-            // this.ReportViewer0510.ServerReport.SetParameters(Paras);
         }
         catch(Exception exp)
         {

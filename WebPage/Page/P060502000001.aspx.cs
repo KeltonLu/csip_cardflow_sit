@@ -10,6 +10,7 @@ using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -97,11 +98,11 @@ public partial class P060502000001 : PageBase
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        string strMsgID = string.Empty;
+        string strMsgId = string.Empty;
 
-        if (!CheckCondition(ref strMsgID))
+        if (!CheckCondition(ref strMsgId))
         {
-            MessageHelper.ShowMessage(this, strMsgID);
+            MessageHelper.ShowMessage(this, strMsgId);
             return;
         }
 
@@ -109,28 +110,27 @@ public partial class P060502000001 : PageBase
         {
             #region 查詢條件參數
 
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
+
             //*匯入日期起日
-            String startDate = this.txtImportStart.Text.Trim();
+            param.Add("startDate",this.txtImportStart.Text.Trim());
 
             //*匯入日期訖日
-            String endDate = this.txtImportEnd.Text.Trim();
+            param.Add("endDate",this.txtImportEnd.Text.Trim());
 
             //狀態
-            String outFlg = this.ddlState.SelectedValue;
-            if (this.ddlState.SelectedValue.Equals("0"))
-                outFlg = "00";
+            param.Add("outFlg", this.ddlState.SelectedValue.Equals("0") ? "00" : ddlState.SelectedValue);
 
             //廠商
-            String factory = ddlFactory.SelectedValue;
-            if (ddlFactory.SelectedValue.Equals("0"))
-                factory = "00";
-
+            param.Add("factory", ddlFactory.SelectedValue.Equals("0") ? "00" : ddlFactory.SelectedValue);
+            
             #endregion
 
             string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
 
             //產生報表
-            bool result = BR_Excel_File.CreateExcelFile_0502Report(startDate, endDate,outFlg,  factory, ref strServerPathFile, ref strMsgID);
+            bool result = BR_Excel_File.CreateExcelFile_0502Report(param, ref strServerPathFile, ref strMsgId);
 
             if (result)
             {
@@ -141,7 +141,7 @@ public partial class P060502000001 : PageBase
                 jsBuilder.RegScript(this.Page, urlString);
             }
             else {
-                MessageHelper.ShowMessage(this, strMsgID);
+                MessageHelper.ShowMessage(this, strMsgId);
             }
 
 

@@ -297,6 +297,7 @@ public class AutoImportFiles : Quartz.IJob
                         ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
                         DataTable dtDetail = null;                 //檢核結果列表
                         //*檢核資料
+                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);
                         if (UploadCheck(strPath, strFunctionName, strCardType, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
                             JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
@@ -345,6 +346,7 @@ public class AutoImportFiles : Quartz.IJob
                             }
 
                             strTemps += Row[rowcount]["TxtFileName"].ToString() + "  ";
+                            JobHelper.SaveLog("錯誤資料匯入完成！", LogState.Info);
                         }
 
                         if (null != dtDetail && dtDetail.Rows.Count > 0)
@@ -362,6 +364,7 @@ public class AutoImportFiles : Quartz.IJob
                                 Row[rowcount]["ImportStates"] = "F";
                                 JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
                             }
+                            JobHelper.SaveLog("正確資料匯入完成！", LogState.Info);
                         }
                     }
                     //*file不存在local

@@ -51,11 +51,11 @@ public partial class P060508000001 : PageBase
         log.Customer_Id = this.txtID.Text;
         BRL_AP_LOG.Add(log);
         //------------------------------------------------------
-        string strMsgID = string.Empty;
+        string strMsgId = string.Empty;
 
-        if (!CheckCondition(ref strMsgID))
+        if (!CheckCondition(ref strMsgId))
         {
-            MessageHelper.ShowMessage(this, strMsgID);
+            MessageHelper.ShowMessage(this, strMsgId);
             return;
         }
         try
@@ -64,39 +64,39 @@ public partial class P060508000001 : PageBase
             Dictionary<string, string> param = new Dictionary<string, string>();
 
             // 身份證字號
-            String ID = this.txtID.Text.Trim().Equals("") ? "NULL" : this.txtID.Text.Trim();
-            param.Add("ID", ID);
+            String id = this.txtID.Text.Trim().Equals("") ? "NULL" : this.txtID.Text.Trim();
+            param.Add("ID", id);
 
             // 匯入日期起日
-            String Imp_DateStart = this.txtProcessDateStart.Text.Trim().Equals("") ? "NULL" : this.txtProcessDateStart.Text.Trim();
-            param.Add("Imp_DateStart", Imp_DateStart);
+            String impDateStart = this.txtProcessDateStart.Text.Trim().Equals("") ? "NULL" : this.txtProcessDateStart.Text.Trim();
+            param.Add("Imp_DateStart", impDateStart);
 
 
             // 匯入日期訖日
-            String Imp_DateEnd = this.txtProcessDateEnd.Text.Trim().Equals("") ? "NULL" : this.txtProcessDateEnd.Text.Trim();
-            param.Add("Imp_DateEnd", Imp_DateEnd);
+            String impDateEnd = this.txtProcessDateEnd.Text.Trim().Equals("") ? "NULL" : this.txtProcessDateEnd.Text.Trim();
+            param.Add("Imp_DateEnd", impDateEnd);
 
 
             // 交寄日期起日
-            String MaildateStart = this.txtMaildateStart.Text.Trim().Equals("") ? "NULL" : this.txtMaildateStart.Text.Trim();
-            param.Add("MaildateStart", MaildateStart);
+            String maildateStart = this.txtMaildateStart.Text.Trim().Equals("") ? "NULL" : this.txtMaildateStart.Text.Trim();
+            param.Add("MaildateStart", maildateStart);
 
             // 交寄日期訖日
-            String MaildateEnd = this.txtMaildateEnd.Text.Trim().Equals("") ? "NULL" : this.txtMaildateEnd.Text.Trim();
-            param.Add("MaildateEnd", MaildateEnd);
+            String maildateEnd = this.txtMaildateEnd.Text.Trim().Equals("") ? "NULL" : this.txtMaildateEnd.Text.Trim();
+            param.Add("MaildateEnd", maildateEnd);
 
             // 掛號號碼
-            String Mailno = this.txtMailno.Text.Trim().Equals("") ? "NULL" : this.txtMailno.Text.Trim();
-            param.Add("Mailno", Mailno);
+            String mailNo = this.txtMailno.Text.Trim().Equals("") ? "NULL" : this.txtMailno.Text.Trim();
+            param.Add("Mailno", mailNo);
 
             // 狀態
-            String Non_Send_Code = this.dropStatus.SelectedValue.Equals("XX") ? "NULL" : this.dropStatus.SelectedValue;
-            param.Add("Non_Send_Code", Mailno);
+            String nonSendCode = this.dropStatus.SelectedValue.Equals("XX") ? "NULL" : this.dropStatus.SelectedValue;
+            param.Add("Non_Send_Code", nonSendCode);
 
             string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
 
             // 產生報表
-            bool result = BR_Excel_File.CreateExcelFile_0508Report(param, ref strServerPathFile, ref strMsgID);
+            bool result = BR_Excel_File.CreateExcelFile_0508Report(param, ref strServerPathFile, ref strMsgId);
 
             if (result)
             {
@@ -108,7 +108,7 @@ public partial class P060508000001 : PageBase
             }
             else
             {
-                MessageHelper.ShowMessage(this, strMsgID);
+                MessageHelper.ShowMessage(this, strMsgId);
             }
         }
         catch (Exception exp)

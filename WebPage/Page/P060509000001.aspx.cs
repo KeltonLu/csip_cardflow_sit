@@ -2,28 +2,18 @@
 //*  功能說明：分行郵寄資料查詢
 //*  作    者：JUN HU
 //*  創建日期：2010/06/30
-//*  修改記錄：
+//*  修改記錄：20200623: Luke,調整EXCEL報表
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
-using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
-using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 using System.Configuration;
+using System.IO;
 
 
 public partial class P060509000001 : PageBase
@@ -33,47 +23,70 @@ public partial class P060509000001 : PageBase
     /// 作    者:JUN HU
     /// 創建時間:2010/07/01
     /// 修改記錄:
+    /// 20200624: Luke, 調整為Excel報表
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     protected void btnSearch_Click(object sender, EventArgs e)
     {
+        string strMsgId = string.Empty;
+
         if (txtMaildateStart.Text.Trim().Equals(""))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
             return;
         }
+
         if (txtMaildateEnd.Text.Trim().Equals(""))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
             return;
         }
+
         if (txtCode.Text.Trim().Equals(""))
         {
             //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_002");
             return;
         }
+
         try
         {
-            // this.ReportViewer0509.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0509.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0509Report";
-            // this.ReportViewer0509.Visible = true;
+            #region 查詢條件參數
 
-            //初始化報表參數,為Report View賦值參數
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[3];
+            Dictionary<string, string> param = new Dictionary<string, string>();
 
-            // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("maildatefrom", txtMaildateStart.Text.Trim());
+            // 郵寄日期
+            param.Add("maildatefrom", txtMaildateStart.Text.Trim());
+            param.Add("maildateto", txtMaildateEnd.Text.Trim());
 
-            // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("maildateto", txtMaildateEnd.Text.Trim());
+            // 分行代碼
+            param.Add("branchid", txtCode.Text.Trim());
 
-            // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("branchid", txtCode.Text.Trim());
-            // this.ReportViewer0509.ServerReport.SetParameters(Paras);
+            #endregion
+
+            string strServerPathFile =
+                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0509Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
         }
         catch (Exception exp)
         {
             Logging.Log(exp, LogLayer.BusinessRule);
-            MessageHelper.ShowMessage(this, "06_06050400_003");
-
+            MessageHelper.ShowMessage(this, "06_06050900_004");
         }
     }
 
@@ -89,7 +102,7 @@ public partial class P060509000001 : PageBase
     {
         //*分行代碼
         DataTable dtCode = new DataTable();
-        
+
         //*分行代碼帶出分行名稱
         if (CSIPCommonModel.BusinessRules.BRM_PROPERTY_KEY.GetEnableProperty("06", "9", ref dtCode))
         {

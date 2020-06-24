@@ -33,6 +33,7 @@ using CSIPCommonModel.BusinessRules;
 public class JobLdapUpd : Quartz.IJob
 {
 
+    protected JobHelper JobHelper = new JobHelper();
     // Job編號
     const string strJobN = "LdapUpdJob";
     // JobID
@@ -57,6 +58,8 @@ public class JobLdapUpd : Quartz.IJob
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
     {
+        String jobId = context.JobDetail.JobDataMap["JOBID"].ToString();
+        JobHelper.strJobId = jobId;
         // 用戶編號
         string strUsrID = string.Empty;
         // 系統信息
@@ -71,11 +74,14 @@ public class JobLdapUpd : Quartz.IJob
         DataTable dtblUserRole = new DataTable();
         // 獲取JOB開始時間
         DateTime dTimeStart = DateTime.Now;
+
+        JobHelper.SaveLog(jobId + "JOB啟動", LogState.Info);
         try
         {  
             // 檢測JOB是否有執行如:執行中或、已經執行成功、其他結束了 今天不再執行
             if (!BRL_BATCH_LOG.JobStatusChk(strFunKey, strJOBNAME, dTimeStart))
-            {            
+            {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -89,7 +95,7 @@ public class JobLdapUpd : Quartz.IJob
             // 如果資料為獲取失敗，直接返回
             if (dsLdapMsg == null)
             {
-
+                JobHelper.SaveLog("資料為獲取失敗", LogState.Info);
                 return;
             }
             else
@@ -107,6 +113,7 @@ public class JobLdapUpd : Quartz.IJob
                 if (!BRM_USER.DeleteAllUser(ref strMsgID))
                 {
                     BRL_BATCH_LOG.Insert(strFunKey, strJOBNAME, DateTime.Now, "F", "CommonModel_清除用戶信息數據失敗!");
+                    JobHelper.SaveLog("CommonModel_清除用戶信息數據失敗", LogState.Info);
                     return;
                 }               
                 
@@ -130,6 +137,7 @@ public class JobLdapUpd : Quartz.IJob
                         {
                             // 如果用戶更新失敗那麼全部回滾
                             BRL_BATCH_LOG.Insert(strFunKey, strJOBNAME, DateTime.Now, "F", "CommonModel_LDAP同步用戶數據失敗!");
+                            JobHelper.SaveLog("CommonModel_LDAP同步用戶數據失敗", LogState.Info);
                             return;
                         }
                     }
@@ -139,11 +147,13 @@ public class JobLdapUpd : Quartz.IJob
                 BRL_BATCH_LOG.Insert(strFunKey, strJOBNAME, DateTime.Now, "S", "CommonModel_" + strJOBNAME + "_執行完成");
             }
 
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
             BRL_BATCH_LOG.Insert(strFunKey, strJOBNAME, DateTime.Now, "F", "CommonModel_發錯錯誤_" + ex.ToString());
             BRL_BATCH_LOG.SaveLog(ex);
+            JobHelper.SaveLog(ex);
         }
         
     }

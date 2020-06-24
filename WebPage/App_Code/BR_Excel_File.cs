@@ -18,36 +18,36 @@ public class BR_Excel_File : BRBase<Entity_UnableCard>
 {
     #region SQL語句
 
-    #region SEARCH_Export_0502
+    #region SearchExport0502
 
-    public const string SEARCH_Export_0502 = @"
-SELECT
-	u.ImportDate,
-	u.indate1,
-	u.id,
-	u.CustName,
-	u.CardNo,
-	u.blockcode,
-CASE
-		u.OutputFlg 
-		WHEN 'N' THEN
-		'未處理' 
-		WHEN 'Y' THEN
-		'已處理' 
-		WHEN 'T' THEN
-		'退單' 
-		WHEN 'S' THEN
-		'成功' ELSE '' 
-	END AS outPutFlg,
-CASE
-		b.Merch_Code 
-		WHEN 'A' THEN
-		'宏通' 
-		WHEN 'B' THEN
-		'台銘' 
-		WHEN 'C' THEN
-		'金雅拓' 
-	END AS Merch_NAME 
+    private const string SearchExport0502 = @"
+SELECT u.ImportDate,
+       CASE
+           b.Merch_Code
+           WHEN 'A' THEN
+               '宏通'
+           WHEN 'B' THEN
+               '台銘'
+           WHEN 'C' THEN
+               '金雅拓'
+           END AS Merch_NAME,
+       u.indate1,
+       u.id,
+       u.CustName,
+       u.CardNo,
+       u.blockcode,
+       CASE
+           u.OutputFlg
+           WHEN 'N' THEN
+               '未處理'
+           WHEN 'Y' THEN
+               '已處理'
+           WHEN 'T' THEN
+               '退單'
+           WHEN 'S' THEN
+               '成功'
+           ELSE ''
+           END AS outPutFlg
 FROM
 	tbl_UnableCard u
 	INNER JOIN tbl_Card_BaseInfo AS b ON u.indate1= b.indate1 
@@ -61,13 +61,13 @@ ORDER BY
 
     #endregion
 
-    #region SEARCH_Export_0503
+    #region SearchExport0503
 
-    public const string SEARCH_Export_0503 = @"
+    private const string SearchExport0503 = @"
 SELECT
-	BlockCode,
 	ImportDate,
 	CardNo,
+    BlockCode,
 CASE
 		OutputFlg 
 		WHEN 'N' THEN
@@ -90,9 +90,9 @@ WHERE
 
     #endregion
 
-    #region SEARCH_Export_0504
+    #region SearchExport0504
 
-    public const string SEARCH_Export_0504 = @"
+    private const string SearchExport0504 = @"
 SELECT
 	serial_no,
 CASE
@@ -183,9 +183,9 @@ WHERE
 
     #endregion
 
-    #region SEARCH_Export_0506
+    #region SearchExport0506
 
-    public const string SEARCH_Export_0506 = @"
+    private const string SearchExport0506 = @"
 SELECT
 	CardNo,
 	BlockCode,
@@ -204,9 +204,9 @@ WHERE
 
     #endregion
 
-    #region SEARCH_Export_0507
+    #region SearchExport0507
 
-    public const string SEARCH_Export_0507 = @"
+    private const string SearchExport0507 = @"
 SELECT ID,
        CardNo,
        Imp_Date,
@@ -225,9 +225,9 @@ AND   (@Status ='NULL' OR Ams=@Status)
 
     #endregion
 
-    #region SEARCH_Export_0508
+    #region SearchExport0508
 
-    public const string SEARCH_Export_0508 = @"
+    private const string SearchExport0508 = @"
 SELECT B.ID
       ,B.CardNo
       ,S.Imp_Date
@@ -246,10 +246,44 @@ AND   (@Non_Send_Code ='NULL' OR S.Info1=@Non_Send_Code)
 ";
 
     #endregion
+    
+    #region SearchExport0509
 
-    #region SEARCH_Export_0519
+    private const string SearchExport0509 = @"
+select maildate,
+       cardtype,
+       sum(allnum) as allnum,
+       mailno
+from (SELECt distinct maildate,
+                      isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as cardtype,
+                      count(*)                                                                              as allnum,
+                      substring(dbo.f_AppendMailno(maildate, cardtype, @branchid), 1, 6)                    as mailno
+      FROM dbo.tbl_Card_BaseInfo base
+      where (@maildatefrom is null or convert(datetime, maildate, 120) >= convert(datetime, @maildatefrom, 120))
+        and (@maildateto is null or convert(datetime, maildate, 120) <= convert(datetime, @maildateto, 120))
+        and branch_id = @branchid
+        --and kind='23'
+        and kind in ('21', '22', '23', '24')
+      GROUP BY maildate, cardtype) t
+GROUP BY mailno, maildate, cardtype
+ORDER BY maildate DESC
+";
 
-    public const string SEARCH_Export_0519 = @"
+    #endregion
+    
+    #region SearchExport0510
+
+    private const string SearchExport0510 = @"
+select id,custname,cardno,indate1,UpdDate,CNote, kktime 
+from tbl_HoldCard 
+order by convert(int,kktime) DESC
+";
+
+    #endregion
+
+    #region SearchExport0519
+
+    private const string SearchExport0519 = @"
 select a.id,
        a.cardno,
        a.indate1,
@@ -345,9 +379,9 @@ where (@backdate = 'NULL' or b.backdate in (select max(b.Backdate)
 
     #endregion
 
-    #region SEARCH_Export_0516
+    #region SearchExport0516
 
-    public const string SEARCH_Export_0516 = @"
+    private const string SearchExport0516 = @"
 select ReasonName, sum(DayIn) DayIn,sum(DayOut) DayOut,sum(CountEnd) CountEnd,sum(END0) END0
 ,sum(END1) END1,sum(END2) END2,sum(END3) END3,sum(END4) END4,sum(END5) END5,sum(END6) END6,sum(END7) END7
 from (
@@ -393,9 +427,9 @@ group by ReasonName
 
     #endregion
     
-    #region SEARCH_Export_0517
+    #region SearchExport0517
 
-    public const string SEARCH_Export_0517 = @"
+    private const string SearchExport0517 = @"
 select distinct  m.Reason,
   CASE m.Reason WHEN '1' THEN '招領逾期' WHEN '2' THEN '無此人' 
 WHEN '3' THEN '址欠詳' WHEN '4' THEN '遷移不明' 
@@ -426,9 +460,9 @@ group by Reason
 
     #endregion
     
-    #region SEARCH_Export_0518
+    #region SearchExport0518
 
-    public const string SEARCH_Export_0518 = @"
+    private const string SearchExport0518 = @"
 if @backtype = 1 --本日新增
     begin
         select a.serial_no,
@@ -569,9 +603,9 @@ else
 
     #endregion
     
-    #region SEARCH_Export_0518
+    #region SearchExport0520
 
-    public const string SEARCH_Export_0520 = @"
+    private const string SearchExport0520 = @"
 select ROW_NUMBER() OVER(order by id, CardNo, UpdDate) as NUMBER,* from 
 (select change.id,back.mailno,change.CardNo,change.UpdDate,change.UpdUser,change.OldAdd1,change.OldAdd2,change.OldAdd3,change.NewAdd1,change.NewAdd2,change.NewAdd3
 from dbo.tbl_Card_DataChange change,dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base
@@ -594,7 +628,6 @@ order by id,CardNo,UpdDate
 ";
 
     #endregion
-
 
     #endregion
 
@@ -623,7 +656,7 @@ order by id,CardNo,UpdDate
             string[] strDirectories = Directory.GetDirectories(strOldPath);
             for (int intLoop = 0; intLoop < strDirectories.Length; intLoop++)
             {
-                if (strDirectories[intLoop].ToString() != strPath)
+                if (strDirectories[intLoop] != strPath)
                 {
                     if (Directory.Exists(strDirectories[intLoop]))
                     {
@@ -659,15 +692,11 @@ order by id,CardNo,UpdDate
     /// <summary>
     /// 無法製卡檔查詢 - Excel 
     /// </summary>
-    /// <param name="factory"></param>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="outFlg"></param>
+    /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    public static bool CreateExcelFile_0502Report(string startDate, string endDate, string outFlg, string factory,
-        ref string strPathFile, ref string strMsgID)
+    public static bool CreateExcelFile_0502Report(Dictionary<string, string> param, ref string strPathFile, ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -676,27 +705,23 @@ order by id,CardNo,UpdDate
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
             #region 依據Request查詢資料庫
 
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SEARCH_Export_0502
+                CommandType = CommandType.Text, 
+                CommandText = SearchExport0502
             };
 
-            SqlParameter paramStartDate = new SqlParameter("@startDate", startDate);
-            sqlSearchData.Parameters.Add(paramStartDate);
-            SqlParameter paramEndDate = new SqlParameter("@endDate", endDate);
-            sqlSearchData.Parameters.Add(paramEndDate);
-            SqlParameter paramOutFlg = new SqlParameter("@outFlg", outFlg);
-            sqlSearchData.Parameters.Add(paramOutFlg);
-            SqlParameter paramFactory = new SqlParameter("@factory", factory);
-            sqlSearchData.Parameters.Add(paramFactory);
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
 
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
 
             #endregion 依據Request查詢資料庫
 
@@ -704,15 +729,15 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_05020000_004";
+                strMsgId = "06_05020000_004";
                 return false;
             }
 
-            DataTable dtblSearchResult = dstSearchData.Tables[0];
+            DataTable dt = dstSearchData.Tables[0];
 
-            if (dtblSearchResult.Rows.Count == 0)
+            if (dt.Rows.Count == 0)
             {
-                strMsgID = "06_05020000_004";
+                strMsgId = "06_05020000_004";
                 return false;
             }
 
@@ -730,45 +755,13 @@ order by id,CardNo,UpdDate
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
             // 創建一個空的單元格對象
-            Range range = null;
             Worksheet sheet = (Worksheet) workbook.Sheets[1];
 
             //初始ROW位置
-            int intRowIndexInSheet = 1;
+            int indexInSheetStart = 2;
 
-            string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 8];
-            for (int intLoop = 0; intLoop < dtblSearchResult.Rows.Count; intLoop++)
-            {
-                intRowIndexInSheet++;
-
-                // 匯入日期
-                arrExportData[intLoop, 0] = dtblSearchResult.Rows[intLoop]["ImportDate"].ToString();
-                // 廠商
-                arrExportData[intLoop, 1] = dtblSearchResult.Rows[intLoop]["Merch_NAME"].ToString();
-                // 製卡日
-                arrExportData[intLoop, 2] = dtblSearchResult.Rows[intLoop]["indate1"].ToString();
-                // 身分證字號
-                arrExportData[intLoop, 3] = dtblSearchResult.Rows[intLoop]["id"].ToString();
-                // 姓名
-                arrExportData[intLoop, 4] = dtblSearchResult.Rows[intLoop]["CustName"].ToString();
-                // 卡號
-                arrExportData[intLoop, 5] = dtblSearchResult.Rows[intLoop]["CardNo"].ToString();
-                // 無法製出原因
-                arrExportData[intLoop, 6] = dtblSearchResult.Rows[intLoop]["blockcode"].ToString();
-                // 狀態
-                arrExportData[intLoop, 7] = dtblSearchResult.Rows[intLoop]["outPutFlg"].ToString();
-            }
-
-            // 賦予查詢結果
-            range = sheet.get_Range("A2", "H" + intRowIndexInSheet);
-            range.Value2 = arrExportData;
-
-            // 設置樣式
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-
+            // 轉入結果資料
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0502Report" + ".xlsx";
@@ -783,8 +776,7 @@ order by id,CardNo,UpdDate
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
-            throw ex;
+            throw;
         }
         finally
         {
@@ -804,12 +796,9 @@ order by id,CardNo,UpdDate
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="outFlg"></param>
+    /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    public static bool CreateExcelFile_0503Report(string startDate, string endDate, string outFlg,
-        ref string strPathFile, ref string strMsgID)
+    public static bool CreateExcelFile_0503Report(Dictionary<string, string> param, ref string strPathFile, ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -825,18 +814,17 @@ order by id,CardNo,UpdDate
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SEARCH_Export_0503
+                CommandType = CommandType.Text, CommandText = SearchExport0503
             };
 
-            SqlParameter paramStartDate = new SqlParameter("@startDate", startDate);
-            sqlSearchData.Parameters.Add(paramStartDate);
-            SqlParameter paramEndDate = new SqlParameter("@endDate", endDate);
-            sqlSearchData.Parameters.Add(paramEndDate);
-            SqlParameter paramOutFlg = new SqlParameter("@outFlg", outFlg);
-            sqlSearchData.Parameters.Add(paramOutFlg);
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
 
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
 
             #endregion 依據Request查詢資料庫
 
@@ -844,15 +832,15 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_05030000_004";
+                strMsgId = "06_05030000_004";
                 return false;
             }
 
-            DataTable dtblSearchResult = dstSearchData.Tables[0];
+            DataTable dt = dstSearchData.Tables[0];
 
-            if (dtblSearchResult.Rows.Count == 0)
+            if (dt.Rows.Count == 0)
             {
-                strMsgID = "06_05030000_004";
+                strMsgId = "06_05030000_004";
                 return false;
             }
 
@@ -870,36 +858,13 @@ order by id,CardNo,UpdDate
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
             // 創建一個空的單元格對象
-            Range range = null;
             Worksheet sheet = (Worksheet) workbook.Sheets[1];
 
             //初始ROW位置
-            int intRowIndexInSheet = 1;
+            int indexInSheetStart = 2;
 
-            string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 4];
-            for (int intLoop = 0; intLoop < dtblSearchResult.Rows.Count; intLoop++)
-            {
-                intRowIndexInSheet++;
-
-                // 匯入日期
-                arrExportData[intLoop, 0] = dtblSearchResult.Rows[intLoop]["ImportDate"].ToString();
-                // 卡號
-                arrExportData[intLoop, 1] = dtblSearchResult.Rows[intLoop]["CardNo"].ToString();
-                // 無法製出原因
-                arrExportData[intLoop, 2] = dtblSearchResult.Rows[intLoop]["blockcode"].ToString();
-                // 狀態
-                arrExportData[intLoop, 3] = dtblSearchResult.Rows[intLoop]["outPutFlg"].ToString();
-            }
-
-            // 賦予查詢結果
-            range = sheet.get_Range("A2", "D" + intRowIndexInSheet);
-            range.Value2 = arrExportData;
-
-            // 設置樣式
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
+            // 轉入結果資料
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);;
 
 
             // 保存文件到程序運行目錄下
@@ -907,7 +872,7 @@ order by id,CardNo,UpdDate
             sheet.SaveAs(strPathFile);
 
             // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false, null, null);
+            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -915,7 +880,6 @@ order by id,CardNo,UpdDate
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
             throw ex;
         }
         finally
@@ -939,7 +903,7 @@ order by id,CardNo,UpdDate
     /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     public static bool CreateExcelFile_0504Report(Dictionary<string, string> param, ref string strPathFile,
-        ref string strMsgID)
+        ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -955,7 +919,7 @@ order by id,CardNo,UpdDate
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SEARCH_Export_0504
+                CommandType = CommandType.Text, CommandText = SearchExport0504
             };
 
             foreach (var data in param)
@@ -965,7 +929,7 @@ order by id,CardNo,UpdDate
             }
 
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
 
             #endregion 依據Request查詢資料庫
 
@@ -973,7 +937,7 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_06050400_004";
+                strMsgId = "06_06050400_004";
                 return false;
             }
 
@@ -981,7 +945,7 @@ order by id,CardNo,UpdDate
 
             if (dtblSearchResult.Rows.Count == 0)
             {
-                strMsgID = "06_06050400_004";
+                strMsgId = "06_06050400_004";
                 return false;
             }
 
@@ -1035,7 +999,7 @@ order by id,CardNo,UpdDate
             }
 
             // 賦予查詢結果
-            range = sheet.get_Range("A2", "K" + intRowIndexInSheet);
+            range = sheet.Range["A2", "K" + intRowIndexInSheet];
             range.Value2 = arrExportData;
 
             // 設置樣式
@@ -1058,7 +1022,6 @@ order by id,CardNo,UpdDate
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
             throw ex;
         }
         finally
@@ -1082,7 +1045,7 @@ order by id,CardNo,UpdDate
     /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     public static bool CreateExcelFile_0506Report(Dictionary<string, string> param, ref string strPathFile,
-        ref string strMsgID)
+        ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -1098,7 +1061,7 @@ order by id,CardNo,UpdDate
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SEARCH_Export_0506
+                CommandType = CommandType.Text, CommandText = SearchExport0506
             };
 
             foreach (var data in param)
@@ -1116,7 +1079,7 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_06050600_000";
+                strMsgId = "06_06050600_000";
                 return false;
             }
 
@@ -1124,7 +1087,7 @@ order by id,CardNo,UpdDate
 
             if (dtblSearchResult.Rows.Count == 0)
             {
-                strMsgID = "06_06050600_000";
+                strMsgId = "06_06050600_000";
                 return false;
             }
 
@@ -1152,11 +1115,11 @@ order by id,CardNo,UpdDate
             //統計
             int successNum = 0;
             int failNum = 0;
-            int TotalNum = dtblSearchResult.Rows.Count;
+            int totalNum = dtblSearchResult.Rows.Count;
 
 
             string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 4];
-            for (int intLoop = 0; intLoop < TotalNum; intLoop++)
+            for (int intLoop = 0; intLoop < totalNum; intLoop++)
             {
                 indexInSheetEnd++;
 
@@ -1181,7 +1144,7 @@ order by id,CardNo,UpdDate
 
             #region 導入數據查詢結果
 
-            range = sheet.get_Range("A" + indexInSheetStart, "D" + (indexInSheetEnd - 1));
+            range = sheet.Range["A" + indexInSheetStart, "D" + (indexInSheetEnd - 1)];
             range.Value2 = arrExportData;
 
             #endregion
@@ -1213,7 +1176,7 @@ order by id,CardNo,UpdDate
 
             sheet.Cells.Replace("$SuccessNum$", successNum);
             sheet.Cells.Replace("$FailNum$", failNum);
-            sheet.Cells.Replace("$TotalNum$", TotalNum);
+            sheet.Cells.Replace("$TotalNum$", totalNum);
 
             #endregion
 
@@ -1223,7 +1186,7 @@ order by id,CardNo,UpdDate
             sheet.SaveAs(strPathFile);
 
             // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false, null, null);
+            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -1231,7 +1194,6 @@ order by id,CardNo,UpdDate
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
             throw ex;
         }
         finally
@@ -1255,7 +1217,7 @@ order by id,CardNo,UpdDate
     /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     public static bool CreateExcelFile_0507Report(Dictionary<string, string> param, ref string strPathFile,
-        ref string strMsgID)
+        ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -1272,7 +1234,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0507
+                CommandText = SearchExport0507
             };
 
             foreach (var data in param)
@@ -1290,7 +1252,7 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_06050700_000";
+                strMsgId = "06_06050700_000";
                 return false;
             }
 
@@ -1298,7 +1260,7 @@ order by id,CardNo,UpdDate
 
             if (dtblSearchResult.Rows.Count == 0)
             {
-                strMsgID = "06_06050700_000";
+                strMsgId = "06_06050700_000";
                 return false;
             }
 
@@ -1324,13 +1286,10 @@ order by id,CardNo,UpdDate
             int indexInSheetEnd = indexInSheetStart;
 
             //統計
-            int successNum = 0;
-            int failNum = 0;
-            int TotalNum = dtblSearchResult.Rows.Count;
-
+            int totalNum = dtblSearchResult.Rows.Count;
 
             string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 6];
-            for (int intLoop = 0; intLoop < TotalNum; intLoop++)
+            for (int intLoop = 0; intLoop < totalNum; intLoop++)
             {
                 indexInSheetEnd++;
 
@@ -1350,7 +1309,7 @@ order by id,CardNo,UpdDate
 
             #region 導入數據查詢結果
 
-            range = sheet.get_Range("A" + indexInSheetStart, "F" + (indexInSheetEnd - 1));
+            range = sheet.Range["A" + indexInSheetStart, "F" + (indexInSheetEnd - 1)];
             range.Value2 = arrExportData;
 
             #endregion
@@ -1410,7 +1369,7 @@ order by id,CardNo,UpdDate
     /// <param name="param">查詢條件</param>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     public static bool CreateExcelFile_0508Report(Dictionary<string, string> param, ref string strPathFile,
-        ref string strMsgID)
+        ref string strMsgId)
     {
         // 創建一個Excel實例
         ExcelApplication excel = new ExcelApplication();
@@ -1427,7 +1386,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0508
+                CommandText = SearchExport0508
             };
 
             foreach (var data in param)
@@ -1437,7 +1396,7 @@ order by id,CardNo,UpdDate
             }
 
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
 
             #endregion 依據Request查詢資料庫
 
@@ -1445,7 +1404,7 @@ order by id,CardNo,UpdDate
 
             if (null == dstSearchData)
             {
-                strMsgID = "06_06050800_000";
+                strMsgId = "06_06050800_000";
                 return false;
             }
 
@@ -1453,7 +1412,7 @@ order by id,CardNo,UpdDate
 
             if (dtblSearchResult.Rows.Count == 0)
             {
-                strMsgID = "06_06050800_000";
+                strMsgId = "06_06050800_000";
                 return false;
             }
 
@@ -1479,10 +1438,10 @@ order by id,CardNo,UpdDate
             int indexInSheetEnd = indexInSheetStart;
 
             //統計
-            int TotalNum = dtblSearchResult.Rows.Count;
+            int totalNum = dtblSearchResult.Rows.Count;
 
             string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 6];
-            for (int intLoop = 0; intLoop < TotalNum; intLoop++)
+            for (int intLoop = 0; intLoop < totalNum; intLoop++)
             {
                 indexInSheetEnd++;
 
@@ -1502,7 +1461,7 @@ order by id,CardNo,UpdDate
 
             #region 導入數據查詢結果
 
-            range = sheet.get_Range("A" + indexInSheetStart, "F" + (indexInSheetEnd - 1));
+            range = sheet.Range["A" + indexInSheetStart, "F" + (indexInSheetEnd - 1)];
             range.Value2 = arrExportData;
 
             #endregion
@@ -1577,7 +1536,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0519
+                CommandText = SearchExport0519
             };
 
             foreach (var data in param)
@@ -1680,7 +1639,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0516
+                CommandText = SearchExport0516
             };
 
             foreach (var data in param)
@@ -1789,7 +1748,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0517
+                CommandText = SearchExport0517
             };
 
             foreach (var data in param)
@@ -1923,7 +1882,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0518
+                CommandText = SearchExport0518
             };
 
             foreach (var data in param)
@@ -2032,7 +1991,7 @@ order by id,CardNo,UpdDate
             SqlCommand sqlSearchData = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = SEARCH_Export_0520
+                CommandText = SearchExport0520
             };
 
             foreach (var data in param)
@@ -2115,8 +2074,221 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
+    
+    #region 分行郵寄資料查詢 - Excel
+
+    /// <summary>
+    /// 分行郵寄資料查詢 - Excel 
+    /// </summary>
+    /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
+    /// <param name="strMsgId">返回消息ID</param>
+    /// <param name="param">查詢條件</param>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
+    public static bool CreateExcelFile_0509Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0509
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06050900_005";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06050900_005";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "0509Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+
+            // 初始ROW位置
+            int indexInSheetStart = 2;
+
+            // 轉入結果資料
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0509Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false, null, null);
+            return true;
+
+            #endregion
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+    
+    #region 扣卡明細查詢 - Excel
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 扣卡明細查詢 - Excel  
+    /// 功能說明:頁面加載事件
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/06/23
+    /// </summary>
+    /// 
+    public static bool CreateExcelFile_0510Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0510
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06051000_006";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06051000_006";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "0510Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+
+            // 初始ROW位置
+            int indexInSheetStart = 2;
+
+            // 轉入結果資料
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0510Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false, null, null);
+            return true;
+
+            #endregion
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+    
     #region 匯入EXCEL資料
 
+    
+    /// <summary>
+    /// 共用匯入EXCEL資料 - Excel
+    /// </summary>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     private static void ExportExcel(DataTable dt, ref Worksheet sheet, int intRows)
     {
         // 總筆數
