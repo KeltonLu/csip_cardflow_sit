@@ -7,22 +7,15 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using EntityLayer;
-using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
 using System.IO;
+using System.Collections.Generic;
+using System.Configuration;
 
 public partial class P060401000003 : PageBase
 {
@@ -396,7 +389,6 @@ public partial class P060401000003 : PageBase
     /// <param name="e"></param>
     protected void btnCreateForm_Click(object sender, EventArgs e)
     {
-
         //*寫入產檔時間
         string strMsgID = string.Empty;
         Entity_Post Post = new Entity_Post();
@@ -407,23 +399,48 @@ public partial class P060401000003 : PageBase
         sqlhelp.AddCondition(Entity_Post.M_Sno, Operator.Equal, DataTypeUtils.Integer, Post.Sno.ToString());
         BRM_Post.Update(Post, sqlhelp.GetFilterCondition(), ref strMsgID, "OutPutDate", "Stateflg");
 
-        if (Session["CardNo"] != null)
+        try
         {
-            Session.Remove("CardNo");
-        }
-        if (Session["Id"] != null)
-        {
-            Session.Remove("Id");
-        }
-        if (Session["Action"] != null)
-        {
-            Session.Remove("Action");
-        }
-        Session["CardNo"] = m_cardno;
-        Session["Id"] = m_id;
-        Session["Action"] = m_action;
+            Dictionary<string, string> param = new Dictionary<string, string>();
 
-        jsBuilder.RegScript(this.Page, "window.open('P060401000004.aspx')");
+            #region 查詢條件參數
+
+            if (m_cardno != null && m_id != null && m_action != null)
+            {
+                param.Add("CardNo", m_cardno);
+                param.Add("Id", m_id);
+                param.Add("Action", m_action);
+            }
+            else
+            {
+                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06040100_028") + "');history.go(-1)");
+                return;
+            }
+
+            #endregion
+
+            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0401Report(param, ref strServerPathFile, ref strMsgID);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgID);
+            }
+        }
+        catch (Exception exp)
+        {
+            MessageHelper.ShowMessage(this, "06_06040100_031" + exp.Message);
+        }
     }
 
     /// <summary>

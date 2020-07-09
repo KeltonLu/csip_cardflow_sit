@@ -80,6 +80,8 @@ public class AutoCardBaseInfo : Quartz.IJob
 
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
+
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
             #region 計數器歸零
@@ -102,6 +104,7 @@ public class AutoCardBaseInfo : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -109,6 +112,7 @@ public class AutoCardBaseInfo : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -142,7 +146,8 @@ public class AutoCardBaseInfo : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))  //表格交換檔設定檔資料
             {
-               for (int f = 0; f < dtFileInfo.Rows.Count; f++)
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
+                for (int f = 0; f < dtFileInfo.Rows.Count; f++)
                 //if (dtFileInfo.Rows.Count > 0)
                {
                   strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
@@ -212,6 +217,10 @@ public class AutoCardBaseInfo : Quartz.IJob
                   #endregion
                 }
             }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             #endregion
 
             #region 登陸ftp上載文件
@@ -250,6 +259,7 @@ public class AutoCardBaseInfo : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

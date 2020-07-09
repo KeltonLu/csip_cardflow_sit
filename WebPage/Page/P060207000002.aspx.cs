@@ -1,22 +1,10 @@
 ﻿using System;
-using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
-using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
-using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 using System.Configuration;
+using System.Collections.Generic;
+using System.IO;
 
 public partial class P060207000002 : PageBase
 {
@@ -26,6 +14,8 @@ public partial class P060207000002 : PageBase
         {
             try
             {
+                string strMsgId = string.Empty;
+
                 string strDailyCloseDate = string.Empty;
 
                 if (Request.QueryString["DailyCloseDate"] != null)
@@ -38,13 +28,28 @@ public partial class P060207000002 : PageBase
                     return;
                 }
 
-                // this.ReportViewer0207.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-                // this.ReportViewer0207.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0207Report";
-                // this.ReportViewer0207.Visible = true;
-                //初始化報表參數,為Report View賦值參數
-                // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[1];
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("DailyCloseDate", strDailyCloseDate);
-                // this.ReportViewer0207.ServerReport.SetParameters(Paras);
+                // 初始化報表參數
+                Dictionary<string, string> param = new Dictionary<string, string>();
+                param.Add("DailyCloseDate", strDailyCloseDate);
+
+                string strServerPathFile =
+                    this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+                //產生報表
+                bool result = BR_Excel_File.CreateExcelFile_0207Report(param, ref strServerPathFile, ref strMsgId);
+
+                if (result)
+                {
+                    FileInfo fs = new FileInfo(strServerPathFile);
+                    Session["ServerFile"] = strServerPathFile;
+                    Session["ClientFile"] = fs.Name;
+                    string urlString = @"location.href='DownLoadFile.aspx';";
+                    jsBuilder.RegScript(this.Page, urlString);
+                }
+                else
+                {
+                    MessageHelper.ShowMessage(this, strMsgId);
+                }
             }
             catch (Exception exp)
             {

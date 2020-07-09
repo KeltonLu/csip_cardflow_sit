@@ -8,27 +8,15 @@
 using System;
 using System.Data;
 using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using System.Text;
-using Quartz;
-using Quartz.Impl;
-using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
-using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using CSIPCommonModel.BusinessRules;
 using Framework.Data.OM;
-using Framework.Common.Utility;
 using System.Text.RegularExpressions;
+using Framework.Common.Logging;
 
 /// <summary>
 /// AutoNewsletterInfoMsg 的摘要描述
@@ -68,6 +56,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
         {
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             //strJobId = "0118";
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
@@ -96,6 +85,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -103,6 +93,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             #region 檢測JOB今日是否為工作日，工作日才要執行
             if (!BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
             {
+                JobHelper.SaveLog("JOB 非工作日：停止！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -112,6 +103,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -128,6 +120,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             //*無JOB交換當信息或查詢失敗
             if (!JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("無JOB交換當信息或查詢失敗！", LogState.Info);
                 return;
             }
 
@@ -172,6 +165,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
                     objFtp.Upload(strFtpUploadPath, dtLocalFile.Rows[j]["TxtOverFileName"].ToString(), dtLocalFile.Rows[j]["LocalOverFilePath"].ToString());
                     //*更新上載狀態為S
                     dtLocalFile.Rows[j]["UploadStates"] = "S";
+                    JobHelper.SaveLog("上傳檔案成功！", LogState.Info);
                 }
                 else
                 {
@@ -180,6 +174,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
                     dtLocalFile.Rows[j]["UploadStates"] = "F";
                     //*發送登陸FTP失敗郵件
                     // SendMail(dtLocalFile.Rows[j]["TxtFileName"].ToString(), Resources.JobResource.Job0000008);
+                    JobHelper.SaveLog("上傳檔案失敗！", LogState.Info);
                 }
             }
             if (errMsg != "")
@@ -204,6 +199,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -321,6 +317,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
 
     private void OutPFile(string strType, DataRow drLocalFile)
     {
+
         DataTable dtAllData = new DataTable();
         DataRow[] drRows = null;
         StringBuilder sbFileInfo = new StringBuilder();
@@ -329,11 +326,13 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
         string strOverFileName = string.Empty;
         if (strType.Equals("B"))
         {
+            JobHelper.SaveLog("開始讀取要匯出的檔案(執行退件)資料！", LogState.Info);
             strFileName = strBFileName;
             strOverFileName = strBOverFileName;
         }
         if (strType.Equals("P"))
         {
+            JobHelper.SaveLog("開始讀取要匯出的檔案(執行招領)資料！", LogState.Info);
             strFileName = strPFileName;
             strOverFileName = strPOverFileName;
         }
@@ -462,6 +461,8 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             row["FtpPwd"] = drLocalFile["FtpPwd"].ToString();
             dtLocalFile.Rows.Add(row);
         }
+
+        JobHelper.SaveLog("結束讀取要匯出的檔案(執行招領)資料！", LogState.Info);
     }
     #endregion
 
@@ -511,27 +512,35 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
     {
         string strStatus = string.Empty;
         string strMessage = string.Empty;
-        DataRow[] rowStatus = dtLocalFile.Select("UploadStates='F'");
-        //*匯出成功
-        if (rowStatus != null && rowStatus.Length > 0)
+        try
         {
-            strStatus = "F";
-            strMessage = Resources.JobResource.Job010201;
+            DataRow[] rowStatus = dtLocalFile.Select("UploadStates='F'");
+            //*匯出成功
+            if (rowStatus != null && rowStatus.Length > 0)
+            {
+                JobHelper.SaveLog("WriteLogToDB:匯出成功！", LogState.Info);
+                strStatus = "F";
+                strMessage = Resources.JobResource.Job010201;
+            }
+            //*匯出失敗
+            else
+            {
+                JobHelper.SaveLog("WriteLogToDB:匯出失敗！", LogState.Info);
+                strStatus = "S";
+                strMessage = Resources.JobResource.Job010200;
+            }
+            EntityM_LBatchLog LBatchLog = new EntityM_LBatchLog();
+            LBatchLog.FUNCTION_KEY = "06";
+            LBatchLog.JOB_ID = strJobId;
+            LBatchLog.START_TIME = StartTime.ToShortTimeString();
+            LBatchLog.END_TIME = EndTime.ToShortTimeString();
+            LBatchLog.STATUS = strStatus;
+            LBatchLog.RETURN_MESSAGE = strMessage;
+            BRM_LBatchLog.insert(LBatchLog);
         }
-        //*匯出失敗
-        else
-        {
-            strStatus = "S";
-            strMessage = Resources.JobResource.Job010200;
+        catch (Exception exp) {
+            JobHelper.SaveLog(exp.Message);
         }
-        EntityM_LBatchLog LBatchLog = new EntityM_LBatchLog();
-        LBatchLog.FUNCTION_KEY = "06";
-        LBatchLog.JOB_ID = strJobId;
-        LBatchLog.START_TIME = StartTime.ToShortTimeString();
-        LBatchLog.END_TIME = EndTime.ToShortTimeString();
-        LBatchLog.STATUS = strStatus;
-        LBatchLog.RETURN_MESSAGE = strMessage;
-        BRM_LBatchLog.insert(LBatchLog);
     }
     #endregion
 

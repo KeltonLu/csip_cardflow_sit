@@ -8,26 +8,13 @@
 using System;
 using System.Data;
 using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using System.Text;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.Utility;
-using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Data.OM;
-using BusinessRulesNew;
 
 /// <summary>
 /// AutoNewsletterInfoMFBack 的摘要描述
@@ -64,6 +51,8 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
         {
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+
             //strJobId = "0115_2";
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
@@ -106,6 +95,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -114,6 +104,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -130,6 +121,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //*創建子目錄名稱，存放下載文件
@@ -157,6 +149,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
                             {
@@ -175,6 +168,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                                 //row["Trandate"] = GetTrandate(rowFileInfo["AMPMFlg"].ToString()); //轉檔日設定
                                 //加密 RedirectHelper.GetEncryptParam(rowFileInfo["ZipPwd"].ToString());
                                 dtLocalFile.Rows.Add(row);
+                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                             }
                         }
                         //*檔案不存在
@@ -234,9 +228,11 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             #endregion
 
             #region 開始資料匯入
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             DataRow[] Row = dtLocalFile.Select("ZipStates='S' and FormatStates='S'");
             if (Row != null && Row.Length > 0)
             {
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 //*讀取檔名正確資料
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
@@ -245,6 +241,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
+                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
                         int No = 0;                                //*匯入之錯誤編號
                         ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
                         DataTable dtDetail = null;                 //檢核結果列表
@@ -253,6 +250,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                         //*檢核成功
                         if (UploadCheck(strPath, strFileName, ref No, ref strMailErr, ref arrayErrorMsg, ref dtDetail))
                         {
+                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             Row[rowcount]["CheckStates"] = "S";
                             //*正式匯入
                             if (ImportToDB(dtDetail, strFileName))
@@ -269,6 +267,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                         //*檢核失敗
                         else
                         {
+                            JobHelper.SaveLog("檢核檔案失敗！");
                             if (arrayErrorMsg.Count > 0)
                             {
                                 for (int i = 0; i < arrayErrorMsg.Count; i++)
@@ -299,6 +298,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                     }
 
                 }
+                JobHelper.SaveLog("結束讀取要匯入的檔案資料！", LogState.Info);
             }
             #endregion
 
@@ -307,6 +307,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFileInfo"].ToString());//*路徑未設置
+                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
             }
             #endregion
 
@@ -342,6 +343,8 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             #endregion
+            
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -497,4 +500,9 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
     }
 
     #endregion
+    
+    
+    
+    
+    
 }

@@ -23,6 +23,24 @@
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnablePageMethods="True" runat="server">
         </asp:ScriptManager>
+
+        <asp:UpdateProgress ID="updateProgress1" runat="server">
+            <ProgressTemplate>
+                <div id="divProgress" align="center" class="progress" style="position: absolute;
+                    top: 290px; width: 100%; filter: Alpha(opacity=80); text-align: center;">
+                    <div id="divProgress2" align="center" class="progress" style="background-color: White;
+                        width: 50%; margin: 0px auto;">
+                        <br />
+                        <img alt="Please Wait..." src="../Common/images/Waiting.gif" />
+                        <br />
+                        <cc1:CustLabel ID="lblWaiting" runat="server" CurAlign="center" CurSymbol="£" FractionalDigit="2"
+                            IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                            SetBreak="False" SetOmit="False" ShowID="00_00000000_000" StickHeight="False"></cc1:CustLabel>
+                    </div>
+                </div>
+            </ProgressTemplate>
+        </asp:UpdateProgress>
+
         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
             <ContentTemplate>
                 <table width="100%" border="0" cellpadding="0" cellspacing="1" runat="server" id="Table1">

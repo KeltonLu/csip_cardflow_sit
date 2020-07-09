@@ -16,7 +16,7 @@ using ExcelApplication = Microsoft.Office.Interop.Excel.ApplicationClass;
 /// </summary>
 public class BR_Excel_File : BRBase<Entity_UnableCard>
 {
-    #region SQL語句
+    #region 各報表SQL語句
 
     #region SearchExport0502
 
@@ -602,7 +602,7 @@ else
 ";
 
     #endregion
-    
+
     #region SearchExport0520
 
     private const string SearchExport0520 = @"
@@ -627,6 +627,53 @@ and (back.id=@strId or @strId='NULL')
 order by id,CardNo,UpdDate
 ";
 
+    #endregion
+
+    #region SearchExport0207
+
+    private const string SearchExport0207 = @"
+Select ROW_NUMBER() OVER (ORDER BY IntoStore_Date desc) AS ROWID,
+       IntoStore_Date,
+       custname,
+       OutStore_Status,
+       IntoStoreCount,
+       OutStoreFCount,
+       OutStoreMCount,
+       OutStoreDCount,
+       DailyCloseCount,
+       S.DailyClose_Date
+From dbo.tbl_Card_DailyStockInfo S,
+     dbo.tbl_Card_DailyClose C
+Where S.DailyClose_Date = C.DailyCloseDate
+  And C.DailyCloseDate = @DailyCloseDate
+Order by IntoStore_Date desc
+";
+    #endregion
+
+    #region SearchExport0401
+
+    private const string SearchExport0401 = @"
+SELECT tbl_Card_BaseInfo.ID,
+       tbl_Card_BaseInfo.ACTION,
+       tbl_Card_BaseInfo.cardno,
+       tbl_Card_BaseInfo.add1,
+       tbl_Card_BaseInfo.add2,
+       tbl_Card_BaseInfo.add3,
+--substring(tbl_Card_BaseInfo.mailno,1,6) mailno, 
+       tbl_Card_BaseInfo.mailno,
+       tbl_Card_BaseInfo.maildate,
+       tbl_Card_BaseInfo.custname,
+       tbl_Post.Uid,
+       substring(CONVERT(varchar(10), convert(datetime, tbl_Card_BaseInfo.maildate), 112), 1, 4) as year,
+       substring(CONVERT(varchar(10), convert(datetime, tbl_Card_BaseInfo.maildate), 112), 5, 2) as month,
+       substring(CONVERT(varchar(10), convert(datetime, tbl_Card_BaseInfo.maildate), 112), 7, 2) as day
+FROM tbl_Card_BaseInfo
+         INNER JOIN
+     tbl_Post ON tbl_Card_BaseInfo.cardno = tbl_Post.Cardno
+WHERE (tbl_Card_BaseInfo.cardno = @cardno)
+  AND (tbl_Card_BaseInfo.id = @id)
+  AND (tbl_Card_BaseInfo.action = @action)
+";
     #endregion
 
     #endregion
@@ -678,7 +725,6 @@ order by id,CardNo,UpdDate
         catch (Exception exp)
         {
             Logging.Log(exp);
-            //Logging.Log(exp, LogLayer.BusinessRule);
             throw exp;
         }
     }
@@ -690,7 +736,10 @@ order by id,CardNo,UpdDate
     #region 無法製卡檔查詢 - Excel
 
     /// <summary>
-    /// 無法製卡檔查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:無法製卡檔查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -792,7 +841,10 @@ order by id,CardNo,UpdDate
     #region 換卡異動檔查詢 - Excel
 
     /// <summary>
-    /// 換卡異動檔查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:換卡異動檔查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -896,7 +948,10 @@ order by id,CardNo,UpdDate
     #region 郵局退件資料查詢 - Excel
 
     /// <summary>
-    /// 郵局退件資料查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:郵局退件資料查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1038,7 +1093,10 @@ order by id,CardNo,UpdDate
     #region 註銷作業報表 - Excel
 
     /// <summary>
-    /// 註銷作業報表 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:註銷作業報表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1210,7 +1268,10 @@ order by id,CardNo,UpdDate
     #region 簡訊發送查詢報表 - Excel
 
     /// <summary>
-    /// 簡訊發送查詢報表 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:簡訊發送查詢報表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1362,7 +1423,10 @@ order by id,CardNo,UpdDate
     #region 郵局寄送資料查詢 - Excel
 
     /// <summary>
-    /// 郵局寄送資料查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:郵局寄送資料查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1514,7 +1578,10 @@ order by id,CardNo,UpdDate
     #region 製卡相關資料查詢 - Excel
 
     /// <summary>
-    /// 製卡相關資料查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:製卡相關資料查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1617,7 +1684,10 @@ order by id,CardNo,UpdDate
     #region 退件日報表 - Excel
 
     /// <summary>
-    /// 退件日報表 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:退件日報表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1722,11 +1792,14 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
     #region 退件原因統計表 - Excel
 
     /// <summary>
-    /// 退件原因統計表 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:退件原因統計表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1856,11 +1929,14 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
     #region 退件連絡報表 - Excel
 
     /// <summary>
-    /// 退件連絡報表 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:退件連絡報表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -1965,11 +2041,14 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
     #region 址更重寄異動記錄查詢 - Excel
 
     /// <summary>
-    /// 址更重寄異動記錄查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:址更重寄異動記錄查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2074,11 +2153,14 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
     #region 分行郵寄資料查詢 - Excel
 
     /// <summary>
-    /// 分行郵寄資料查詢 - Excel 
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:分行郵寄資料查詢 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2177,13 +2259,12 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
     #region 扣卡明細查詢 - Excel
 
     /// <summary>
     /// 專案代號:20200031-CSIP EOS
-    /// 扣卡明細查詢 - Excel  
-    /// 功能說明:頁面加載事件
+    /// 功能說明:扣卡明細查詢 - Excel  
     /// 作    者:Ares Luke
     /// 創建時間:2020/06/23
     /// </summary>
@@ -2248,14 +2329,14 @@ order by id,CardNo,UpdDate
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
             // 創建一個空的單元格對象
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 2;
 
             // 轉入結果資料
             ExportExcel(dt, ref sheet, indexInSheetStart - 1);
-            
+
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0510Report" + ".xlsx";
             sheet.SaveAs(strPathFile);
@@ -2281,12 +2362,297 @@ order by id,CardNo,UpdDate
     }
 
     #endregion
-    
+
+    #region 自取庫存日結 - Excel
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:自取庫存日結 - Excel  
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/06/29
+    /// </summary>
+
+    public static bool CreateExcelFile_0207Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0207
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06020701_001";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06020701_001";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "0207Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+
+            // 初始ROW位置
+            int indexInSheetStart = 5;
+
+            // 轉入結果資料
+            //ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+
+            #region Excel 依序塞資料
+
+            // 總筆數
+            int totalRowsNum = dt.Rows.Count;
+            // 報表欄位筆數
+            int totalColumnsNum = 4;
+
+            int sumIntoStoreCount = 0;
+            int sumOutStoreFCount = 0;
+            int sumOutStoreMCount = 0;
+            int sumOutStoreDCount = 0;
+            int sumDailyCloseCount = 0;
+            string dailyCloseDate = "";
+
+
+            for (int intRowsLoop = 1; intRowsLoop <= totalRowsNum; intRowsLoop++)
+            {
+                for (int intColumnsLoop = 1; intColumnsLoop <= totalColumnsNum; intColumnsLoop++)
+                {
+                    sheet.Cells[intRowsLoop + (indexInSheetStart - 1), intColumnsLoop] = dt.Rows[intRowsLoop - 1][intColumnsLoop - 1];
+                }
+
+                if (intRowsLoop == 1)
+                {
+                    sumIntoStoreCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["IntoStoreCount"]];
+                    sumOutStoreFCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreFCount"]];
+                    sumOutStoreMCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreMCount"]];
+                    sumOutStoreDCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreDCount"]];
+                    sumDailyCloseCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["DailyCloseCount"]];
+                    dailyCloseDate = dt.Rows[intRowsLoop - 1][dt.Columns["DailyClose_Date"]].ToString();
+                }
+            }
+
+            //當日庫存
+            int preDailyCount = sumDailyCloseCount + sumOutStoreFCount + sumOutStoreMCount + sumOutStoreDCount -
+                           sumIntoStoreCount;
+
+            // 報表列印日
+            sheet.Cells.Replace("$PrintDate$", DateTime.Now.ToString("yyyy/MM/dd"));
+            // 打印日期
+            sheet.Cells.Replace("$DailyClose_Date$", dailyCloseDate);
+            // 前日庫存
+            sheet.Cells.Replace("$PreDailyCount$", preDailyCount);
+            // 今日入庫
+            sheet.Cells.Replace("$IntoStoreCount$", sumIntoStoreCount);
+            // 今日領卡
+            sheet.Cells.Replace("$OutStoreFCount$", sumOutStoreFCount);
+            // 今日郵寄
+            sheet.Cells.Replace("$OutStoreMCount$", sumOutStoreMCount);
+            // 今日註銷
+            sheet.Cells.Replace("$OutStoreDCount$", sumOutStoreDCount);
+            // 今日庫存
+            sheet.Cells.Replace("$DailyCloseCount$", sumDailyCloseCount);
+
+            #endregion
+
+            #region Excel Style 樣式
+
+            Range range = null;
+            range = sheet.Range[sheet.Cells[1, 1], sheet.Cells[totalRowsNum + (indexInSheetStart - 1), totalColumnsNum]];
+            range.Font.Size = 12;
+            range.Font.Name = "新細明體";
+            range.Borders.LineStyle = 1;
+            range.EntireColumn.AutoFit();
+            range.EntireRow.AutoFit();
+
+            #endregion
+
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0207Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false, null, null);
+            return true;
+
+            #endregion
+        }
+        catch (Exception ex)
+        {
+            strMsgId = "06_06020701_005";
+            Logging.Log(ex);
+            throw;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+
+    #region 郵局查單申請處理 - Excel
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:郵局查單申請處理 - Excel  
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/07/06
+    /// </summary>
+
+    public static bool CreateExcelFile_0401Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0401
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06040100_033";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06040100_033";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "0401Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+
+            // 交寄日期年月日
+            sheet.Cells.Replace("$year$", Convert.ToString(int.Parse(DateTime.Now.ToString("yyyy")) - 1911));
+            sheet.Cells.Replace("$month$", DateTime.Now.ToString("MM"));
+            sheet.Cells.Replace("$day$", DateTime.Now.ToString("dd"));
+            // 住址
+            sheet.Cells.Replace("$add1$", dt.Rows[0][dt.Columns["add1"]]);
+            sheet.Cells.Replace("$add2$", dt.Rows[0][dt.Columns["add2"]]);
+            sheet.Cells.Replace("$add3$", dt.Rows[0][dt.Columns["add3"]]);
+            // 收件人姓名
+            sheet.Cells.Replace("$custname$", dt.Rows[0][dt.Columns["custname"]]);
+            //郵號件碼種類
+            sheet.Cells.Replace("$mailno$", "'" + dt.Rows[0][dt.Columns["mailno"]].ToString());
+
+            #endregion
+
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0401Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false, null, null);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            strMsgId = "06_06040100_032";
+            Logging.Log(ex);
+            throw;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+
     #region 匯入EXCEL資料
 
-    
     /// <summary>
-    /// 共用匯入EXCEL資料 - Excel
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:共用匯入EXCEL資料 - Excel
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/06/29
     /// </summary>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
     private static void ExportExcel(DataTable dt, ref Worksheet sheet, int intRows)
