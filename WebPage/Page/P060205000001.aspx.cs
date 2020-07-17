@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
-using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using BusinessRulesNew;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 using CSIPCommonModel.EntityLayer;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+
 public partial class P060205000001 : PageBase
 {
     #region table
@@ -221,7 +215,52 @@ public partial class P060205000001 : PageBase
                     string strMerchDate = this.dpMerchDate.Text.Trim();
                     string strMerchDateSQL = CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", strMerchDate.Replace("/", ""), -1);
                     strMerchDateSQL = strMerchDateSQL.Substring(0, 4) + "/" + strMerchDateSQL.Substring(4, 2) + "/" + strMerchDateSQL.Substring(6, 2);
-                    Response.Redirect("P060205000002.aspx?PrintType=" + RedirectHelper.GetEncryptParam("1") + " &MerchDate=" + RedirectHelper.GetEncryptParam(strMerchDate) + " &MerchDateSQL=" + RedirectHelper.GetEncryptParam(strMerchDateSQL) + "");
+
+                    string strMsgID = string.Empty;
+                    Dictionary<string, string> param = new Dictionary<string, string>();
+
+                    #region 查詢條件參數
+
+                    if (strMerchDate != null && strMerchDateSQL != null)
+                    {
+                        param.Add("strMerchDate", strMerchDate);
+                        param.Add("strMerchDateSQL", strMerchDateSQL);
+                    }
+                    else
+                    {
+                        jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020701_005") + "');");
+                        return;
+                    }
+
+                    if (Session["Merch0205"].ToString().Trim() == "0")
+                    {
+                        param.Add("strMerch", "NULL");
+                    }
+                    else
+                    {
+                        param.Add("Merch0205", Session["Merch0205"].ToString().Trim());
+                    }
+
+                    #endregion
+
+                    string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+
+                    //產生報表
+                    bool result = BR_Excel_File.CreateExcelFile_020501Report(param, ref strServerPathFile, ref strMsgID);
+
+                    if (result)
+                    {
+                        FileInfo fs = new FileInfo(strServerPathFile);
+                        Session["ServerFile"] = strServerPathFile;
+                        Session["ClientFile"] = fs.Name;
+                        string urlString = @"location.href='DownLoadFile.aspx';";
+                        jsBuilder.RegScript(this.Page, urlString);
+                    }
+                    else
+                    {
+                        MessageHelper.ShowMessage(this, strMsgID);
+                    }
                 }
 
             }
@@ -236,14 +275,46 @@ public partial class P060205000001 : PageBase
                 else
                 {
                     string strFetchDate = this.dpFetchDate.Text.Trim();
-                    //string strFetchDateSQL1 = CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", strFetchDate.Replace("/", ""), -15);
-                    //strFetchDateSQL1 = strFetchDateSQL1.Substring(0, 4) + "/" + strFetchDateSQL1.Substring(4, 2) + "/" + strFetchDateSQL1.Substring(6, 2);
-                    //string strFetchDateSQL2 = CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", strFetchDate.Replace("/", ""), -14);
-                    //strFetchDateSQL2 = strFetchDateSQL2.Substring(0, 4) + "/" + strFetchDateSQL2.Substring(4, 2) + "/" + strFetchDateSQL2.Substring(6, 2);
                     string strFetchDateSQL1 = DateTime.Parse(strFetchDate).AddDays(-15).ToString("yyyy/MM/dd");
                     string strFetchDateSQL2 = DateTime.Parse(strFetchDate).AddDays(-14).ToString("yyyy/MM/dd");
-                    Response.Redirect("P060205000002.aspx?PrintType=" + RedirectHelper.GetEncryptParam("2") + " &FetchDate=" + RedirectHelper.GetEncryptParam(strFetchDate) + " &FetchDateSQL1=" + RedirectHelper.GetEncryptParam(strFetchDateSQL1) + " &FetchDateSQL2=" + RedirectHelper.GetEncryptParam(strFetchDateSQL2) + "");
 
+                    string strMsgID = string.Empty;
+                    Dictionary<string, string> param = new Dictionary<string, string>();
+
+                    #region 查詢條件參數
+
+                    if (strFetchDate != null && strFetchDateSQL1 != null && strFetchDateSQL2 != null)
+                    {
+                        param.Add("strFetchDate", strFetchDate);
+                        param.Add("strFetchDateSQL1", strFetchDateSQL1);
+                        param.Add("strFetchDateSQL2", strFetchDateSQL2);
+                    }
+                    else
+                    {
+                        jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020701_001") + "');");
+                        return;
+                    }
+
+                    #endregion
+
+                    string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+
+
+                    //產生報表
+                    bool result = BR_Excel_File.CreateExcelFile_020502Report(param, ref strServerPathFile, ref strMsgID);
+
+                    if (result)
+                    {
+                        FileInfo fs = new FileInfo(strServerPathFile);
+                        Session["ServerFile"] = strServerPathFile;
+                        Session["ClientFile"] = fs.Name;
+                        string urlString = @"location.href='DownLoadFile.aspx';";
+                        jsBuilder.RegScript(this.Page, urlString);
+                    }
+                    else
+                    {
+                        MessageHelper.ShowMessage(this, strMsgID);
+                    }
                 }
 
             }

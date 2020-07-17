@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="P060201000003.aspx.cs" Inherits="P060401000002" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="P060201000003.aspx.cs" Inherits="P060201000003" %>
 
 <%@ Register Src="../Common/Controls/CustAddress.ascx" TagName="CustAddress" TagPrefix="uc1" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>

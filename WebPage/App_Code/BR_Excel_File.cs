@@ -676,6 +676,176 @@ WHERE (tbl_Card_BaseInfo.cardno = @cardno)
 ";
     #endregion
 
+    #region SearchExport020501
+
+    private const string SearchExport020501 = @"
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id) as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype),
+              '信用卡')                                        as action,
+       indate1,
+       custname,
+       name1,
+       cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BaseInfo base
+where kind = '1'
+  and isnull(Urgency_Flg, '') <> '1'
+  and (indate1 = @strMerchDateSQL or (indate1 < @strMerchDateSQL and isnull(IntoStore_Status, '0') = '0'))
+  and (Merch_Code = @strMerch or @strMerch = 'NULL')
+  and cardtype <> '900'
+union
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id) as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype),
+              '信用卡')                                        as action,
+       indate1,
+       custname,
+       name1,
+       cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BaseInfo base
+where kind = '1'
+  and Urgency_Flg = '1'
+  and (indate1 = @strMerchDate or (indate1 < @strMerchDate and isnull(IntoStore_Status, '0') = '0'))
+  and (Merch_Code = @strMerch or @strMerch = 'NULL')
+  and cardtype <> '900'
+union
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id) as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype),
+              '信用卡')                                             as action,
+       base.indate1,
+       base.custname,
+       base.name1,
+       base.cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BackInfo back,
+     dbo.tbl_Card_BaseInfo base
+where back.action = base.action
+  and back.id = base.id
+  and back.cardno = base.cardno
+  and back.trandate = base.trandate
+  and isnull(base.kind, '') <> '1'
+  and back.Enditem = '0'
+  and ((InformMerchDate < @strMerchDate and isnull(IntoStore_Status, '0') <> '1') or
+       (InformMerchDate = @strMerchDate and (isnull(IntoStore_Status, '0') <> '1' or
+                                             (isnull(IntoStore_Status, '0') = '1' and
+                                              IntoStore_Date >= back.ImportDate))))
+  and (Merch_Code = @strMerch or @strMerch = 'NULL')
+  and base.cardtype <> '900'
+union
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id) as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype),
+              '信用卡')                                             as action,
+       base.indate1,
+       base.custname,
+       base.name1,
+       base.cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BackInfo back,
+     dbo.tbl_Card_BaseInfo base
+where back.action = base.action
+  and back.id = base.id
+  and back.cardno = base.cardno
+  and back.trandate = base.trandate
+  and isnull(base.kind, '') <> '1'
+  and back.Enditem = '0'
+  and (InformMerchDate = @strMerchDate or InformMerchDate < @strMerchDate)
+  and isnull(IntoStore_Status, '0') = '1'
+  and IntoStore_Date < back.ImportDate
+  and (Merch_Code = @strMerch or @strMerch = 'NULL')
+  and base.cardtype <> '900'          
+";
+    #endregion
+
+    #region SearchExport020502
+
+    private const string SearchExport020502 = @"
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id)                                  as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
+       indate1,
+       custname,
+       name1,
+       cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BaseInfo base
+where kind = '1'
+  and isnull(Urgency_Flg, '') <> '1'
+  and indate1 <= @strFetchDateSQL1
+  and isnull(IntoStore_Status, '0') = '1'
+  --//排除「已出庫、且出庫日已日結」的資料
+  and (isnull(OutStore_Status, '0') = '0' or isnull(OutStore_Date, '') > (select top 1 DailyCloseDate
+                                                                          from dbo.tbl_Card_DailyClose
+                                                                          order by DailyCloseDate desc))
+  and cardtype <> '900'
+union
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id)                                  as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
+       indate1,
+       custname,
+       name1,
+       cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BaseInfo base
+where kind = '1'
+  and Urgency_Flg = '1'
+  and indate1 <= @strFetchDateSQL2
+  and isnull(IntoStore_Status, '0') = '1'
+  --//排除「已出庫、且出庫日已日結」的資料
+  and (isnull(OutStore_Status, '0') = '0' or isnull(OutStore_Date, '') > (select top 1 DailyCloseDate
+                                                                          from dbo.tbl_Card_DailyClose
+                                                                          order by DailyCloseDate desc))
+  and cardtype <> '900'
+union
+select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id)                             as no,
+       isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
+       base.indate1,
+       base.custname,
+       base.name1,
+       base.cardno,
+       '□自取/□代取',
+       '',
+       '',
+       '',
+       ''
+from dbo.tbl_Card_BackInfo back,
+     dbo.tbl_Card_BaseInfo base
+where back.action = base.action
+  and back.id = base.id
+  and back.cardno = base.cardno
+  and back.trandate = base.trandate
+  and isnull(base.kind, '') <> '1'
+  and back.Enditem = '0'
+  and InformMerchDate <= @strFetchDateSQL2
+  and isnull(IntoStore_Status, '0') = '1'
+  and IntoStore_Date >= back.ImportDate
+  and base.cardtype <> '900'
+        
+";
+    #endregion
+
     #endregion
 
     #region 共用 檢查目錄路徑
@@ -2645,6 +2815,283 @@ WHERE (tbl_Card_BaseInfo.cardno = @cardno)
     }
 
     #endregion
+
+    #region 卡片自取逾期明細表_1 - Excel
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:卡片自取逾期明細表 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/07/08
+    /// </summary>
+    /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
+    /// <param name="strMsgId">返回消息ID</param>
+    /// <param name="param">查詢條件</param>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
+    public static bool CreateExcelFile_020501Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            // 取要下載的資料
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport020501
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06020701_006";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06020701_006";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "020501Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Range range = null;
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+
+            //統計
+            int totalNum = dt.Rows.Count;
+
+            //初始ROW位置
+            int indexInSheetStart = 5;
+            int indexInSheetEnd = indexInSheetStart + totalNum;
+
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+
+            #region 移轉範本頁尾至資料結果下方
+
+            //sheet1 內容
+            int pageFooterNum = indexInSheetEnd;
+            Range range1 = sheet.Range["A" + pageFooterNum, "K" + pageFooterNum];
+            //sheet2 頁尾
+            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
+            Range range2 = sheet2.Range["A1", "K3"];
+            //合併
+            range2.Copy();
+            sheet.Paste(range1, false);
+            //刪除 頁尾暫存
+            sheet2.Delete();
+
+            //合計張數
+            sheet.Cells.Replace("$totalCardNo$", totalNum);
+            #endregion
+
+            //自取時間
+            sheet.Range["K2"].Value = "自取時間：" + DateTime.Now.ToString("yyyy/MM/dd");
+
+            //列印時間
+            sheet.Range["K3"].Value = "列印日期：" + param["strMerchDate"];
+
+
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "020501Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false);
+            return true;
+
+            #endregion 匯入文檔結束
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw ex;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+
+    #region 卡片自取逾期明細表_2 - Excel
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:卡片自取逾期明細表_2 - Excel 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/07/08
+    /// </summary>
+    /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
+    /// <param name="strMsgId">返回消息ID</param>
+    /// <param name="param">查詢條件</param>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
+    public static bool CreateExcelFile_020502Report(Dictionary<string, string> param, ref string strPathFile,
+        ref string strMsgId)
+    {
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            CheckDirectory(ref strPathFile);
+
+            // 取要下載的資料
+
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport020502
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+
+            #region 查無資料
+
+            if (null == dstSearchData)
+            {
+                strMsgId = "06_06020701_006";
+                return false;
+            }
+
+            DataTable dt = dstSearchData.Tables[0];
+
+
+            if (dt.Rows.Count == 0)
+            {
+                strMsgId = "06_06020701_006";
+                return false;
+            }
+
+            #endregion
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      ConfigurationManager.AppSettings["ReportTemplate"] + "020502Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            // 創建一個空的單元格對象
+            Range range = null;
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+
+            //統計
+            int totalNum = dt.Rows.Count;
+
+            //初始ROW位置
+            int indexInSheetStart = 5;
+            int indexInSheetEnd = indexInSheetStart + totalNum;
+
+            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+
+            #region 移轉範本頁尾至資料結果下方
+
+            //sheet1 內容
+            int pageFooterNum = indexInSheetEnd;
+            Range range1 = sheet.Range["A" + pageFooterNum, "L" + pageFooterNum];
+            //sheet2 頁尾
+            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
+            Range range2 = sheet2.Range["A1", "K3"];
+            //合併
+            range2.Copy();
+            sheet.Paste(range1, false);
+            //刪除 頁尾暫存
+            sheet2.Delete();
+
+            //合計
+            sheet.Cells.Replace("$totalCardNo$", totalNum);
+            #endregion
+
+            //逾期時間
+            sheet.Range["K2"].Value = "逾期時間：" + param["strFetchDate"];
+
+            //列印時間
+            sheet.Range["K3"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
+
+
+
+            // 保存文件到程序運行目錄下
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "020502Report" + ".xlsx";
+            sheet.SaveAs(strPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false);
+            return true;
+
+            #endregion 匯入文檔結束
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw ex;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+    }
+
+    #endregion
+
 
     #region 匯入EXCEL資料
 
