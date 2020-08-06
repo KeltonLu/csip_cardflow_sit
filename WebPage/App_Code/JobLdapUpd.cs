@@ -6,22 +6,8 @@
 //*<author>            <time>            <TaskID>                <desc>
 //*******************************************************************
 
-
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM;
-using Framework.WebControls;
-using Framework.Common.Utility;
-using Framework.Common.Message;
-using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using CSIPCommonModel.EntityLayer;
 using Framework.Data.OM.Transaction;

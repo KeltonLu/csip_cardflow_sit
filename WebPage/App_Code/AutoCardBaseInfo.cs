@@ -7,29 +7,12 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
-using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
-using System.Text;
-using System.Text.RegularExpressions;
-using Framework.Data.OM;
-using CSIPCommonModel.EntityLayer;
 
 public class AutoCardBaseInfo : Quartz.IJob
 {
@@ -54,6 +37,7 @@ public class AutoCardBaseInfo : Quartz.IJob
     protected DateTime StartTime;
     protected DateTime EndTime;
 
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -75,15 +59,46 @@ public class AutoCardBaseInfo : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"] + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + strJobId;
             #endregion
 
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
 
-            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+            
             #region 計數器歸零
             SCount = 0;
             FCount = 0;
@@ -126,7 +141,7 @@ public class AutoCardBaseInfo : Quartz.IJob
 
             #region 獲取卡片基本檔資料
             DataTable dtExportCardBaseInfo = new DataTable();
-            String MailDate = StartTime.ToString("yyyy/MM/dd").ToString();
+            String MailDate = _jobDate.ToString("yyyy/MM/dd").ToString();
             BusinessRules.BRM_CardBaseInfo.SearchExportCardBaseInfo(ref dtExportCardBaseInfo, MailDate );
             //if (!(dtExportCardBaseInfo.Rows.Count > 0))
             //{

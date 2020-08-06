@@ -243,7 +243,7 @@ public partial class P060205000001 : PageBase
 
                     #endregion
 
-                    string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                    string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
 
 
                     //產生報表
@@ -297,7 +297,7 @@ public partial class P060205000001 : PageBase
 
                     #endregion
 
-                    string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                    string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
 
 
                     //產生報表
@@ -482,8 +482,8 @@ public partial class P060205000001 : PageBase
         this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06020500_015");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvUserView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
     /// <summary>
     /// 功能說明:綁定GridView
@@ -853,8 +853,4 @@ public partial class P060205000001 : PageBase
         }
     }
     #endregion
-
-
-
-
 }

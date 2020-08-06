@@ -7,30 +7,15 @@
 //*******************************************************************
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
-using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
-using System.Configuration;
 using System.IO;
 using CSIPCommonModel.EntityLayer;
 
 public partial class P060504000001 : PageBase
 {
-
     //Talas 20191003 SOC修改
     private EntityAGENT_INFO eAgentInfo;//*記錄登陸Session訊息
     private structPageInfo sPageInfo;//*記錄網頁訊息
@@ -123,7 +108,7 @@ public partial class P060504000001 : PageBase
 
             #endregion
             
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0504Report(param, ref strServerPathFile, ref strMsgID);

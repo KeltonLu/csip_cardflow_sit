@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using Framework.Data.OM;
-using CSIPCommonModel.BaseItem;
-using CSIPCommonModel.BusinessRules;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM.Transaction;
-using System.IO;
-using System.Configuration;
-using Framework.Common;
-using Framework.Common.Logging;
-using System.Reflection;
 
 /// <summary>
 /// BRCard_BaseInfo 的摘要描述

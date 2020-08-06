@@ -9,9 +9,9 @@
 using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
+using Framework.Common.Utility;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Web.UI.WebControls;
@@ -127,7 +127,7 @@ public partial class P060502000001 : PageBase
             
             #endregion
 
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0502Report(param, ref strServerPathFile, ref strMsgId);

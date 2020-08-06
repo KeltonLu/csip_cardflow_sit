@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 public abstract class Light 
 { 
     public abstract void TurnOn(); 

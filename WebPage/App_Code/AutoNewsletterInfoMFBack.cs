@@ -7,13 +7,13 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
 using Framework.Common.Logging;
 using Framework.Common.Utility;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
+using CSIPCommonModel.BusinessRules;
 using Framework.Data.OM;
 
 /// <summary>
@@ -35,6 +35,8 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
     protected DateTime EndTime;
 
     protected FTPFactory objFtp;
+    
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -56,6 +58,36 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
             //strJobId = "0115_2";
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
+            #endregion
+            
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
             #endregion
 
             #region 記錄job啟動時間的分段
@@ -132,14 +164,14 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         //為了排除工作日的問題，抓取前一個工作日
                         // string  strImportDate = "";
                         // strImportDate = DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
 
                         //string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.Now.AddDays(-1).ToString("MMdd") + ".TXT";
-                        string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("MMdd") + ".TXT";
+                        string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("MMdd") + ".TXT";
                         //FTP 路徑+檔名
                         string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileInfo;
                         string strFtpIp = rowFileInfo["FtpIP"].ToString();
@@ -158,7 +190,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                                 row["LocalFilePath"] = strLocalPath; //本地路徑
                                 row["FtpFilePath"] = rowFileInfo["FtpPath"].ToString(); //FTP路徑
                                 row["FtpFileInfo"] = strFtpFileInfo; //FTP路徑+檔名
-                                row["FolderName"] = strJobId + DateTime.Now.ToString("yyyyMMddhhmmss"); //本地資料夾
+                                row["FolderName"] = strJobId + _jobDate.ToString("yyyyMMddhhmmss"); //本地資料夾
                                 row["ZipFileName"] = strFileInfo; //FTP壓縮檔名稱
                                 row["ZipPwd"] = rowFileInfo["ZipPwd"].ToString(); //FTP壓縮檔密碼
                                 row["CardType"] = rowFileInfo["CardType"].ToString(); //卡片種類
@@ -252,6 +284,17 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                         {
                             JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             Row[rowcount]["CheckStates"] = "S";
+                            
+                            //多加判斷如果是假日要抓下一個工作日
+                            DateTime dt = BRWORK_DATE.IS_WORKDAY("06", _jobDate.ToString("yyyyMMdd")) ? 
+                                _jobDate : 
+                                DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
+
+                            for (int i = 0; i < dtDetail.Rows.Count; i++)
+                            {
+                                dtDetail.Rows[i]["jobDate"] = dt.ToString("yyyy/MM/dd");
+                            }
+                            
                             //*正式匯入
                             if (ImportToDB(dtDetail, strFileName))
                             {
@@ -371,7 +414,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "1");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string[] strCc = dtCallMail.Rows[0]["CcUsers"].ToString().Split(';');
             string strSubject = string.Format(dtCallMail.Rows[0]["MailTittle"].ToString(), Resources.JobResource.Job2000115, strFileName);
@@ -500,9 +543,4 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
     }
 
     #endregion
-    
-    
-    
-    
-    
 }

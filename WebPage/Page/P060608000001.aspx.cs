@@ -8,14 +8,8 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
 using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using BusinessRules;
 using Framework.Common.JavaScript;
 using Framework.Data.OM;
@@ -24,6 +18,7 @@ using Framework.Common.Logging;
 using Framework.WebControls;
 using CSIPCommonModel.EntityLayer;
 using Framework.Common.Message;
+using Framework.Common.Utility;
 using System.Text;
 
 public partial class P060608000001 : PageBase
@@ -156,8 +151,8 @@ public partial class P060608000001 : PageBase
 
         //* 設置一頁顯示最大筆數
 
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvCardView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvCardView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>

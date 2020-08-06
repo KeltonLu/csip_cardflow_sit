@@ -9,18 +9,7 @@
 
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using System.Text;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.Utility;
 using Framework.Common.IO;
 using BusinessRules;
@@ -28,7 +17,6 @@ using EntityLayer;
 using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
-using CSIPCommonModel.BusinessRules;
 using Framework.Data.OM;
 using System.Data.SqlClient;
 
@@ -54,6 +42,8 @@ public class AutoImportBackInfoFiles : Quartz.IJob
     FTPFactory objFtp;
     //20171117 (U) by Tank
     string strErrMsg = string.Empty;
+    
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -76,6 +66,37 @@ public class AutoImportBackInfoFiles : Quartz.IJob
 
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
+            
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+            
 
             #region 記錄job啟動時間的分段
             string strAmOrPm = string.Empty;
@@ -150,9 +171,9 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
-                        string strFileInfo = DateTime.Now.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
+                        string strFileInfo = _jobDate.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
                         //FTP 路徑+檔名
                         string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileInfo;
 
@@ -412,7 +433,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "1");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string[] strCc = dtCallMail.Rows[0]["CcUsers"].ToString().Split(';');
             string strSubject = string.Format(dtCallMail.Rows[0]["MailTittle"].ToString(), Resources.JobResource.Job0000110, strFileName);
@@ -551,7 +572,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
         try
         {
             string strSql = "SELECT top 1 id,custname,trandate,cardtype,add1,add2,add3 FROM tbl_Card_BaseInfo WHERE cardno=@CardNo and action=@Action ORDER BY trandate DESC ";
-            sqlConn = new SqlConnection(ConfigurationManager.ConnectionStrings["Connection_System"].ToString());
+            sqlConn = new SqlConnection(UtilHelper.GetConnectionStrings("Connection_System"));
             sqlCmd = new SqlCommand();
             sqlCmd.Connection = sqlConn;
             sqlCmd.CommandType = CommandType.Text;

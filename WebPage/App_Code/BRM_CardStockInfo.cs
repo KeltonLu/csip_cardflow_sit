@@ -1,13 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Framework.Data.OM;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM.Transaction;
 using EntityLayer;
 using System.Data.SqlClient;
 using System.Data;
-using System.Configuration;
 using BusinessRules;
 
 namespace BusinessRulesNew

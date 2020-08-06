@@ -6,17 +6,8 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.Common.Message;
@@ -55,7 +46,7 @@ public partial class P060510000002 : PageBase
             param.Add("maildate1", Request.QueryString["maildate1"].Equals("") ? "NULL" : RedirectHelper.GetDecryptString(Request.QueryString["maildate1"]));
             
 
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0510Report(param, ref strServerPathFile, ref strMsgId);

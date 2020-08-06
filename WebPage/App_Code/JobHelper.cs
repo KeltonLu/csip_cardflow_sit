@@ -7,24 +7,14 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using Framework.Common.IO;
+using Framework.Common.Utility;
 using BusinessRules;
 using EntityLayer;
 using System.IO;
-using System.IO.Compression;
 using System.Collections;
-using Framework.Data.OM.Collections;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Checksums;
@@ -35,22 +25,24 @@ using CSIPCommonModel.EntityLayer;
 public class JobHelper : FTPFactory
 {
 
-    private string strHost = ConfigurationManager.AppSettings["FTPRemoteIP"]; //FTP IP地址
-    private string strPath = ConfigurationManager.AppSettings["FTPRemotePathDefault"]; //FTP 檔案目錄
-    private string strUser = ConfigurationManager.AppSettings["FTPUser"]; //FTP User
-    private string strPwd = ConfigurationManager.AppSettings["FTPPassword"]; //FTP Password
-    private int strPort = Convert.ToInt32(ConfigurationManager.AppSettings["FTPRemotePort"]); //FTP Port
-    private string strLocalPath = ConfigurationManager.AppSettings["SubTotalFilesPath"]; //Local 檔案存儲目錄
-    private string strFWFlag = ConfigurationManager.AppSettings["FTPFWFlag"]; //Fire Wall Flag
+    private string strHost = UtilHelper.GetAppSettings("FTPRemoteIP"); //FTP IP地址
+    private string strPath = UtilHelper.GetAppSettings("FTPRemotePathDefault"); //FTP 檔案目錄
+    private string strUser = UtilHelper.GetAppSettings("FTPUser"); //FTP User
+    private string strPwd = UtilHelper.GetAppSettings("FTPPassword"); //FTP Password
+    private int strPort = Convert.ToInt32(UtilHelper.GetAppSettings("FTPRemotePort")); //FTP Port
+    private string strLocalPath = UtilHelper.GetAppSettings("SubTotalFilesPath"); //Local 檔案存儲目錄
+    private string strFWFlag = UtilHelper.GetAppSettings("FTPFWFlag"); //Fire Wall Flag
     public string strJobId = "";
     /// <summary>
     /// 緩衝區大小(2048)
     /// </summary>
     private const int BUFFER_SIZE = 2048;
     /// <summary>
-    /// 預設的壓縮密碼
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:白箱掃描修正-HardCode
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/07/29
     /// </summary>
-    private const string pwd = "123456789";
 
     /// <summary>
     /// 功能說明:Login Ftp
@@ -289,7 +281,7 @@ public class JobHelper : FTPFactory
 
         if (BRM_LBatchLog.SearchLoginCount(ref LoginCount, DateTime.Now.ToString("yyyy/MM/dd")))
         {
-            if (LoginCount < int.Parse(ConfigurationManager.AppSettings["LoginCount"]))
+            if (LoginCount < int.Parse(UtilHelper.GetAppSettings("LoginCount")))
             {
                 blnResult = true;
             }

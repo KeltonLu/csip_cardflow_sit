@@ -227,8 +227,8 @@ public partial class P060510000001 : PageBase
         this.grvCardView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06051000_010");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvCardView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvCardView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>

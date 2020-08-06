@@ -419,7 +419,7 @@ public partial class P060401000003 : PageBase
 
             #endregion
 
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0401Report(param, ref strServerPathFile, ref strMsgID);

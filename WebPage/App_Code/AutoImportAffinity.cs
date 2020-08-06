@@ -7,7 +7,6 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
 using Framework.Common.Logging;
 using Framework.Common.IO;
 using BusinessRules;
@@ -17,7 +16,6 @@ using System.IO;
 using Framework.Data.OM;
 using System.Text;
 using Framework.Common.Utility;
-
 
 public class AutoImportAffinity : Quartz.IJob
 {
@@ -138,7 +136,7 @@ public class AutoImportAffinity : Quartz.IJob
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         string strFileInfo = rowFileInfo["FtpFileName"].ToString() + ".TXT";
                         //FTP 路徑+檔名
@@ -394,7 +392,7 @@ public class AutoImportAffinity : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;

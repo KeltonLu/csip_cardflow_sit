@@ -9,12 +9,12 @@
 
 using System;
 using System.Data;
-using System.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using Framework.Common.Message;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
+using Framework.Common.Utility;
 
 public partial class P060518000001 : PageBase
 {
@@ -76,7 +76,7 @@ public partial class P060518000001 : PageBase
 
 
             string strServerPathFile =
-                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0518Report(param, ref strServerPathFile, ref strMsgId);

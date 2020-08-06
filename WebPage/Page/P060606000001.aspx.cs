@@ -7,24 +7,14 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using EntityLayer;
-using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
-using System.Text;
-using System.Configuration;
 
 public partial class Page_P060606000001 : PageBase
 {
@@ -64,8 +54,8 @@ public partial class Page_P060606000001 : PageBase
         grvFUNCTION.Columns[4].HeaderText = BaseHelper.GetShowText("06_06060000_004");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvFUNCTION.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvFUNCTION.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>
@@ -128,7 +118,7 @@ public partial class Page_P060606000001 : PageBase
 
         //綁定Ftp Server 選單
         ddlFtpIp.Items.Clear();
-        string[] strValue = ConfigurationManager.AppSettings["FtpIP"].Split(';');
+        string[] strValue = UtilHelper.GetAppSettings("FtpIP").Split(';');
         for (int Item = 0; Item < strValue.Length; Item++)
         {
             ListItem liTemp = new ListItem(strValue[Item], strValue[Item]);
@@ -728,14 +718,14 @@ public partial class Page_P060606000001 : PageBase
 
                 SqlHelper sqlCmd = new SqlHelper();
                 sqlCmd.AddCondition(Entity_FileInfo.M_FileId, Operator.Equal, DataTypeUtils.String, strFileID);
-                string[] strField = new string[] { Entity_FileInfo.M_FtpFileName, Entity_FileInfo.M_ZipPwd, 
+                string[] strField = new string[] { Entity_FileInfo.M_FtpFileName, Entity_FileInfo.M_ZipPd, 
                     Entity_FileInfo.M_MerchCode, Entity_FileInfo.M_MerchName, Entity_FileInfo.M_AMPMFlg,
                     Entity_FileInfo.M_CardType,Entity_FileInfo.M_CancelTime,Entity_FileInfo.M_BLKCode,
                     Entity_FileInfo.M_MEMO,Entity_FileInfo.M_ReasonCode,Entity_FileInfo.M_ActionCode,
                     Entity_FileInfo.M_CWBRegions,Entity_FileInfo.M_ImpSort,Entity_FileInfo.M_FunctionFlg,
                     Entity_FileInfo.M_PExpFlg,Entity_FileInfo.M_BExpFlg,Entity_FileInfo.M_Status,
                     Entity_FileInfo.M_ImportDate,Entity_FileInfo.M_FtpIP,Entity_FileInfo.M_FtpPath,
-                    Entity_FileInfo.M_FtpUserName,Entity_FileInfo.M_FtpPwd};
+                    Entity_FileInfo.M_FtpUserName,Entity_FileInfo.M_FtpPd};
                 //MerchCode  MerchName  AMPMFlg  CardType  CancelTime  BLKCode  MEMO ReasonCode ActionCode CWBRegions
                 //ImpSort  FunctionFlg PExpFlg  BExpFlg  Status ImportDate FtpIP FtpPath  FtpUserName  FtpPwd
                 if (BRM_FileInfo.UpdateEntityByCondition(esFileInfo, sqlCmd.GetFilterCondition(), strField))

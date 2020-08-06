@@ -7,13 +7,13 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
 using System.Text;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using Framework.Data.OM;
 using Framework.Common.Logging;
+using Framework.Common.Utility;
 
 /// <summary>
 /// AutoNewsletterInfoVoice 的摘要描述
@@ -31,6 +31,8 @@ public class AutoNewsletterInfoVoice : Quartz.IJob
     protected DataTable dtFileInfo;
     protected DateTime StartTime;
     protected DateTime EndTime;
+    
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -50,6 +52,36 @@ public class AutoNewsletterInfoVoice : Quartz.IJob
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             //strJobId = "0115_4";
 
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+            
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
             #endregion
@@ -103,7 +135,7 @@ public class AutoNewsletterInfoVoice : Quartz.IJob
 
             if (dtFileInfo.Rows.Count > 0)
             {
-                strFolderName = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"] + "\\" + strJobId + "\\" + strJobId + StartTime.ToString("yyyyMMddHHmmss");
+                strFolderName = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + strJobId + "\\" + strJobId + _jobDate.ToString("yyyyMMddHHmmss");
                 foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                 {
                     String txtNextDate = "";
@@ -199,7 +231,7 @@ public class AutoNewsletterInfoVoice : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "1");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string[] strCc = dtCallMail.Rows[0]["CcUsers"].ToString().Split(';');
             string strSubject = string.Format(dtCallMail.Rows[0]["MailTittle"].ToString(), Resources.JobResource.Job4000115, strFileName);

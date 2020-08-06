@@ -7,23 +7,12 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Data.OM;
 using Framework.Common.Utility;
 
@@ -48,6 +37,8 @@ public class AutoBatchRegisterInfo : Quartz.IJob
     string strFtpUserName = string.Empty;
     string strFtpPwd = string.Empty;
     FTPFactory objFtp;
+
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -69,11 +60,42 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             #region load jobid and LocalPath
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
-            strLocalPath = ConfigurationManager.AppSettings["DownloadFilePath"] + strJobId;
+            strLocalPath = UtilHelper.GetAppSettings("DownloadFilePath") + strJobId;
             #endregion
 
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
 
-
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+            
+            
             #region 記錄job啟動時間的分段
             string strAmOrPm = string.Empty;
             JobHelper.IsAmOrPm(StartTime, ref strAmOrPm);
@@ -106,6 +128,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -114,6 +137,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -130,6 +154,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //*創建子目錄名稱，存放下載文件
@@ -148,14 +173,14 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                         if (null != arrFileList && arrFileList.Length > 0)
                         {
                             //本地路徑
-                            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
 
                             foreach (string strFile in arrFileList)
                             {
                                 if (!string.IsNullOrEmpty(strFile) && strFile.ToString().Trim().Length == 38)
                                 {
                                     string[] strFlg = strFile.Split('-');
-                                    string strDay = DateTime.Now.ToString("yyMMdd");
+                                    string strDay = _jobDate.ToString("yyMMdd");
                                     if (null != strFlg && strFlg.Length > 0)
                                     {
                                         if (strFlg[3].Equals(strDay))
@@ -163,6 +188,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                                             //FTP 路徑+檔名
                                             string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFile;
 
+                                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFile))
                                             {
                                                 //*記錄下載的檔案信息
@@ -173,6 +199,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                                                 row["ZipFileName"] = strFile;
                                                 row["ZipPwd"] = RedirectHelper.GetDecryptString(rowFileInfo["ZipPwd"].ToString());
                                                 dtLocalFile.Rows.Add(row);
+                                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                                             }
 
                                         }
@@ -201,6 +228,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FormatStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".TXT");
+                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
@@ -208,6 +236,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     errMsg += (errMsg == "" ? "" : "、") + rowLocalFile["ZipFileName"].ToString();
                     rowLocalFile["ZipStates"] = "F";
                     rowLocalFile["FormatStates"] = "F";
+                    JobHelper.SaveLog("解壓縮檔案失敗！", LogState.Info);
                     // SendMail(rowLocalFile["ZipFileName"].ToString());
                 }
             }
@@ -248,9 +277,11 @@ public class AutoBatchRegisterInfo : Quartz.IJob
 
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("ZipStates='S' and FormatStates='S'");
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             if (Row != null && Row.Length > 0)
             {
                 //*讀取檔名正確資料
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
                     string strFileName = Row[rowcount]["TxtFileName"].ToString();
@@ -259,6 +290,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
+                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
                         //*正式匯入
                         if (CheckAndImport(strPath, strFileName))
                         {
@@ -299,6 +331,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());
+                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
             }
             #endregion
 
@@ -337,6 +370,8 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             #endregion
+            
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -363,7 +398,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "5");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string strSubject = dtCallMail.Rows[0]["MailTittle"].ToString();
             string strBody = dtCallMail.Rows[0]["MailContext"].ToString();
@@ -389,7 +424,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "5");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string strSubject = dtCallMail.Rows[0]["MailTittle"].ToString();
             string strBody = dtCallMail.Rows[0]["MailContext"].ToString();
@@ -415,7 +450,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
         sqlhelp.AddCondition(EntityM_CallMail.M_ConditionID, Operator.Equal, DataTypeUtils.String, "5");
         if (BRM_CallMail.SearchMailByNo(sqlhelp.GetFilterCondition(), ref dtCallMail, ref strMsgID))
         {
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
             string strSubject = dtCallMail.Rows[0]["MailTittle"].ToString();
             string strBody = dtCallMail.Rows[0]["MailContext"].ToString();

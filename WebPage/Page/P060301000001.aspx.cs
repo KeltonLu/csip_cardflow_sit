@@ -7,34 +7,19 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
 using Framework.Common.Message;
-using Framework.Common.Cryptography;
 using Framework.Common.IO;
 using Framework.Common.JavaScript;
 using Framework.Common.Utility;
 using Framework.WebControls;
 using BusinessRules;
-using EntityLayer;
-using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM;
 using System.Text;
-
 
 public partial class P060301000001 : PageBase
 {
-
     #region 事件
     /// <summary>
     /// 功能說明:頁面加載
@@ -195,7 +180,6 @@ public partial class P060301000001 : PageBase
     }
     #endregion
 
-
     #region 方法
     /// <summary>
     /// 功能說明:標題列印
@@ -212,8 +196,8 @@ public partial class P060301000001 : PageBase
         this.dateTo.Text = DateHelper.Today.ToString("yyyy/MM/dd");
         this.btnCancelN.Text = BaseHelper.GetShowText("06_06030100_007");
          //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvUserView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     

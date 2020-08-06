@@ -8,30 +8,11 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
-using Framework.Common.IO;
 using BusinessRules;
-using EntityLayer;
-using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
-using System.Text;
-using System.Text.RegularExpressions;
-using Framework.Data.OM;
-using CSIPCommonModel.EntityLayer;
-using System.Collections.Generic;
+
 /// <summary>
 /// AutoOUCancelOASA 的摘要描述
 /// </summary>
@@ -52,7 +33,6 @@ public class OnceOUCancelOASA : Quartz.IJob
     protected DateTime StartTime;
     protected DateTime EndTime;
     protected string strGetDate = "";
-    protected string strJobLogMsg = string.Empty;
     /// <summary>
     /// 增加日期設定 下載檔案日期已此欄位為主，可於啟動JOB時額外設定
     /// </summary>
@@ -75,6 +55,8 @@ public class OnceOUCancelOASA : Quartz.IJob
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
             //strJobId = "0109";
+
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             #endregion
 
             #region 記錄job啟動時間
@@ -82,13 +64,10 @@ public class OnceOUCancelOASA : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId;
+            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion
-            strJobLogMsg = strJobLogMsg + "###################" + StartTime + " JOB : 【" + strJobId + "】啟動 ###################\n";
-            //20190503 (U) by Nash 新增文字檔LOG
-            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】1. 啟動", LogState.Info);
             #region 計數器歸零
             SCount = 0;
             FCount = 0;
@@ -97,6 +76,7 @@ public class OnceOUCancelOASA : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -105,6 +85,7 @@ public class OnceOUCancelOASA : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -130,20 +111,15 @@ public class OnceOUCancelOASA : Quartz.IJob
             string strJobStatus = "S";          
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, "下載完成");
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
-            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】9. 執行結束！", LogState.Info);
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
             #endregion
         }
         catch (Exception ex)
         {
-            strJobLogMsg = strJobLogMsg + DateTime.Now.ToString() + " JOB AutoImportFiles : 【" + strJobId + "】發生異常 , 異常原因 : " + ex.ToString() + " \n";
-            JobHelper.SaveLog(DateTime.Now.ToString() + strJobLogMsg);
-            //20190503 (U) by Nash 新增文字檔LOG
-            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】發生異常 , 異常原因 : " + ex.ToString() + "【FAIL】");
+            JobHelper.SaveLog("發生異常, 異常原因: " + ex.ToString());
 
             BRM_LBatchLog.Insert(strFunctionKey, strJobId, StartTime, DateTime.Now, "F", "CommonModel_發生錯誤_" + ex.ToString());
             BRM_LBatchLog.SaveLog(ex);
-            //20190503 (U) by Nash 新增文字檔LOG
-            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】CommonModel_發生錯誤_" + ex.ToString() + "【FAIL】");
         }
         //Talas 增加清空ImportDate，不管原來有沒有設定
         finally
@@ -166,13 +142,9 @@ public class OnceOUCancelOASA : Quartz.IJob
 
         if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
         {
+            JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
             if (dtFileInfo.Rows.Count > 0)
             {
-                string strMsg = string.Empty;
-                strJobLogMsg = strJobLogMsg + "===============" + DateTime.Now.ToString() + " JOB : 【" + strJobId + "】開始下載檔案！===============\n";
-                //20190503 (U) by Nash 新增文字檔LOG
-                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】2. 開始下載檔案！", LogState.Info);
-
                 foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                 {
                     //只會有OU13
@@ -183,7 +155,7 @@ public class OnceOUCancelOASA : Quartz.IJob
                     for (int i = 1; i < 40; i++)
                     {
                         string strGetDate = DateTime.Today.AddDays(-1 * i).ToString("yyyyMMdd").Substring(4, 4);
-                        strLocalPath =   ConfigurationManager.AppSettings["OU13TmpFilePath"];
+                        strLocalPath =   UtilHelper.GetAppSettings("OU13TmpFilePath");
                         if (!Directory.Exists(strLocalPath)){
                             Directory.CreateDirectory(strLocalPath);
                         }
@@ -199,20 +171,25 @@ public class OnceOUCancelOASA : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
                             {
+                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                             }
                         }
                         //*檔案不存在
                         else
                         {
-                            //20190503 (U) by Nash 新增文字檔LOG
-                            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + strFileInfo + "】 不存在！【FAIL】");
+                            JobHelper.SaveLog("3. 註銷檔 : 【" + strFileInfo + "】 不存在！【FAIL】");
                         }
                     }
                 }
             }
+        }
+        else
+        {
+            JobHelper.SaveLog("從DB抓取檔案資料失敗！");
         }
     }
     #endregion

@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using Framework.Data.OM;
-using CSIPCommonModel.BaseItem;
-using CSIPCommonModel.BusinessRules;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM.Transaction;
 using System.IO;
-using System.Configuration;
-using Framework.Common;
 using Framework.Common.Logging;
-using System.Reflection;
+using Framework.Common.Utility;
 using Microsoft.Office.Interop.Excel;
 using ExcelApplication = Microsoft.Office.Interop.Excel.ApplicationClass;
+
 /// <summary>
 /// BRBatchImport_UrgencyCard 的摘要描述
 /// </summary>
@@ -168,7 +161,7 @@ VALUES(@indate1,@id,@cardno,@kind,@card_file,@result,@fail_reason,@reason,@impor
         //  ExcelApplication excel = new ExcelApplication();
         ExcelApplication excel = new ExcelApplication();
         Workbook workbook = null;
-        string excelPathFile = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["ReportTemplate"] + "EmcCardLogReport.xls";
+        string excelPathFile = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("ReportTemplate") + "EmcCardLogReport.xls";
         try
         {
             //* 檢查目錄，并刪除以前的文檔資料
@@ -179,7 +172,7 @@ VALUES(@indate1,@id,@cardno,@kind,@card_file,@result,@fail_reason,@reason,@impor
 
             excel.Visible = false;//* 显示 Excel 文件,如果为 true 则显示 Excel 文件
             excel.Application.DisplayAlerts = false;
-            // string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["ReportTemplate"] + "AutoPayStatus.xls";
+            // string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("ReportTemplate") + "AutoPayStatus.xls";
             workbook = excel.Workbooks.Open(excelPathFile, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
                             Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
                             Type.Missing, Type.Missing, Type.Missing, Type.Missing);

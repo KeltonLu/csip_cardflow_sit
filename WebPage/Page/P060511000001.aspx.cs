@@ -8,17 +8,14 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
+using System.IO;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
+using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
+using Framework.Common.Utility;
 
 public partial class P060511000001 : PageBase
 {
@@ -79,85 +76,74 @@ public partial class P060511000001 : PageBase
     {
         try
         {
-            // this.ReportViewer0511.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0511.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0511Report";
-            // this.ReportViewer0511.Visible = true;
+            
+            string strMsgID = string.Empty;
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            
+            #region 查詢條件參數
 
-            //初始化報表參數,為Report View賦值參數
-
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[6];
-
-            if (txtBackdateStart.Text.Trim().Equals(""))
-            {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatefrom", "NULL");
-            }
-            else
-            {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatefrom", txtBackdateStart.Text.Trim());
-            }
-            if (txtBackdateEnd.Text.Trim().Equals(""))
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateto", "NULL");
-            }
-            else
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateto", txtBackdateEnd.Text.Trim());
-            }
+            param.Add("indatefrom", txtBackdateStart.Text.Trim().Equals("") ? "NULL" : txtBackdateStart.Text.Trim());
+            param.Add("indateto", txtBackdateEnd.Text.Trim().Equals("") ? "NULL" : txtBackdateEnd.Text.Trim());
+          
             if (custddlType.SelectedItem.Value.Trim().Equals(""))
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("newway", "00");
-                // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "00");
+                param.Add("newway", "00");
+                param.Add("Enditem", "00");
             }
             else
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("newway", custddlType.SelectedValue);
+                param.Add("newway", custddlType.SelectedValue);
 
                 switch (custddlType.SelectedValue.ToString().Trim())
                 {
                     case "0":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "1");
+                        param.Add("Enditem", "1");
                         break;
                     case "1":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "0"); 
+                        param.Add("Enditem", "0");
                         break;
                     case "3":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "2"); 
+                        param.Add("Enditem", "2");
                         break;
                     case "4":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "3"); 
+                        param.Add("Enditem", "3");
                         break;
                     case "10":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "6"); 
+                        param.Add("Enditem", "6");
                         break;
                     case "11":
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "5");
+                        param.Add("Enditem", "5");
                         break;
                     default:
-                        // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("Enditem", "7"); 
+                        param.Add("Enditem", "7");
                         break;
                 }
             }
-            if (ddlFactory.SelectedItem.Value.Trim().Equals("0"))
+            
+            param.Add("factory", ddlFactory.SelectedItem.Value.Trim().Equals("0") ? "00" : ddlFactory.SelectedValue);
+            param.Add("UrgencyFlg", ckUrgency_Flg.Checked ? "1" : "NULL");
+            
+            #endregion
+            
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0511Report(param, ref strServerPathFile, ref strMsgID);
+
+            if (result)
             {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("factory", "00");
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
             }
-            else
-            {
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("factory", ddlFactory.SelectedValue);
+            else {
+                MessageHelper.ShowMessage(this, strMsgID);
             }
-            if (ckUrgency_Flg.Checked)
-            {
-                // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("UrgencyFlg", "1");
-            }
-            else
-            {
-                // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("UrgencyFlg", "NULL");
-            }
-            // this.ReportViewer0511.ServerReport.SetParameters(Paras);
         }
         catch(Exception exp)
         {
-            // this.ReportViewer0511.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_06050400_003");
         }

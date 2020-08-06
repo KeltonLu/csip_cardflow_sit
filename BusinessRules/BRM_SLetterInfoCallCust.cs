@@ -61,7 +61,7 @@ namespace BusinessRules
             string strSrcFlg = string.Empty;
             try
             {
-                sqlConn = new SqlConnection(ConfigurationManager.ConnectionStrings["Connection_System"].ToString());
+                sqlConn = new SqlConnection(UtilHelper.GetConnectionStrings("Connection_System"));
                 
                 sqlCmd = new SqlCommand();
                 sqlCmd.Connection = sqlConn;

@@ -9,17 +9,8 @@
 
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
@@ -27,13 +18,10 @@ using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
 using System.Text;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
 using CSIPCommonModel.BusinessRules;
-
 
 public class AutoOutputDataChange : Quartz.IJob
 //public class AutoOutputDataChange 
@@ -79,8 +67,8 @@ public class AutoOutputDataChange : Quartz.IJob
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
             //strJobId = "0104";
-            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"] + "\\" + strJobId + "\\";
-            //strLocalPath = ConfigurationManager.AppSettings["UpLoadFilePath"] + "\\" + strJobId + "\\";
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + strJobId + "\\";
+            //strLocalPath = UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + strJobId + "\\";
             #endregion
 
 
@@ -1535,7 +1523,7 @@ public class AutoOutputDataChange : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;

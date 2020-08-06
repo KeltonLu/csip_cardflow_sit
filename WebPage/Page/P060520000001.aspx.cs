@@ -8,13 +8,13 @@
 //*******************************************************************
 
 using System;
-using System.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using CSIPCommonModel.EntityLayer;
 using Framework.Common.JavaScript;
+using Framework.Common.Utility;
 
 public partial class P060520000001 : PageBase
 {
@@ -111,7 +111,7 @@ public partial class P060520000001 : PageBase
             param.Add("strId", txtId.Text.Trim().Equals("") ? "NULL" : txtId.Text.Trim());
 
             string strServerPathFile =
-                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0520Report(param, ref strServerPathFile, ref strMsgId);

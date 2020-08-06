@@ -1,8 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="P060521000001.aspx.cs" Inherits="P060521000001" %>
 
 <%@ Register Assembly="Framework.WebControls" Namespace="Framework.WebControls" TagPrefix="cc1" %>
-<%-- <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" --%>
-<%--     Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %> --%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
@@ -22,8 +20,8 @@
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnablePageMethods="True" runat="server">
         </asp:ScriptManager>
-<%--        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
-            <ContentTemplate>--%>
+        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
+            <ContentTemplate>
                 <table width="100%" border="0" cellpadding="0" cellspacing="1">
                     <tr class="itemTitle">
                         <td colspan="2" style="width: 100%">
@@ -49,20 +47,9 @@
                                 ShowID="06_06052100_002" OnClick="btnSearch_Click" />&nbsp;&nbsp;
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="6" style="width: 32%">
-                            <%-- <rsweb:reportviewer id="ReportViewer0521" runat="server" height="470px" width="100%" --%>
-                            <%--     font-names="Verdana" font-size="8pt" processingmode="Remote" showparameterprompts="False" --%>
-                            <%--     sizetoreportcontent="True" showdocumentmapbutton="False" showexportcontrols="True" --%>
-                            <%--     showfindcontrols="False" showpagenavigationcontrols="False" showprintbutton="True" --%>
-                            <%--     showpromptareabutton="False" showrefreshbutton="False" showzoomcontrol="False"> --%>
-                            <%--         <ServerReport ReportServerUrl="" /> --%>
-                            <%--     </rsweb:reportviewer> --%>
-                        </td>
-                    </tr>
                 </table>
-<%--            </ContentTemplate>
-        </asp:UpdatePanel>--%>
+            </ContentTemplate>
+        </asp:UpdatePanel>
     </form>
 </body>
 </html>

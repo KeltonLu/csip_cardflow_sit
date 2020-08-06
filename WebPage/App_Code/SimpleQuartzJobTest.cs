@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Common.Logging;
 using Quartz;
 using System.IO;
-using System.Diagnostics;
 
 /// <summary>
 /// SimpleQuartzJobTest 的摘要描述

@@ -7,21 +7,14 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Framework.Common.Logging;
-using Framework.Common.Message;
+using Framework.Common.Utility;
 using System.Collections.Generic;
 using System.IO;
 using CSIPCommonModel.EntityLayer;
 using Framework.Common.JavaScript;
+
 public partial class P060522000001 : PageBase
 {
     private EntityAGENT_INFO eAgentInfo;//*記錄登陸Session訊息
@@ -37,8 +30,8 @@ public partial class P060522000001 : PageBase
 
         }
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize =  int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.gvpbP02Record.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize =  int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.gvpbP02Record.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
         //Talas 20191003 SOC修改
         eAgentInfo = (EntityAGENT_INFO)this.Session["Agent"]; //*Session變數集合
         sPageInfo = (structPageInfo)this.Session["PageInfo"];//*記錄網頁訊息
@@ -92,7 +85,7 @@ public partial class P060522000001 : PageBase
 
     protected void btnPrint_Click(object sender, EventArgs e)
     {
-        string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+        string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
         if (!Directory.Exists(strServerPathFile))
         {
             Directory.CreateDirectory(strServerPathFile);

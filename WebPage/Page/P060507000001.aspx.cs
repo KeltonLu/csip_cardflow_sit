@@ -9,14 +9,13 @@ using CSIPCommonModel.EntityLayer;
 using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
+using Framework.Common.Utility;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 
 public partial class P060507000001 : PageBase
 {
-
     //Talas 20191003 SOC修改
     private EntityAGENT_INFO eAgentInfo;//*記錄登陸Session訊息
     private structPageInfo sPageInfo;//*記錄網頁訊息
@@ -91,7 +90,7 @@ public partial class P060507000001 : PageBase
             String Status = this.dropStatus.SelectedValue.Equals("XX") ? "NULL" : this.dropStatus.SelectedValue;
             param.Add("Status", Status);
 
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0507Report(param, ref strServerPathFile, ref strMsgID);

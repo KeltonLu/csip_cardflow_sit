@@ -7,27 +7,14 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
-using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Data.OM;
 using System.Text;
 using Framework.Common.Utility;
-
 
 public class AutoImportDataChange : Quartz.IJob
 {
@@ -71,7 +58,7 @@ public class AutoImportDataChange : Quartz.IJob
             //strJobId = "0105";
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
-            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId;
+            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             #endregion
 
             #region 記錄job啟動時間的分段
@@ -445,7 +432,7 @@ public class AutoImportDataChange : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;

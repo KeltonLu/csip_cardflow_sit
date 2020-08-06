@@ -9,30 +9,18 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
-using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
-using System.Text;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
 using System.Collections.Generic;
+
 /// <summary>
 /// AutoOUCancelOASA 的摘要描述
 /// </summary>
@@ -83,7 +71,7 @@ public class AutoOUCancelOASA : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId;
+            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion
@@ -112,6 +100,7 @@ public class AutoOUCancelOASA : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog(DateTime.Now.ToString() + "JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -120,6 +109,8 @@ public class AutoOUCancelOASA : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+
+                JobHelper.SaveLog(DateTime.Now.ToString() + "JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -195,6 +186,7 @@ public class AutoOUCancelOASA : Quartz.IJob
         //Talas 增加清空ImportDate，不管原來有沒有設定
         finally
         {
+            JobHelper.SaveLog(DateTime.Now.ToString() + strJobLogMsg);
             //如有設定參數則回復為空白(同一JOBID都清空)
             //BR_FileInfo.UpdateParameter(strJobId);
 
@@ -592,8 +584,8 @@ public class AutoOUCancelOASA : Quartz.IJob
                         //先判斷是否OU13，因為要下載的路徑不一樣
                         if (isOu13)
                         {
-                            // strLocalPath = ConfigurationManager.AppSettings["OU13TmpFilePath"];
-                            strLocalPath = ConfigurationManager.AppSettings["OU13TmpFilePath"] + "\\";
+                            // strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath");
+                            strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
 
                             if (!Directory.Exists(strLocalPath))
                             {
@@ -602,7 +594,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
                         else
                         {
-                            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         }
 
 
@@ -653,7 +645,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                     if (isOu13)
                     {
                         //指定回真正作業目錄
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //增加目錄檢核
                         if (!Directory.Exists(strLocalPath))
                         {
@@ -662,7 +654,7 @@ public class AutoOUCancelOASA : Quartz.IJob
 
                         //到  strLocalPath 找 31天前的檔名
                         string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate + ".EXE";
-                        string WorkPath = ConfigurationManager.AppSettings["OU13TmpFilePath"];    //暫存檔目錄
+                        string WorkPath = UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
                         if (File.Exists(importFile))
@@ -966,7 +958,7 @@ public class AutoOUCancelOASA : Quartz.IJob
         string strTXTFileName = string.Empty;
         string strExeFileName = srcZipFile.Substring(0, srcZipFile.Trim().Length - 4);
 
-        strTXTFileName = srcZipFile.Replace("EXE", "");
+        strTXTFileName = srcZipFile.Replace(".EXE", "");
 
 
         System.Diagnostics.Process p = new System.Diagnostics.Process();
@@ -1040,7 +1032,7 @@ public class AutoOUCancelOASA : Quartz.IJob
 
                 string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
-                string strFrom = ConfigurationManager.AppSettings["MailSender"];
+                string strFrom = UtilHelper.GetAppSettings("MailSender");
 
                 string[] strTo = new string[] { };
 
@@ -1122,7 +1114,7 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// <returns></returns>
     public Dictionary<string, string> GetFileDic()
     {
-        string sPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId;
+        string sPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
         if (!Directory.Exists(sPath))
         {
             return new Dictionary<string, string>();

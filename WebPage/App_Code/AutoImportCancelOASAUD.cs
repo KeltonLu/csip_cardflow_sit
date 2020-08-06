@@ -7,27 +7,14 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
-using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
-using System.Text;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
 
@@ -60,6 +47,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
     private string strMail;
     protected string strJobId;
 
+    private DateTime _jobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -94,6 +82,39 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             JobHelper.strJobId = strJobId;
 
             //strJobId = "0108";
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            _jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+
+            
             #endregion
 
             #region 記錄job啟動時間
@@ -101,7 +122,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId;
+            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion
@@ -129,6 +150,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -137,6 +159,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -154,6 +177,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             intExist = 0;
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     string strMsg = string.Empty;
@@ -173,11 +197,11 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         {
                             if (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"))
                             {
-                                strFileDate = DateTime.Now.ToString("yyyy/MM/dd");
+                                strFileDate = _jobDate.ToString("yyyy/MM/dd");
                             }
                             else
                             {
-                                strFileDate = DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd");
+                                strFileDate = _jobDate.AddDays(-1).ToString("yyyy/MM/dd");
                             }
                         }
                         switch (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4))
@@ -203,7 +227,9 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
                             {
                                 //*記錄下載的檔案信息
@@ -217,6 +243,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                                 //row["ZipPwd"] = rowFileInfo["ZipPwd"].ToString(); //FTP壓縮檔密碼解密
                                 dtLocalFile.Rows.Add(row);
                                 intExist = intExist + 1;
+                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                             }
                         }
                         //*檔案不存在
@@ -233,6 +260,10 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                     }
                 }
             }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             #endregion
 
             #region 處理本地壓縮檔
@@ -246,6 +277,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                     ////*解壓成功
                     if (blnResult)
                     {
+                        JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                         rowLocalFile["ZipStates"] = "S";
                         if (strZipFileName.Substring(0, 4).Equals("os66"))
                         {
@@ -255,6 +287,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         {
                             rowLocalFile["FileName"] = strZipFileName.Replace(".EXE", ".txt");
                         }
+                        JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                     }
                     //*解壓失敗
                     else
@@ -265,12 +298,14 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         // alInfo.Add(strZipFileName);
                         //解壓失敗發送Mail通知
                         // SendMail("1", alInfo, Resources.JobResource.Job0000002);
+                        JobHelper.SaveLog("解壓縮檔案失敗！");
                     }
                 }
                 else
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FileName"] = strZipFileName;
+                    JobHelper.SaveLog("檔案無須解壓縮！");
                 }
 
             }
@@ -285,9 +320,11 @@ public class AutoImportCancelOASAUD : Quartz.IJob
 
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("ZipStates='S'");
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             if (Row != null && Row.Length > 0)
             {
                 //*讀取檔名正確資料
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
                     strFileName = Row[rowcount]["FileName"].ToString().Trim();
@@ -298,13 +335,16 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
+                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
                         strMsgID = string.Empty;
                         ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
                         DataTable dtDetail = null;                 //檢核結果列表
 
+                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);
                         //*檢核成功
                         if (UploadCheck(strPath, strFunctionName, strFileName.Substring(0, 4), ref strMsgID, ref arrayErrorMsg, ref dtDetail))
                         {
+                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             Row[rowcount]["CheckStates"] = "S";
 
                             //判斷該檔案是否增經匯入過
@@ -345,6 +385,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         //*檢核失敗
                         else
                         {
+                            JobHelper.SaveLog("檢核檔案失敗！");
                             Row[rowcount]["CheckStates"] = "F";
                             Row[rowcount]["ImportStates"] = "F";
 
@@ -595,6 +636,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                 SendMail("8", alInfo8, Resources.JobResource.Job0000002);
             }
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -820,7 +862,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
     {
         Hashtable htInput = new Hashtable();//*上傳P4_JCAX修改主機資料
 
-        string strPurgeDateReq = DateTime.Now.AddMonths(3).ToString("MMdd");
+        string strPurgeDateReq = _jobDate.AddMonths(3).ToString("MMdd");
 
         htInput.Add("sessionId", strSessionId);
 
@@ -874,7 +916,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
     {
         Hashtable htInput = new Hashtable();//*上傳P4_JCAX修改主機資料
 
-        string strPurgeDateReq = DateTime.Now.AddMonths(3).ToString("MMdd");
+        string strPurgeDateReq = _jobDate.AddMonths(3).ToString("MMdd");
 
         htInput.Add("sessionId", strSessionId);
 
@@ -928,7 +970,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
     {
         Hashtable htInput = new Hashtable();//*上傳P4_JCAX修改主機資料
 
-        string strPurgeDateReq = DateTime.Now.AddMonths(3).ToString("MMdd");
+        string strPurgeDateReq = _jobDate.AddMonths(3).ToString("MMdd");
 
         htInput.Add("sessionId", strSessionId);
 
@@ -1028,7 +1070,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
 
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
 
             string strSubject = string.Empty;
 

@@ -9,29 +9,15 @@
 
 using System;
 using System.Data;
-using System.Globalization;
 using System.Threading;
-using System.Configuration;
-using System.Collections.Generic;
 using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using System.ComponentModel;
-using System.Text;
-using System.Reflection;
 using CSIPCommonModel.BusinessRules;
 using CSIPCommonModel.EntityLayer;
-using CSIPCommonModel.BaseItem;
+using Framework.Common;
 using Framework.Common.Utility;
 using Framework.Common.Message;
-using Framework.Data.OM;
-using Framework.Data.OM.Collections;
-using Framework.WebControls;
 using Framework.Common.JavaScript;
-using System.IO;
 using Framework.Common.Logging;
 
 /// <summary>
@@ -135,7 +121,7 @@ public class PageBase : System.Web.UI.Page
         structPageInfo sPageInfo = new structPageInfo();
         /*增加記錄網頁訊息的struct Add by 陳靜嫻2009-09-21 End */
 
-        string strUrlError = System.Configuration.ConfigurationManager.AppSettings["Error"].ToString();
+        string strUrlError = UtilHelper.GetAppSettings("Error");
         string strMsg = "";
         #region 判斷Session是否存在及重新取Session值
 
@@ -184,7 +170,7 @@ public class PageBase : System.Web.UI.Page
             Logging.UpdateLogAgentFunctionId(sPageInfo.strPageCode);
             /*Session中增加記錄網頁訊息的struct Add by 陳靜嫻2009-09-21 End */
             strMsg = "00_00000000_021";
-            string strUrlLogon = System.Configuration.ConfigurationManager.AppSettings["LOGOUT"].ToString();
+            string strUrlLogon = UtilHelper.GetAppSettings("LOGOUT");
                         
             if (this.Session["Agent"] == null || ((EntityAGENT_INFO)this.Session["Agent"]).dtfunction == null ||
                 ((DataTable)((EntityAGENT_INFO)this.Session["Agent"]).dtfunction).Rows.Count <= 0)
@@ -322,7 +308,7 @@ public class PageBase : System.Web.UI.Page
     /// </summary>
     protected void CensorPage()
     {
-        string strUrlErrorIframe = System.Configuration.ConfigurationManager.AppSettings["ERROR_IFRAME"].ToString();
+        string strUrlErrorIframe = UtilHelper.GetAppSettings("ERROR_IFRAME");
 
         try
         {

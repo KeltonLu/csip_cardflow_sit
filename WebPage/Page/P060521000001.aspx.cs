@@ -6,18 +6,14 @@
 
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+
 using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
+using System.Collections.Generic;
+using System.IO;
+using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
+using Framework.Common.Utility;
 
 public partial class P060521000001 : PageBase
 {
@@ -25,7 +21,7 @@ public partial class P060521000001 : PageBase
     {
         if (!IsPostBack)
         {
-            this.txtSelfPickDate.Text=DateTime.Now.ToString("yyyy/MM/dd");
+            this.txtSelfPickDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
         }
     }
 
@@ -44,6 +40,7 @@ public partial class P060521000001 : PageBase
             MessageHelper.ShowMessage(this, "06_06052100_000");
             return;
         }
+
         LoadReport();
     }
 
@@ -57,19 +54,33 @@ public partial class P060521000001 : PageBase
     /// <param name="e"></param>
     private void LoadReport()
     {
+        string strMsgId = string.Empty;
+
         try
         {
-            // this.ReportViewer0521.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0521.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0521Report";
-            // this.ReportViewer0521.Visible = true;
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"SelfPickDate", txtSelfPickDate.Text.Trim()}
+            };
 
-            //初始化報表參數,為Report View賦值參數
 
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[1];
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0521Report(param, ref strServerPathFile, ref strMsgId);
 
-            // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("SelfPickDate", txtSelfPickDate.Text.Trim());
-           
-            // this.ReportViewer0521.ServerReport.SetParameters(Paras);
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
         }
         catch (Exception exp)
         {

@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 
 public partial class Page_P060209000002 : System.Web.UI.Page
 {
@@ -278,8 +269,8 @@ public partial class Page_P060209000002 : System.Web.UI.Page
         this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06020901_012");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvUserView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>
@@ -366,7 +357,5 @@ public partial class Page_P060209000002 : System.Web.UI.Page
         }
         return "";
     }
-}
     #endregion
-   
-
+}

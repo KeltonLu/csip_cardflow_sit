@@ -1,25 +1,15 @@
 ﻿using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
 using System.IO;
-using System.Configuration;
 using System.Collections.Generic;
 using System.Text;
+
 public partial class Page_P060210000001 : PageBase
 {
     #region table
@@ -88,7 +78,7 @@ public partial class Page_P060210000001 : PageBase
                 //    jobHelper.SaveLog(strFileName + "06_06021000_002");
                 //    return;
                 //}
-                string strServerPath = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"];
+                string strServerPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath");
                 strServerPath = strServerPath + "\\" + strFileName;
                 // 檢查文檔是否已經存在
                 if (File.Exists(strServerPath))

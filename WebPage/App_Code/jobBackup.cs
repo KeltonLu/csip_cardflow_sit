@@ -8,30 +8,12 @@
 
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM;
-using Framework.WebControls;
 using Framework.Common.Utility;
-using Framework.Common.Message;
-using Framework.Common.JavaScript;
 using Framework.Common.Logging;
-using CSIPCommonModel.EntityLayer;
-using Framework.Data.OM.Transaction;
 using CSIPCommonModel.BusinessRules;
 using Quartz;
-using Quartz.Impl;
-using Framework.Common.IO;
-using System.Collections;
 using System.IO;
 using System.Collections.Generic;
-
 
 /// <summary>
 /// jobBackup 的摘要描述
@@ -45,7 +27,7 @@ public class jobBackup : IJob
         //
     }
 
-    string strFuncKey = ConfigurationManager.AppSettings["FunctionKey"].ToString();
+    string strFuncKey = UtilHelper.GetAppSettings("FunctionKey");
     string strSucc = "";
     DateTime dTimeStart;
     private string strJobID;
@@ -54,9 +36,9 @@ public class jobBackup : IJob
     //private string strJobTitle;
 
     //*需處理的來源資料夾
-    private readonly List<string> SourceFolder = new List<string>(ConfigurationManager.AppSettings["SourceFolder"].Split(','));
+    private readonly List<string> SourceFolder = new List<string>(UtilHelper.GetAppSettings("SourceFolder").Split(','));
     //*需排除附檔名列表
-    private readonly List<string> SkipExtension = new List<string>(ConfigurationManager.AppSettings["SkipExtension"].Split(','));
+    private readonly List<string> SkipExtension = new List<string>(UtilHelper.GetAppSettings("SkipExtension").Split(','));
 
     #region IJob 成員
     /// <summary>
@@ -112,17 +94,17 @@ public class jobBackup : IJob
             string BackupPath = "";
 
             //*原始檔案保存起始日(SourceKeepDay)
-            int SourceKeepDay = Convert.ToInt32(ConfigurationManager.AppSettings["SourceKeepDay"].ToString());
+            int SourceKeepDay = Convert.ToInt32(UtilHelper.GetAppSettings("SourceKeepDay"));
 
             //*備份檔案保存起始日(BackupKeepDay)
-            int BackupKeepDay = Convert.ToInt32(ConfigurationManager.AppSettings["BackupKeepDay"].ToString());
+            int BackupKeepDay = Convert.ToInt32(UtilHelper.GetAppSettings("BackupKeepDay"));
 
             //*備份路徑(以執行當天的日期命名)
-            string BackupDir = ConfigurationManager.AppSettings["BackupPath"].ToString() + dTimeStart.ToString("yyyyMMdd");
+            string BackupDir = UtilHelper.GetAppSettings("BackupPath") + dTimeStart.ToString("yyyyMMdd");
 
             //*執行備份動作，如果BackupInitial=true則把所有檔案都備份一次
             Log("***開始備份***");
-            bool BackupALL = Convert.ToBoolean(ConfigurationManager.AppSettings["BackupALL"]);
+            bool BackupALL = Convert.ToBoolean(UtilHelper.GetAppSettings("BackupALL"));
             foreach (string SF in SourceFolder)
             {
                 SourcePath = BaseDir + SF;
@@ -290,7 +272,7 @@ public class jobBackup : IJob
     /// <param name="dateStart">JOB開始時間</param>
     private void Log(string LogStr)
     {
-        string BackupPath = ConfigurationManager.AppSettings["BackupPath"].ToString() + dTimeStart.ToString("yyyyMMdd");
+        string BackupPath = UtilHelper.GetAppSettings("BackupPath") + dTimeStart.ToString("yyyyMMdd");
         StreamWriter sw = null;
         LogStr = DateTime.Now.ToLocalTime().ToString() + " ： " + LogStr;
         try
@@ -300,6 +282,7 @@ public class jobBackup : IJob
                 Directory.CreateDirectory(BackupPath);
             sw = new StreamWriter(BackupPath + "\\BackupJobLog.txt", true);
             sw.WriteLine(LogStr);
+            Logging.Log(LogStr, strJobID);
         }
         catch(Exception exp)
         {

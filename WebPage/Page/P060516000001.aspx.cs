@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.Common.Message;
-using System.Configuration;
+using Framework.Common.Utility;
 using System.IO;
 
 public partial class P060516000001 : PageBase
@@ -54,7 +54,7 @@ public partial class P060516000001 : PageBase
             param.Add("Operaction", Operaction);
 
             string strServerPathFile =
-                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0516Report(param, ref strServerPathFile, ref strMsgId);

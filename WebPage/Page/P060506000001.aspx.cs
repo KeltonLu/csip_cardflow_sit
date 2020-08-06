@@ -7,17 +7,14 @@
 //*******************************************************************
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using Framework.Common.JavaScript;
 using Framework.Common.Logging;
 using Framework.Common.Message;
-
+using Framework.Common.Utility;
 
 public partial class P060506000001 : PageBase
 {
-
-
     /// <summary>
     /// 功能說明:查詢事件
     /// 作    者:Simba Liu
@@ -68,7 +65,7 @@ public partial class P060506000001 : PageBase
             
             #endregion
             
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0506Report(param, ref strServerPathFile, ref strMsgID);

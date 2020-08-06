@@ -1,8 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="P060513000001.aspx.cs" Inherits="P060513000001" %>
 
 <%@ Register Assembly="Framework.WebControls" Namespace="Framework.WebControls" TagPrefix="cc1" %>
-<%-- <%@ Register Assembly="Microsoft.ReportViewer.WebForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" --%>
-<%--     Namespace="Microsoft.Reporting.WebForms" TagPrefix="rsweb" %> --%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -47,8 +45,8 @@
                 </div>
             </ProgressTemplate>
         </asp:UpdateProgress>
-<%--        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
-            <ContentTemplate>--%>
+        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
+            <ContentTemplate>
                 <table width="100%" border="0" cellpadding="0" cellspacing="1">
                     <tr class="itemTitle">
                         <td colspan="2">
@@ -90,20 +88,9 @@
                                 ShowID="06_06051300_006" OnClick="btnSearch_Click" />&nbsp;&nbsp;
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="2" style="height: 25px">
-                            <%-- <rsweb:ReportViewer ID="ReportViewer0513" runat="server" Height="400px" Width="100%" --%>
-                            <%--     Font-Names="Verdana" Font-Size="8pt" ProcessingMode="Remote" ShowParameterPrompts="False" --%>
-                            <%--     SizeToReportContent="True" ShowDocumentMapButton="False" ShowExportControls="True" --%>
-                            <%--     ShowFindControls="False" ShowPrintButton="True" ShowPromptAreaButton="False" --%>
-                            <%--     ShowRefreshButton="False" ShowZoomControl="False" BackColor="White"> --%>
-                            <%--     <ServerReport ReportServerUrl="" /> --%>
-                            <%-- </rsweb:ReportViewer> --%>
-                        </td>
-                    </tr>
                 </table>
-<%--            </ContentTemplate>
-        </asp:UpdatePanel>--%>
+            </ContentTemplate>
+        </asp:UpdatePanel>
     </form>
 </body>
 </html>

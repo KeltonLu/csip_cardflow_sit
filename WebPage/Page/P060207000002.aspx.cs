@@ -2,7 +2,6 @@
 using Framework.Common.JavaScript;
 using Framework.Common.Message;
 using Framework.Common.Utility;
-using System.Configuration;
 using System.Collections.Generic;
 using System.IO;
 
@@ -33,7 +32,7 @@ public partial class P060207000002 : PageBase
                 param.Add("DailyCloseDate", strDailyCloseDate);
 
                 string strServerPathFile =
-                    this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                    this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
                 //產生報表
                 bool result = BR_Excel_File.CreateExcelFile_0207Report(param, ref strServerPathFile, ref strMsgId);

@@ -7,17 +7,10 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
 using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Framework.Common.Logging;
 using Framework.Common.Message;
-using Framework.Common.Cryptography;
-using Framework.Common.IO;
 using Framework.Common.JavaScript;
 using Framework.Common.Utility;
 using Framework.WebControls;
@@ -25,11 +18,6 @@ using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM;
-using System.Text;
-using System.Collections.Specialized;
-using CSIPCommonModel.BusinessRules;
 
 public partial class P060302000001 : PageBase
 {
@@ -413,8 +401,8 @@ public partial class P060302000001 : PageBase
         //*匯檔日期初始化
         this.dateTo.Text = DateHelper.Today.ToString("yyyy/MM/dd");
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvUserView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
         string strMsgID = string.Empty;
         //初始化DropDownList的數據
         DataTable dtCard = new DataTable(); 
@@ -829,7 +817,7 @@ public partial class P060302000001 : PageBase
     /// <returns>返回值：""----上傳不成功；其他：上傳文檔服務器路徑及文檔名稱</returns>
     protected string FileUpload(HttpPostedFile hpfUploadFile,string strJobId)
     {
-        string strServerPath = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"];
+        string strServerPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath");
 
         string strDirPath = strServerPath + "\\" + strJobId;
         // Determine whether the directory exists.	
@@ -874,7 +862,7 @@ public partial class P060302000001 : PageBase
     //        //*本地存放目錄名(格式為yyyyMMddHHmmss+JobID)
     //        string strFolderName = strJobId + DateTime.Now.ToString("yyyyMMddHHmmss");
     //        //創建文件夾的路徑
-    //        string strDirPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName;
+    //        string strDirPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName;
     //        //創建文件夾
     //        Directory.CreateDirectory(strDirPath);
     //        //上傳文件存放至服務器的路徑

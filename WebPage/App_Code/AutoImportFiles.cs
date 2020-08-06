@@ -7,17 +7,7 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
@@ -25,11 +15,9 @@ using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
 using System.Text;
 using CSIPCommonModel.EntityLayer;
 using CSIPCommonModel.BusinessRules;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
 
 /// <summary>
@@ -64,7 +52,9 @@ public class AutoImportFiles : Quartz.IJob
     protected string strCardType = string.Empty;
 
     protected FTPFactory objFtp;
-    #endregion
+
+    protected DateTime jobDate = DateTime.Now;
+#endregion
 
     #region 程式入口
     /// <summary>
@@ -86,6 +76,36 @@ public class AutoImportFiles : Quartz.IJob
             string strTemp = Resources.JobResource.Job0101001;
 
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            jobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
 
             #region 計數器歸零
             SCount = 0;
@@ -158,9 +178,9 @@ public class AutoImportFiles : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
-                        string strFileInfo = DateTime.Now.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
+                        string strFileInfo = jobDate.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
                         //FTP 路徑+檔名
                         string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileInfo;
 
@@ -460,7 +480,7 @@ public class AutoImportFiles : Quartz.IJob
             #region 更新異動檔中無法對應到卡片基本檔的資料為退單處理
             DataTable dtCardDataChange = new DataTable();
             //如果假日~就不要檢查異動資料
-            if (BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
+            if (BRWORK_DATE.IS_WORKDAY("06", jobDate.ToString("yyyyMMdd")))
             {
                 if (BRM_CardDataChange.SearchForCard(ref dtCardDataChange))
                 {
@@ -492,24 +512,24 @@ public class AutoImportFiles : Quartz.IJob
         switch (strTrandate)
         {
             case "A":
-                return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
+                return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", jobDate.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
             case "P":
-                if (BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
+                if (BRWORK_DATE.IS_WORKDAY("06", jobDate.ToString("yyyyMMdd")))
                 {
-                    return DateTime.Now.ToString("yyyy/MM/dd");
+                    return jobDate.ToString("yyyy/MM/dd");
                 }
                 else
                 {
-                    return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), 1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
+                    return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
                 }
             default:
-                if (BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
+                if (BRWORK_DATE.IS_WORKDAY("06", jobDate.ToString("yyyyMMdd")))
                 {
-                    return DateTime.Now.ToString("yyyy/MM/dd");
+                    return jobDate.ToString("yyyy/MM/dd");
                 }
                 else
                 {
-                    return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), 1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
+                    return DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null).ToString("yyyy/MM/dd");
                 }
         }
 
@@ -537,7 +557,7 @@ public class AutoImportFiles : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;
@@ -1361,13 +1381,13 @@ public class AutoImportFiles : Quartz.IJob
         bool blnResult = false;
         DateTime dt = new DateTime();
         //*製卡日設定
-        if (BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
+        if (BRWORK_DATE.IS_WORKDAY("06", jobDate.ToString("yyyyMMdd")))
         {
-            dt = DateTime.Now;
+            dt = jobDate;
         }
         else
         {
-            dt = DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
+            dt = DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
         }
 
         EntitySet<EntityLayer.Entity_CardBaseInfo> SetCardBaseInfo = new EntitySet<EntityLayer.Entity_CardBaseInfo>();
@@ -1422,7 +1442,6 @@ public class AutoImportFiles : Quartz.IJob
                         TCardBaseInfo.indate1 = strIndate;
                         TCardBaseInfo.trandate = strTranDate;
                     }
-
                     string strMsgID = string.Empty;
                     //if (!BRM_TCardBaseInfo.IsRepeatByAll(TCardBaseInfo))
                     //{
@@ -1460,13 +1479,6 @@ public class AutoImportFiles : Quartz.IJob
 
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
                     }
-
-
-
-
-
-
-
 
                     BRM_CardDataChange.UpdateIndate(TCardBaseInfo);
                 }
@@ -1551,7 +1563,6 @@ public class AutoImportFiles : Quartz.IJob
                         TCardBaseInfo.indate1 = strIndate;
                         TCardBaseInfo.trandate = strTranDate;
                     }
-
                     string strMsgID = string.Empty;
                     if (!BRM_TCardBaseInfo.IsRepeatByAll(TCardBaseInfo)) //* 判斷是否有重復資料
                     {

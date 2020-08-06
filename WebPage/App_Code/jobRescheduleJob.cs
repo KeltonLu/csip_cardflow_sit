@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Quartz;
 using CSIPCommonModel.BusinessRules;
 using Framework.Common.Logging;
 using Framework.Common.Cryptography;
+using Framework.Common.Utility;
 using System.Web.Compilation;
 using Quartz.Impl;
-using System.Net;
 
 /// <summary>
 /// jobRescheduleJob 的摘要描述
@@ -33,7 +26,7 @@ public class jobRescheduleJob : IJob
     public void Execute(JobExecutionContext context)
     {
 
-        string strFuncKey = ConfigurationManager.AppSettings["FunctionKey"].ToString();
+        string strFuncKey = UtilHelper.GetAppSettings("FunctionKey");
         string strJobID = "";
         string strJobTitle;
         string strLdapID;
@@ -113,7 +106,7 @@ public class jobRescheduleJob : IJob
 
                             //* 加解密操作類
                             DESEncrypt des = new DESEncrypt();
-                            des.EncryptKey = ConfigurationManager.AppSettings["EncryptKey"].ToString();
+                            des.EncryptKey = UtilHelper.GetAppSettings("EncryptKey");
 
                             //* 新增一個Job
                             Type type = BuildManager.GetType(dtblAutoJob.Rows[i]["EXEC_PROG"].ToString(), false);

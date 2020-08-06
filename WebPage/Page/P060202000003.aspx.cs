@@ -7,24 +7,15 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
-using System.Web.Services;
-using System.Configuration;
 using CSIPCommonModel.EntityLayer;
 
 public partial class P060202000003 : PageBase
@@ -670,9 +661,9 @@ public partial class P060202000003 : PageBase
                 CallEMFS.E00520 CallEmfs = new CallEMFS.E00520();
                 //CallEmfs.UserId = "Z00006660";                                  //* 從Session中讀取 Test
                 CallEmfs.UserId = ((EntityAGENT_INFO)Session["Agent"]).agent_id;  //* 從Session中讀取UserID
-                CallEmfs.CaseType = ConfigurationManager.AppSettings["CallEMFSType"];  //*案件類型
+                CallEmfs.CaseType = UtilHelper.GetAppSettings("CallEMFSType");  //*案件類型
                 CallEmfs.CardType = "新卡";                                     //* ACTION
-                CallEmfs.CustLevel = ConfigurationManager.AppSettings["CallEMFSLevel"]; //*案件級別
+                CallEmfs.CustLevel = UtilHelper.GetAppSettings("CallEMFSLevel"); //*案件級別
                 CallEmfs.CustId = m_Id;                                         //* 歸戶ID
                 CallEmfs.CustName = txtUserName.Text.Trim();                    //* 歸戶姓名
                 CallEmfs.TelH = txtTel.Text.Trim();                             //* 歸戶電話

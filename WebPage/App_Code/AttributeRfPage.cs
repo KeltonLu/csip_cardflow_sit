@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
+
 namespace Framework.Data.OM.OMAttribute
 {
     /// <summary>

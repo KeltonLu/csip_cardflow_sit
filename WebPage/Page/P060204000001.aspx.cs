@@ -8,31 +8,17 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
-using System.Configuration;
 using System.Collections;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using System.IO;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
 using Framework.Data.OM.Collections;
 using CSIPCommonModel.EntityLayer;
-
-
-using System.Drawing;
-
 
 public partial class Page_P060204000001 : PageBase
 {
@@ -146,9 +132,9 @@ public partial class Page_P060204000001 : PageBase
 
                 #region 取得上傳路徑
                 //* 取得上傳路徑
-                string strUploadPath = AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["UpLoadFilePath"];
+                string strUploadPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath");
 
-                //string strUploadPath = ConfigurationManager.AppSettings["UpLoadFilePath"];
+                //string strUploadPath = UtilHelper.GetAppSettings("UpLoadFilePath");
 
                 if (!Directory.Exists(strUploadPath))
                 {

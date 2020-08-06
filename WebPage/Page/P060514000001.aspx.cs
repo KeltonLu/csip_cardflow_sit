@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using CSIPCommonModel.EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.Message;
 using EntityLayer;
 using Framework.Data.OM;
 using BusinessRules;
+using System.Collections.Generic;
+using CSIPCommonModel.EntityLayer;
+using Framework.Common.Utility;
+using System.IO;
+using Framework.Common.JavaScript;
 
 public partial class P060514000001 : PageBase
 {
@@ -27,7 +24,6 @@ public partial class P060514000001 : PageBase
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        int intParas = 0;
         if (this.txtdateStart.Text.Trim().Equals(""))
         {
             MessageHelper.ShowMessage(this, "06_06051800_000");
@@ -41,133 +37,99 @@ public partial class P060514000001 : PageBase
             return;
         }
 
+        string strMsgID = string.Empty;
+
+        string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
+
         try
         {
+            bool result = false;
+
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>
+                {
+                    // 檔案產出日期 起
+                    {"OstartDate", txtdateStart.Text.Trim().Equals("") ? "NULL" : txtdateStart.Text.Trim()},
+                    
+                    // 檔案產出日期 迄
+                    {"OendDate", txtdateEnd.Text.Trim().Equals("") ? "NULL" : txtdateEnd.Text.Trim()},
+
+                    {"Ouser", ((EntityAGENT_INFO)Session["Agent"]).agent_name}
+                };
+
             if (rbCount.Checked)
             {
-                // this.ReportViewer0514.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-                // this.ReportViewer0514.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0514Report";
-                // this.ReportViewer0514.Visible = true;
-
-                //初始化報表參數,為Report View賦值參數
-
-                // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[3];
-
-                if (txtdateStart.Text.Trim().Equals(""))
-                {
-                    // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("OstartDate", "NULL");
-                }
-                else
-                {
-                    // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("OstartDate", txtdateStart.Text.Trim());
-                }
-                if (txtdateEnd.Text.Trim().Equals(""))
-                {
-                    // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("OendDate", "NULL");
-                }
-                else
-                {
-                    // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("OendDate", txtdateEnd.Text.Trim());
-                }
-
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("Ouser", ((EntityAGENT_INFO)Session["Agent"]).agent_name);
-
-                // this.ReportViewer0514.ServerReport.SetParameters(Paras);
+                //產生報表
+                result = BR_Excel_File.CreateExcelFile_0514Report(param, ref strServerPathFile, ref strMsgID);
             }
             else if (rbResult.Checked)
             {
-                // this.ReportViewer0514.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-                if (ddlType.SelectedValue.Equals("1"))
-                {
-                    if (ddlStatus.SelectedValue.Equals("0"))
-                    {
-                        // this.ReportViewer0514.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0514_0Report";
-                        intParas=5;
-                    }
-                    else
-                    {
-                        // this.ReportViewer0514.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0514_1Report";
-                        intParas=6;
-                    }
-
-                }
-                else if (ddlType.SelectedValue.Equals("2"))
-                {
-                    if (ddlStatus.SelectedValue.Equals("0"))
-                    {
-                        // this.ReportViewer0514.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0514_2Report";
-                        intParas=5;
-                    }
-                    else
-                    {
-                        // this.ReportViewer0514.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0514_3Report";
-                        intParas=6;
-                    }
-                }
-                // this.ReportViewer0514.Visible = true;
-
-                string strMsgID = "";
                 DataTable dtOASA = new DataTable();
-                //初始化報表參數,為Report View賦值參數
-
-                // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[intParas];
-
-                if (txtdateStart.Text.Trim().Equals(""))
-                {
-                    // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("OstartDate", "NULL");
-                }
-                else
-                {
-                    // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("OstartDate", txtdateStart.Text.Trim());
-                }
-                if (txtdateEnd.Text.Trim().Equals(""))
-                {
-                    // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("OendDate", "NULL");
-                }
-                else
-                {
-                    // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("OendDate", txtdateEnd.Text.Trim());
-                }
-
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("Ouser", ((EntityAGENT_INFO)Session["Agent"]).agent_name);
 
                 if (ddlType.SelectedValue.Equals("1"))
                 {
-                    // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("flag", "1");
+                    param.Add("flag", "1");
 
                     if (BRM_Report.SearchOASAG(GetFilterCondition(), ref dtOASA, ref strMsgID))
                     {
-                        // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("num", dtOASA.Rows.Count.ToString());
+                        param.Add("num", dtOASA.Rows.Count.ToString());
                     }
                     else
                     {
-                        // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("num", "0");
+                        param.Add("num", "0");
                     }
+
+                    if (ddlStatus.SelectedValue.Equals("0"))
+                    {
+                        result = BR_Excel_File.CreateExcelFile_0514_0Report(param, ref strServerPathFile, ref strMsgID);
+                    }
+                    else
+                    {
+                        param.Add("BLKCode", ddlStatus.SelectedValue);
+                        result = BR_Excel_File.CreateExcelFile_0514_1Report(param, ref strServerPathFile, ref strMsgID);
+                    }
+
                 }
                 else if (ddlType.SelectedValue.Equals("2"))
                 {
-                    // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("flag", "2");
+                    param.Add("flag", "2");
 
                     if (BRM_Report.SearchOASAG(GetFilterCondition(), ref dtOASA, ref strMsgID))
                     {
-                        // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("num", dtOASA.Rows.Count.ToString());
+                        param.Add("num", dtOASA.Rows.Count.ToString());
                     }
                     else
                     {
-                        // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("num", "0");
+                        param.Add("num", "0");
+                    }
+
+                    if (ddlStatus.SelectedValue.Equals("0"))
+                    {
+                        result = BR_Excel_File.CreateExcelFile_0514_2Report(param, ref strServerPathFile, ref strMsgID);
+                    }
+                    else
+                    {
+                        param.Add("BLKCode", ddlStatus.SelectedValue);
+                        result = BR_Excel_File.CreateExcelFile_0514_3Report(param, ref strServerPathFile, ref strMsgID);
                     }
                 }
+            }
 
-                if (!ddlStatus.SelectedValue.Equals("0"))
-                {
-                    // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("BLKCode", ddlStatus.SelectedValue);
-                }
-                // this.ReportViewer0514.ServerReport.SetParameters(Paras);
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgID);
             }
         }
         catch (Exception exp)
         {
-            // this.ReportViewer0514.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_06051800_001");
         }

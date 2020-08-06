@@ -6,23 +6,7 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using System.Text;
-using System.Xml;
-using System.Collections.Generic;
-using System.IO;
-using Framework.Common.JavaScript;
-using Framework.Common.IO;
 using System.Text.RegularExpressions;
-using Framework.Common.Utility;
-using Microsoft.VisualBasic;
 
 public class ValidateHelper
 {

@@ -65,7 +65,7 @@ namespace BusinessRulesNew
             string strSrcFlg = string.Empty;
             try
             {
-                sqlConn = new SqlConnection(ConfigurationManager.ConnectionStrings["Connection_System"].ToString());
+                sqlConn = new SqlConnection(UtilHelper.GetConnectionStrings("Connection_System"));
                 
                 sqlCmd = new SqlCommand();
                 sqlCmd.Connection = sqlConn;
@@ -108,17 +108,17 @@ namespace BusinessRulesNew
                     parmBlock_code.Value = dtDetail.Rows[i]["Block_code"].ToString();  //BlockCode
                     parmAms.Value = dtDetail.Rows[i]["Ams"].ToString();    //Ams
                     parmImp_File.Value = strImpFileName;   //主機回覆檔匯入檔名
-                    //多加判斷如果是假日要抓下一個工作日
-                    DateTime dt = new DateTime();
-                    if (BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
-                    {
-                        dt = DateTime.Now;
-                    }
-                    else
-                    {
-                        dt = DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
-                    }
-                    parmImp_Date.Value = dt.ToString("yyyy/MM/dd");  //主機回覆檔匯入日期
+                    // //多加判斷如果是假日要抓下一個工作日
+                    // DateTime dt = new DateTime();
+                    // if (BRWORK_DATE.IS_WORKDAY("06", _jobDate.ToString("yyyyMMdd")))
+                    // {
+                    //     dt = _jobDate;
+                    // }
+                    // else
+                    // {
+                    //     dt = DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
+                    // }
+                    parmImp_Date.Value = dtDetail.Rows[i]["jobDate"];  //主機回覆檔匯入日期
                    // parmImp_Date.Value = DateTime.Now.ToString("yyyy/MM/dd");  //主機回覆檔匯入日期
                     parmID.Value = dtDetail.Rows[i]["ID"].ToString();  //ID
                     parmCardNo.Value = dtDetail.Rows[i]["CardNo"].ToString();  //卡號

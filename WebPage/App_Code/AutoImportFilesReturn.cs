@@ -7,29 +7,16 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
 using System.IO;
-using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
 using System.Text;
 using CSIPCommonModel.EntityLayer;
 using CSIPCommonModel.BusinessRules;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
 
 /// <summary>
@@ -55,6 +42,8 @@ public class AutoImportFilesReturn : Quartz.IJob
     string strFtpUserName = string.Empty;
     string strFtpPwd = string.Empty;
     FTPFactory objFtp;
+    
+    protected DateTime JobDate = DateTime.Now;
     #endregion
 
     #region 程式入口
@@ -75,6 +64,38 @@ public class AutoImportFilesReturn : Quartz.IJob
             ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
             string strTemp = Resources.JobResource.Job0101001;
 
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
+            
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
+            {
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            JobDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
+            }
+            #endregion
+            
             #region 記錄job啟動時間的分段
             string strAmOrPm = string.Empty;
             JobHelper.IsAmOrPm(StartTime, ref strAmOrPm);
@@ -111,6 +132,7 @@ public class AutoImportFilesReturn : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -119,6 +141,7 @@ public class AutoImportFilesReturn : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -136,6 +159,7 @@ public class AutoImportFilesReturn : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
 
@@ -156,7 +180,7 @@ public class AutoImportFilesReturn : Quartz.IJob
                             {
                                 continue;
                             }
-                            string strTmpFile1 = DateTime.Now.ToString("yyyyMMdd");
+                            string strTmpFile1 = JobDate.ToString("yyyyMMdd");
                             string strTmpFile2 = rowFileInfo["FtpFileName"].ToString().Trim();
                             if (strFile.Substring(0, 1).Equals(strTmpFile2))
                             {
@@ -168,7 +192,7 @@ public class AutoImportFilesReturn : Quartz.IJob
                         }
 
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         string strFileName = string.Empty;
                         for (int iFileCount = 0; iFileCount < alImportFiles.Count; iFileCount++)
                         {
@@ -177,6 +201,7 @@ public class AutoImportFilesReturn : Quartz.IJob
                             //FtpPath + FtpFileName
                             string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileName;
 
+                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileName))
                             {
@@ -191,6 +216,7 @@ public class AutoImportFilesReturn : Quartz.IJob
                                 row["MerchName"] = rowFileInfo["MerchName"].ToString(); //製卡廠名稱
                                 row["ZipPwd"] = RedirectHelper.GetDecryptString(rowFileInfo["ZipPwd"].ToString()); //FTP壓縮檔密碼解密
                                 dtLocalFile.Rows.Add(row);
+                                JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                             }
                             else
                             {
@@ -230,12 +256,14 @@ public class AutoImportFilesReturn : Quartz.IJob
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().ToUpper().Replace(".ZIP", ".TXT");
+                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
                 {
                     errMsg += (errMsg == "" ? "" : "、") + rowLocalFile["ZipFileName"];
                     rowLocalFile["ZipStates"] = "F";
+                    JobHelper.SaveLog("解壓縮檔案失敗！");
                     // ArrayList alInfo = new ArrayList();
                     // alInfo.Add(rowLocalFile["ZipFileName"]);
                     //解壓失敗發送Mail通知
@@ -283,9 +311,11 @@ public class AutoImportFilesReturn : Quartz.IJob
 
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("ZipStates='S' and FormatStates='S'");
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             if (Row != null && Row.Length > 0)
             {
                 //*讀取檔名正確資料
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
                     string strFileName = Row[rowcount]["TxtFileName"].ToString();
@@ -298,13 +328,17 @@ public class AutoImportFilesReturn : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
+                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
                         int No = 0;                                //*匯入之錯誤編號
 
                         DataTable dtDetail = null;                 //檢核結果列表
                         //*檢核資料
+                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);;
                         if (UploadCheck(strPath, strFunctionName, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
+                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             //CheckMailDate(dtDetail);
+                            
                             //*匯入檢核正確的回饋檔資料至卡片基本檔
                             if (BatUpdateFor0102(dtDetail))
                             {
@@ -315,10 +349,13 @@ public class AutoImportFilesReturn : Quartz.IJob
                             {
                                 //匯入失敗
                                 Row[rowcount]["ImportStates"] = "F";
+                                JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
                             }
+                            JobHelper.SaveLog("正確資料匯入完成！", LogState.Info);
                         }
                         else
                         {
+                            JobHelper.SaveLog("檢核檔案失敗！");
                             //檢核失敗
                             Row[rowcount]["ImportStates"] = "F";
                         }
@@ -338,6 +375,7 @@ public class AutoImportFilesReturn : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());//*路徑未設置
+                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
             }
             #endregion
 
@@ -393,6 +431,8 @@ public class AutoImportFilesReturn : Quartz.IJob
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             #endregion
+            
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -409,8 +449,8 @@ public class AutoImportFilesReturn : Quartz.IJob
     public void CheckMailDate(DataTable dtResult)
     {
         DataTable dtDetail = BRM_TCardBaseInfo.GetKindTableFor0102(dtResult, Resources.JobResource.Job010202);
-        int iThreeMailDay = int.Parse(ConfigurationManager.AppSettings["ThreeMailDay"].ToString());
-        int iUsualMailDay = int.Parse(ConfigurationManager.AppSettings["UsualMailDay"].ToString());
+        int iThreeMailDay = int.Parse(UtilHelper.GetAppSettings("ThreeMailDay"));
+        int iUsualMailDay = int.Parse(UtilHelper.GetAppSettings("UsualMailDay"));
         String errMsg = "";
 
         if (dtDetail.Rows.Count > 0)
@@ -457,8 +497,8 @@ public class AutoImportFilesReturn : Quartz.IJob
         {
             bool blnResult = true;
             DataTable dtDetail = BRM_TCardBaseInfo.GetKindTableFor0102(dtResult, Resources.JobResource.Job010202);
-            int iThreeMailDay = int.Parse(ConfigurationManager.AppSettings["ThreeMailDay"].ToString());
-            int iUsualMailDay = int.Parse(ConfigurationManager.AppSettings["UsualMailDay"].ToString());
+            int iThreeMailDay = int.Parse(UtilHelper.GetAppSettings("ThreeMailDay"));
+            int iUsualMailDay = int.Parse(UtilHelper.GetAppSettings("UsualMailDay"));
             String errMsg = "";
 
             for (int i = 0; i < dtResult.Rows.Count; i++)
@@ -591,7 +631,7 @@ public class AutoImportFilesReturn : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;

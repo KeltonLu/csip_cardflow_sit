@@ -7,33 +7,31 @@
 
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
+using System.IO;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using BusinessRules;
 using EntityLayer;
 using Framework.Common.JavaScript;
 using Framework.Common.Logging;
-using Framework.WebControls;
 using Framework.Common.Message;
+using Framework.WebControls;
 using Framework.Data.OM;
 using Framework.Common.Utility;
 
 public partial class P060512000001 : PageBase
 {
     #region 成員
+
     public DataTable m_dtCardBaseInfo
     {
         get { return ViewState["m_dtCardBaseInfo"] as DataTable; }
         set { ViewState["m_dtCardBaseInfo"] = value; }
     }
+
     #endregion
 
     protected void Page_Load(object sender, EventArgs e)
@@ -51,14 +49,16 @@ public partial class P060512000001 : PageBase
     {
         if (this.txtBackdateStart.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
             return;
         }
+
         if (txtBackdateEnd.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
             return;
         }
+
         BindGridView();
     }
 
@@ -93,9 +93,8 @@ public partial class P060512000001 : PageBase
 
         //* 設置一頁顯示最大筆數
 
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvCardView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvCardView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>
@@ -113,7 +112,8 @@ public partial class P060512000001 : PageBase
         {
             //* 查詢不成功
 
-            if (!BRM_Report.SearchSendStatus(txtBackdateStart.Text.Trim(), txtBackdateEnd.Text.Trim(), ref dtCardBaseInfo, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID))
+            if (!BRM_Report.SearchSendStatus(txtBackdateStart.Text.Trim(), txtBackdateEnd.Text.Trim(),
+                ref dtCardBaseInfo, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID))
             {
                 this.gpList.RecordCount = 0;
                 this.grvCardView.DataSource = null;
@@ -161,6 +161,7 @@ public partial class P060512000001 : PageBase
                 custlk.Visible = false;
                 custlb.Visible = true;
             }
+
             custlk.CommandArgument = e.Row.RowIndex.ToString();
         }
     }
@@ -169,7 +170,7 @@ public partial class P060512000001 : PageBase
     {
         try
         {
-            CustLinkButton lkbtn = (CustLinkButton)sender;
+            CustLinkButton lkbtn = (CustLinkButton) sender;
             int rowIndex = int.Parse(lkbtn.CommandArgument);
             string strCardfile = m_dtCardBaseInfo.Rows[rowIndex]["card_file"].ToString();
             ViewState["strCardfile"] = strCardfile;
@@ -193,15 +194,19 @@ public partial class P060512000001 : PageBase
     private string GetFilterCondition()
     {
         SqlHelper sqlhelp = new SqlHelper();
-        sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_kind, Operator.NotIn, DataTypeUtils.String, "'1','2','9','10','11'");
+        sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_kind, Operator.NotIn, DataTypeUtils.String,
+            "'1','2','9','10','11'");
 
         if (this.txtBackdateStart.Text.Trim() != "" && this.txtBackdateEnd.Text.Trim() != "")
         {
-            sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_indate1, Operator.LessThanEqual, DataTypeUtils.String, this.txtBackdateEnd.Text.Trim());
-            sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_indate1, Operator.GreaterThanEqual, DataTypeUtils.String, this.txtBackdateStart.Text.Trim());
+            sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_indate1, Operator.LessThanEqual, DataTypeUtils.String,
+                this.txtBackdateEnd.Text.Trim());
+            sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_indate1, Operator.GreaterThanEqual, DataTypeUtils.String,
+                this.txtBackdateStart.Text.Trim());
         }
 
-        sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_card_file, Operator.Equal, DataTypeUtils.String, ViewState["strCardfile"].ToString());
+        sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_card_file, Operator.Equal, DataTypeUtils.String,
+            ViewState["strCardfile"].ToString());
 
         return sqlhelp.GetFilterCondition();
     }
@@ -210,40 +215,33 @@ public partial class P060512000001 : PageBase
     {
         try
         {
-            // this.ReportViewer0512.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0512.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0512_2Report";
-            // this.ReportViewer0512.Visible = true;
-
-            //初始化報表參數,為Report View賦值參數
-
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[3];
-
-            if (this.txtBackdateStart.Text.Trim().Equals(""))
-            {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatestart", "NULL");
-            }
-            else
-            {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("indatestart", this.txtBackdateStart.Text.Trim());
-            }
-            if (this.txtBackdateEnd.Text.Trim().Equals(""))
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateend", "NULL");
-            }
-            else
-            {
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("indateend", this.txtBackdateEnd.Text.Trim());
-            }
-            if (ViewState["strCardfile"].ToString().Equals(""))
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("strCardfile", "NULL");
-            }
-            else
-            {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("strCardfile", ViewState["strCardfile"].ToString());
-            }
+            string strMsgId = string.Empty;
+            Dictionary<string, string> param = new Dictionary<string, string>();
             
-            // this.ReportViewer0512.ServerReport.SetParameters(Paras);
+            #region 查詢條件參數
+
+            param.Add("indatestart", this.txtBackdateStart.Text.Trim().Equals("") ? "NULL" : this.txtBackdateStart.Text.Trim());
+            param.Add("indateend", this.txtBackdateEnd.Text.Trim().Equals("") ? "NULL" : this.txtBackdateEnd.Text.Trim());
+            param.Add("strCardfile", ViewState["strCardfile"].ToString().Equals("") ? "NULL" : ViewState["strCardfile"].ToString());
+
+            #endregion
+            
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0512_2Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
         }
         catch (Exception exp)
         {
@@ -291,15 +289,50 @@ public partial class P060512000001 : PageBase
     {
         if (this.txtBackdateStart.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
             return;
         }
+
         if (txtBackdateEnd.Text.Trim().Equals(""))
         {
-           // MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06051200_000");
             return;
         }
-        //* 傳遞參數加密
-        Response.Redirect("P060512000002.aspx?indatefrom=" + RedirectHelper.GetEncryptParam(txtBackdateStart.Text.Trim()) + " &indateto=" + RedirectHelper.GetEncryptParam(txtBackdateEnd.Text.Trim()), false);
+
+        try
+        {
+            string strMsgId = string.Empty;
+            Dictionary<string, string> param = new Dictionary<string, string>();
+
+            #region 查詢條件參數
+
+            param.Add("indatefrom", txtBackdateStart.Text.Trim().Equals("") ? "NULL" : txtBackdateStart.Text.Trim());
+            param.Add("indateto", txtBackdateEnd.Text.Trim().Equals("") ? "NULL" : txtBackdateEnd.Text.Trim());
+
+            #endregion
+
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0512_1Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
+        }
+        catch (Exception exp)
+        {
+            Logging.Log(exp, LogLayer.UI);
+            return;
+        }
     }
 }

@@ -12,9 +12,8 @@ using System.Data;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.Common.Message;
-using System.Configuration;
+using Framework.Common.Utility;
 using System.IO;
-
 
 public partial class P060509000001 : PageBase
 {
@@ -33,19 +32,19 @@ public partial class P060509000001 : PageBase
 
         if (txtMaildateStart.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
             return;
         }
 
         if (txtMaildateEnd.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
             return;
         }
 
         if (txtCode.Text.Trim().Equals(""))
         {
-            //MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_002");
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_002");
             return;
         }
 
@@ -65,7 +64,7 @@ public partial class P060509000001 : PageBase
             #endregion
 
             string strServerPathFile =
-                this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+                this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0509Report(param, ref strServerPathFile, ref strMsgId);

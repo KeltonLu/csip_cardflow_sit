@@ -12,7 +12,7 @@ using System.Web.UI.WebControls;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.Common.Message;
-using System.Configuration;
+using Framework.Common.Utility;
 using System.IO;
 
 public partial class P060517000001 : PageBase
@@ -113,7 +113,7 @@ public partial class P060517000001 : PageBase
             param.Add("Action", ddlAction.SelectedValue.Equals("0") ? "NULL" : ddlAction.SelectedValue.Trim());
 
 
-            string strServerPathFile = this.Server.MapPath(ConfigurationManager.AppSettings["ExportExcelFilePath"].ToString());
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
             //產生報表
             bool result = BR_Excel_File.CreateExcelFile_0517Report(param, ref strServerPathFile, ref strMsgId);

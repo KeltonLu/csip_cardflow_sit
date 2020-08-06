@@ -9,23 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
-using System.ComponentModel;
-using Framework.Data.OM.OMAttribute;
-using System.Reflection;
-using System.Xml.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Collections;
 using Framework.Common.Logging;
-using System.Diagnostics;
-using Framework.Data.OM;
 using Framework.Data.OM.Collections;
 using System.Data;
 using System.Data.Common;
 using Framework.Data;
-using CSIPCommonModel.BaseItem;
 using Framework.Common.Message;
+using Framework.Common;
 
 namespace BusinessRules
 {

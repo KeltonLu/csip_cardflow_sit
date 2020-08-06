@@ -6,24 +6,15 @@
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
+using System.IO;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using EntityLayer;
+using CSIPCommonModel.EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
-using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
-using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
-using System.Configuration;
 
 public partial class P060515000001 : PageBase
 {
@@ -143,71 +134,76 @@ public partial class P060515000001 : PageBase
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        string strMsgID = string.Empty;
-        if (!CheckCondition(ref strMsgID))
+        string strMsgId = string.Empty;
+        if (!CheckCondition(ref strMsgId))
         {
-            // this.ReportViewer0515.Visible = false;
-            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgId) + "')");
             return;
         }
 
+        string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
+        
         try
         {
-            // this.ReportViewer0515.ServerReport.ReportServerUrl = new System.Uri(ConfigurationManager.AppSettings["ReportServerUrl"].ToString());
-            // this.ReportViewer0515.ServerReport.ReportPath = ConfigurationManager.AppSettings["ReportPath"].ToString() + "0515Report";
-            // this.ReportViewer0515.Visible = true;
-
-            //初始化報表參數,為Report View賦值參數
-            // Microsoft.Reporting.WebForms.ReportParameter[] Paras = new Microsoft.Reporting.WebForms.ReportParameter[8];
-
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            
             //*製卡日期
             if (rdbMake.Checked)
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("MstatrDate", this.dpMakeStime.Text.Trim());
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("MendDate", this.dpMakeEtime.Text.Trim());
-
-                // Paras[6] = new Microsoft.Reporting.WebForms.ReportParameter("CountS", dpMakeStime.Text.Trim());
-                // Paras[7] = new Microsoft.Reporting.WebForms.ReportParameter("CountE", dpMakeEtime.Text.Trim());
+                param.Add("MstatrDate", this.dpMakeStime.Text.Trim());
+                param.Add("MendDate", this.dpMakeEtime.Text.Trim());
+                param.Add("CountS", this.dpMakeStime.Text.Trim());
+                param.Add("CountE", this.dpMakeEtime.Text.Trim());
             }
             else
             {
-                // Paras[0] = new Microsoft.Reporting.WebForms.ReportParameter("MstatrDate", "NULL");
-                // Paras[1] = new Microsoft.Reporting.WebForms.ReportParameter("MendDate", "NULL");
+                param.Add("MstatrDate", "NULL");
+                param.Add("MendDate", "NULL");
             }
 
             //*郵寄日期
             if (rdbPost.Checked)
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("PstatrDate", this.dpPostStime.Text.Trim());
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("PendDate", this.dpPostEtime.Text.Trim());
-
-                // Paras[6] = new Microsoft.Reporting.WebForms.ReportParameter("CountS", dpPostStime.Text.Trim());
-                // Paras[7] = new Microsoft.Reporting.WebForms.ReportParameter("CountE", dpPostEtime.Text.Trim());
+                param.Add("PstatrDate", this.dpPostStime.Text.Trim());
+                param.Add("PendDate", this.dpPostEtime.Text.Trim());
+                param.Add("CountS", this.dpPostStime.Text.Trim());
+                param.Add("CountE", this.dpPostEtime.Text.Trim());
             }
             else
             {
-                // Paras[2] = new Microsoft.Reporting.WebForms.ReportParameter("PstatrDate", "NULL");
-                // Paras[3] = new Microsoft.Reporting.WebForms.ReportParameter("PendDate", "NULL");
+                param.Add("PstatrDate", "NULL");
+                param.Add("PendDate", "NULL");
             }
 
             if (ddlFactory.SelectedValue.Equals("0"))
             {
-                // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("Factory", "00");
-                // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("FactoryName", BaseHelper.GetShowText("06_06051900_009"));
+                param.Add("Factory", "00");
+                param.Add("FactoryName", BaseHelper.GetShowText("06_06051900_009"));
             }
             else
             {
-                // Paras[4] = new Microsoft.Reporting.WebForms.ReportParameter("Factory", this.ddlFactory.SelectedValue);
-                // Paras[5] = new Microsoft.Reporting.WebForms.ReportParameter("FactoryName", this.ddlFactory.SelectedItem.Text.Trim());
+                param.Add("Factory", this.ddlFactory.SelectedValue);
+                param.Add("FactoryName", this.ddlFactory.SelectedItem.Text.Trim());
             }
 
-
-
-            // this.ReportViewer0515.ServerReport.SetParameters(Paras);
+            Boolean result = BR_Excel_File.CreateExcelFile_0515Report(param, ref strServerPathFile, ref strMsgId);
+            
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
         }
         catch (Exception exp)
         {
-            // this.ReportViewer0515.Visible = false;
             Logging.Log(exp, LogLayer.BusinessRule);
             MessageHelper.ShowMessage(this, "06_05150000_003");
 

@@ -9,31 +9,14 @@
 
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
-using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
 using System.Collections;
-using System.IO;
 using Framework.Data.OM.Collections;
-using Framework.Common.Utility;
-using System.Resources.Tools;
-using System.Text;
-using System.Text.RegularExpressions;
-using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
 //20161108 (U) by Tank
-using Framework.Data;
 using System.Data.SqlClient;
 
 /// <summary>

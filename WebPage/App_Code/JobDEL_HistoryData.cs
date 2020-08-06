@@ -8,33 +8,12 @@
 
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using System.Data.SqlClient;
-using Framework.Data.OM.Transaction;
-using Framework.Data.OM.Collections;
-using Framework.Data.OM;
 using Framework.Data;
-using Framework.WebControls;
 using Framework.Common.Utility;
-using Framework.Common.Message;
-using Framework.Common.JavaScript;
 using Framework.Common.Logging;
-using CSIPCommonModel.EntityLayer;
 using CSIPCommonModel.BusinessRules;
-using BusinessRules;
 using Quartz;
-using Quartz.Impl;
-using Framework.Common.IO;
-using System.Collections;
-using System.IO;
-using System.Collections.Generic;
-
 
 /// <summary>
 /// jobBackup 的摘要描述
@@ -48,7 +27,7 @@ public class JobDEL_HistoryData : IJob
         //
     }
 
-    string strFuncKey = ConfigurationManager.AppSettings["FunctionKey"].ToString();
+    string strFuncKey = UtilHelper.GetAppSettings("FunctionKey");
     string strSucc = "";
     DateTime dTimeStart;
     private string strJobID;
@@ -143,7 +122,7 @@ public class JobDEL_HistoryData : IJob
             DataHelper dh = new DataHelper();
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.StoredProcedure;
-            sqlcmd.CommandTimeout = int.Parse(ConfigurationManager.AppSettings["SqlCmdTimeoutMax"].ToString());
+            sqlcmd.CommandTimeout = int.Parse(UtilHelper.GetAppSettings("SqlCmdTimeoutMax"));
             sqlcmd.CommandText = "SP_DEL_HistoryData";
 
             SqlParameter Count = sqlcmd.Parameters.Add("@delCount", SqlDbType.VarChar, 10);

@@ -7,24 +7,16 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
-using Framework.WebControls;
 using BusinessRules;
-using Framework.Common.Cryptography;
 using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
-using Framework.Data.OM.Collections;
-using BusinessRulesNew;
 using CSIPCommonModel.EntityLayer;
+
 public partial class P060201000001 : PageBase
 {
     //Talas 20191003 SOC修改
@@ -92,8 +84,8 @@ public partial class P060201000001 : PageBase
         this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06020100_007");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
-        this.grvUserView.PageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["PageSize"].ToString());
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
 
     /// <summary>

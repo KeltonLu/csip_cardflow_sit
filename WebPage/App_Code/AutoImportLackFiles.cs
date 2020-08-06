@@ -7,17 +7,7 @@
 //*******************************************************************
 using System;
 using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using Quartz;
-using Quartz.Impl;
 using Framework.Common.Logging;
-using Framework.Common.Message;
 using Framework.Common.IO;
 using BusinessRules;
 using EntityLayer;
@@ -25,13 +15,9 @@ using System.Collections;
 using System.IO;
 using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
-using System.Resources.Tools;
 using System.Text;
-using CSIPCommonModel.EntityLayer;
 using CSIPCommonModel.BusinessRules;
-using System.Text.RegularExpressions;
 using Framework.Data.OM;
-
 
 public class AutoImportLackFiles : Quartz.IJob
 {
@@ -75,6 +61,7 @@ public class AutoImportLackFiles : Quartz.IJob
             #region load jobid and LocalPath
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             //strJobId = "0103";
             #endregion
             #region 記錄job啟動時間的分段
@@ -108,6 +95,7 @@ public class AutoImportLackFiles : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId).Equals("") || JobHelper.SerchJobStatus(strJobId).Equals("0"))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
                 //*job停止
             }
@@ -116,6 +104,7 @@ public class AutoImportLackFiles : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -133,6 +122,7 @@ public class AutoImportLackFiles : Quartz.IJob
             dtFileInfo = new DataTable();
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //*創建子目錄名稱，存放下載文件
@@ -147,7 +137,7 @@ public class AutoImportLackFiles : Quartz.IJob
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
                         //本地路徑
-                        strLocalPath = ConfigurationManager.AppSettings["FileDownload"] + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         ArrayList arrFileList = new ArrayList();
                         if (rowFileInfo["FtpFileName"].ToString().Length >= 2)
@@ -183,6 +173,7 @@ public class AutoImportLackFiles : Quartz.IJob
                                 {
                                     continue;
                                 }
+                                JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                                 //*下載檔案
                                 if (objFtp.Download(strFtpFileInfo + strFile, strLocalPath, strFile))
                                 {
@@ -198,7 +189,7 @@ public class AutoImportLackFiles : Quartz.IJob
                                     row["Trandate"] = rowFileInfo["AMPMFlg"].ToString(); //轉檔日設定
                                     row["ZipPwd"] = RedirectHelper.GetDecryptString(rowFileInfo["ZipPwd"].ToString()); //FTP壓縮檔密碼解密
                                     dtLocalFile.Rows.Add(row);
-                                    JobHelper.SaveLog(DateTime.Now.ToString() + " 下載檔案成功！", LogState.Info);
+                                    JobHelper.SaveLog("下載檔案成功！", LogState.Info);
                                 }
                             }
                             //*檔案不存在
@@ -210,6 +201,10 @@ public class AutoImportLackFiles : Quartz.IJob
 
                     }
                 }
+            }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
             }
 
             #endregion
@@ -225,6 +220,7 @@ public class AutoImportLackFiles : Quartz.IJob
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".txt");
+                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
@@ -235,6 +231,7 @@ public class AutoImportLackFiles : Quartz.IJob
                     // alInfo.Add(rowLocalFile["ZipFileName"]);
                     //解壓失敗發送Mail通知
                     // SendMail("1", alInfo, Resources.JobResource.Job0000002);
+                    JobHelper.SaveLog("解壓縮檔案失敗！");
                 }
             }
             if (errMsg != "")
@@ -277,9 +274,11 @@ public class AutoImportLackFiles : Quartz.IJob
 
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("ZipStates='S' and FormatStates='S'");
+            JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
             if (Row != null && Row.Length > 0)
             {
                 //*讀取檔名正確資料
+                JobHelper.SaveLog("開始讀取要匯入的檔案資料！", LogState.Info);
                 for (int rowcount = 0; rowcount < Row.Length; rowcount++)
                 {
                     strFileName = Row[rowcount]["TxtFileName"].ToString();
@@ -296,6 +295,7 @@ public class AutoImportLackFiles : Quartz.IJob
                                                                    //*檢核成功
                         if (UploadCheck(strPath, strFunctionName, strCardType, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
+                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
                             Row[rowcount]["CheckStates"] = "S";
 
                             Entity_CardBaseInfo eCardBaseInfo = new Entity_CardBaseInfo();
@@ -303,6 +303,7 @@ public class AutoImportLackFiles : Quartz.IJob
                             eCardBaseInfo.Merch_Code = Row[rowcount]["MerchCode"].ToString(); //*獲取製卡廠代碼
                             eCardBaseInfo.card_file = strFileName;                          //*匯入檔名
 
+                            JobHelper.SaveLog("開始匯入資料！", LogState.Info);
                             //*正式匯入
                             if (ImportToDB(dtDetail, strFileName, eCardBaseInfo, strCardType))
                             {
@@ -318,6 +319,7 @@ public class AutoImportLackFiles : Quartz.IJob
                         //*檢核失敗
                         else
                         {
+                            JobHelper.SaveLog("檢核檔案失敗！");
                             StringBuilder sbErrorFiles = new StringBuilder();
                             for (int i = 0; i < arrayErrorMsg.Count; i++)
                             {
@@ -349,6 +351,7 @@ public class AutoImportLackFiles : Quartz.IJob
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job010303, strPath));
                     }
                 }
+                JobHelper.SaveLog("結束讀取要匯入的檔案資料！", LogState.Info);
             }
             #endregion
 
@@ -357,6 +360,7 @@ public class AutoImportLackFiles : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());//*路徑未設置
+                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
             }
             #endregion
 
@@ -395,6 +399,7 @@ public class AutoImportLackFiles : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {
@@ -425,7 +430,7 @@ public class AutoImportLackFiles : Quartz.IJob
         if (null != dtCallMail && dtCallMail.Rows.Count > 0)
         {
             string strDateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            string strFrom = ConfigurationManager.AppSettings["MailSender"];
+            string strFrom = UtilHelper.GetAppSettings("MailSender");
             string[] strTo = new string[] { };
             string[] strCc = new string[] { };
             string strSubject = string.Empty;
