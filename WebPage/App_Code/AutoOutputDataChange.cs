@@ -74,6 +74,7 @@ public class AutoOutputDataChange : Quartz.IJob
 
             #region 記錄job啟動時間的分段
             string strAmOrPm = string.Empty;
+            JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             JobHelper.IsAmOrPm(StartTime, ref strAmOrPm);
             #endregion
 
@@ -126,6 +127,7 @@ public class AutoOutputDataChange : Quartz.IJob
             #region 判斷job工作狀態
             if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
             {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
                 return;
             }
             #endregion
@@ -133,6 +135,7 @@ public class AutoOutputDataChange : Quartz.IJob
             #region 檢測JOB今日是否為工作日，工作日才要執行
             if (!BRWORK_DATE.IS_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd")))
             {
+                JobHelper.SaveLog("今日非工作日！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -141,6 +144,7 @@ public class AutoOutputDataChange : Quartz.IJob
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
             }
@@ -360,9 +364,10 @@ public class AutoOutputDataChange : Quartz.IJob
             #endregion
 
             #region 壓縮檔案
-
+            JobHelper.SaveLog("開始壓縮檔案", LogState.Info);
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 for (int z = 0; z < dtLocalFile.Rows.Count; z++)
                 {
                     string strFile = strLocalPath + dtLocalFile.Rows[z]["TxtFileName"].ToString();
@@ -386,7 +391,10 @@ public class AutoOutputDataChange : Quartz.IJob
                     }
                 }
             }
-
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
+            }
             #endregion
 
             #region 登陸ftp上載文件
@@ -394,8 +402,10 @@ public class AutoOutputDataChange : Quartz.IJob
             string strFtpIp = string.Empty;
             string strFtpUserName = string.Empty;
             string strFtpPwd = string.Empty;
+            JobHelper.SaveLog("開始上傳文件", LogState.Info);
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
+                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //FTP 檔名
@@ -419,12 +429,14 @@ public class AutoOutputDataChange : Quartz.IJob
                         {
                             //*更新上載狀態為S
                             dtLocalFile.Rows[j]["UploadStates"] = "S";
+                            JobHelper.SaveLog(dtLocalFile.Rows[j]["ZipName"] + "上傳成功", LogState.Info);
                         }
                         else
                         {
                             errMsg += (errMsg == "" ? "" : "、") + dtLocalFile.Rows[j]["ZipName"];
                             //*更新上載狀態為F
                             dtLocalFile.Rows[j]["UploadStates"] = "F";
+                            JobHelper.SaveLog(dtLocalFile.Rows[j]["ZipName"] + "上傳失敗");
                             // alInfo.Add(dtLocalFile.Rows[j]["ZipName"]);
                             //上傳檔案失敗
                             // SendMail("1", alInfo, Resources.JobResource.Job0000042);
@@ -438,6 +450,10 @@ public class AutoOutputDataChange : Quartz.IJob
                         SendMail("1", alInfo, Resources.JobResource.Job0000042);
                     }
                 }
+            }
+            else
+            {
+                JobHelper.SaveLog("從DB抓取檔案資料失敗！");
             }
             #endregion
 
@@ -465,6 +481,7 @@ public class AutoOutputDataChange : Quartz.IJob
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             WriteLogToDB();
             #endregion
+            JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
         {

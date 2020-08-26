@@ -289,7 +289,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                             DateTime dt = BRWORK_DATE.IS_WORKDAY("06", _jobDate.ToString("yyyyMMdd")) ? 
                                 _jobDate : 
                                 DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), 1), "yyyyMMdd", null);
-
+                            dtDetail.Columns.Add("jobDate");
                             for (int i = 0; i < dtDetail.Rows.Count; i++)
                             {
                                 dtDetail.Rows[i]["jobDate"] = dt.ToString("yyyy/MM/dd");

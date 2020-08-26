@@ -57,6 +57,7 @@ public class JobDEL_HistoryData : IJob
             DataTable dtInfo = BRL_BATCH_LOG.GetRunningDate(strFuncKey, strJobID, "R", ref strMsgID);
             if (dtInfo == null || dtInfo.Rows.Count > 0)
             {
+                Logging.Log("JOB 工作狀態為：正在執行！", strJobID, LogState.Info);
                 return;
             }
             //*開始批次作業
@@ -88,6 +89,7 @@ public class JobDEL_HistoryData : IJob
             strJobMsg += Resources.JobResource.JobDEL_HistoryData001 + strDelCount;
 
             UpdateBatchLog(strJobMsg, dTimeStart);
+            Logging.Log("JOB結束！", strJobID, LogState.Info);
         }   
         catch (Exception exp)
         {
@@ -130,6 +132,7 @@ public class JobDEL_HistoryData : IJob
 
             dh.ExecuteNonQuery(sqlcmd);
             Del_Count = Count.Value.ToString();
+            Logging.Log("預計刪除筆數：" + Del_Count, strJobID, LogState.Info);
         }
         catch (System.Exception ex)
         {

@@ -115,12 +115,12 @@ namespace BusinessRules
 
                 string sql = @"SELECT * FROM(";
                 //自取
-                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and indate1<='" + strFetchDateSQL1 + "'  and IntoStore_Status='1'";
+                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and indate1<= @strFetchDateSQL1 and IntoStore_Status='1'";
                 sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//排除「已出庫、且出庫日已日結」的資料
                 sql += " and cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 sql += " union";
                 //自取+緊急製卡
-                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and Urgency_Flg='1' and indate1<='" + strFetchDateSQL2 + "'  and IntoStore_Status='1'";
+                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and Urgency_Flg='1' and indate1<= @strFetchDateSQL2 and IntoStore_Status='1'";
                 sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//排除「已出庫、且出庫日已日結」的資料
                 sql += " and cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 sql += " union";
@@ -129,7 +129,7 @@ namespace BusinessRules
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base ";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate ";
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
-                sql += " and InformMerchDate <='" + strFetchDateSQL2 + "'and IntoStore_Status='1' and IntoStore_Date>=back.ImportDate";
+                sql += " and InformMerchDate <= @strFetchDateSQL2 and IntoStore_Status='1' and IntoStore_Date>=back.ImportDate";
                 sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//排除「已出庫、且出庫日已日結」的資料
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
 
@@ -139,6 +139,9 @@ namespace BusinessRules
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strFetchDateSQL1", strFetchDateSQL1));
+                sqlcmd.Parameters.Add(new SqlParameter("@strFetchDateSQL2", strFetchDateSQL2));
+
                 DataSet ds = BRM_CardStockInfo.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);
                 if (ds != null)
                 {
@@ -264,16 +267,23 @@ namespace BusinessRules
             try
             {
 
+                // 專案代號:20200031-CSIP EOS 功能說明:處理資安-CSIP EOS 作者:Ares Luke 創建時間:2020/08/19
                 string sql = @"Update dbo.tbl_Card_BaseInfo";
                 sql += " Set IntoStore_Status='1',IntoStore_Date=convert(nvarchar(10),getdate(),111),OutStore_Status='0',OutStore_Date=''";
-                sql += " Where action='"+strAction+"' and id='"+strId+"' and cardno='"+strCardNo+"' and trandate='"+strTrandate+"'";
+                sql += " Where action= @strAction and id = @strId and cardno= @strCardNo and trandate= @strTrandate";
 
                 sql += " Insert into dbo.tbl_Card_StockInfo(IntoStore_Date,cardno,OutStore_Status,OutStore_Date,custname,id,action,trandate)";
-                sql += " Values(convert(nvarchar(10),getdate(),111),'"+strCardNo+"','0','','"+strCustname+"','"+strId+"','"+strAction+"','"+strTrandate+"')";
+                sql += " Values(convert(nvarchar(10),getdate(),111), @strCardNo ,'0','', @strCustname , @strId , @strAction , @strTrandate )";
 
-                SqlCommand sqlcmd = new SqlCommand();
-                sqlcmd.CommandType = CommandType.Text;
-                sqlcmd.CommandText = sql;
+                SqlCommand sqlcmd = new SqlCommand {CommandType = CommandType.Text, CommandText = sql};
+                sqlcmd.Parameters.Add(new SqlParameter("@strAction", strAction));
+                sqlcmd.Parameters.Add(new SqlParameter("@strId", strId));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCardNo", strCardNo));
+                sqlcmd.Parameters.Add(new SqlParameter("@strTrandate", strTrandate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCustname", strCustname));
+                sqlcmd.Parameters.Add(new SqlParameter("@strAction", strAction));
+                sqlcmd.Parameters.Add(new SqlParameter("@strTrandate", strTrandate));
+
                 if (BRM_CardStockInfo.Add(sqlcmd))
                 {
                     return true;
@@ -302,16 +312,21 @@ namespace BusinessRules
         {
             try
             {
+                // 專案代號:20200031-CSIP EOS 功能說明:處理資安-CSIP EOS 作者:Ares Luke 創建時間:2020/08/19
                 string sql = @"Update dbo.tbl_Card_BaseInfo";
                 sql += " Set IntoStore_Status='0',IntoStore_Date='',OutStore_Status='0',OutStore_Date=''";
-                sql += " Where action='" + strAction + "' and id='" + strId + "' and cardno='" + strCardNo + "' and trandate='" + strTrandate + "'";
+                sql += " Where action= @strAction  and id= @strId and cardno= @strCardNo and trandate= @strTrandate";
 
                 sql += " Delete from dbo.tbl_Card_StockInfo";
-                sql += " where IntoStore_Date='" + strIntoStoreDate + "' and cardno='" + strCardNo + "'";
+                sql += " where IntoStore_Date= @strIntoStoreDate and cardno= @strCardNo ";
 
-                SqlCommand sqlcmd = new SqlCommand();
-                sqlcmd.CommandType = CommandType.Text;
-                sqlcmd.CommandText = sql;
+                SqlCommand sqlcmd = new SqlCommand {CommandType = CommandType.Text, CommandText = sql};
+                sqlcmd.Parameters.Add(new SqlParameter("@strAction", strAction));
+                sqlcmd.Parameters.Add(new SqlParameter("@strId", strId));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCardNo", strCardNo));
+                sqlcmd.Parameters.Add(new SqlParameter("@strTrandate", strTrandate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strIntoStoreDate", strIntoStoreDate));
+
                 if (BRM_CardStockInfo.Delete(sqlcmd))
                 {
                     return true;
@@ -374,10 +389,12 @@ namespace BusinessRules
         {
             try
             {
-                string sql = @"select mailno from tbl_Card_StockInfo where cardno ='" + strCardNo + "' and IntoStore_Date='" + strIntoStoreDate + "'";
-                SqlCommand sqlcmd = new SqlCommand();
-                sqlcmd.CommandType = CommandType.Text;
-                sqlcmd.CommandText = sql;
+                // 專案代號:20200031-CSIP EOS 功能說明:處理資安-CSIP EOS 作者:Ares Luke 創建時間:2020/08/19
+                string sql = @"select mailno from tbl_Card_StockInfo where cardno = @strCardNo and IntoStore_Date = @strIntoStoreDate ";
+                SqlCommand sqlcmd = new SqlCommand {CommandType = CommandType.Text, CommandText = sql};
+                sqlcmd.Parameters.Add(new SqlParameter("@strCardNo", strCardNo));
+                sqlcmd.Parameters.Add(new SqlParameter("@strIntoStoreDate", strIntoStoreDate));
+
                 DataSet ds = BRM_CardStockInfo.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {

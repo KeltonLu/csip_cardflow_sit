@@ -227,7 +227,6 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
-                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
                             JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))

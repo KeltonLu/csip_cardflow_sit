@@ -42,6 +42,18 @@ public partial class P060509000001 : PageBase
             return;
         }
 
+        if (txtIndateStart.Text.Trim().Equals(""))
+        {
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+            return;
+        }
+
+        if (txtIndateEnd.Text.Trim().Equals(""))
+        {
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+            return;
+        }
+
         if (txtCode.Text.Trim().Equals(""))
         {
             MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_002");
@@ -57,6 +69,10 @@ public partial class P060509000001 : PageBase
             // 郵寄日期
             param.Add("maildatefrom", txtMaildateStart.Text.Trim());
             param.Add("maildateto", txtMaildateEnd.Text.Trim());
+
+            // 製卡日期
+            param.Add("indatefrom", txtIndateStart.Text.Trim());
+            param.Add("indateto", txtIndateEnd.Text.Trim());
 
             // 分行代碼
             param.Add("branchid", txtCode.Text.Trim());

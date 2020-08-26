@@ -120,10 +120,55 @@
                         </tr>
                         <tr align="center" class="itemTitle">
                             <td colspan="6">
-                                <cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
-                                    ShowID="06_06050800_006" OnClick="btnSearch_Click" />&nbsp;&nbsp;
-                            </td>
-                        </tr>
+								<cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
+									ShowID="06_06050800_006" OnClick="btnSearch_Click" />
+								<cc1:CustButton ID="btnPrint" runat="Server" class="smallButton" Style="width: 50px;"
+									ShowID="06_06050800_008" OnClick="btnPrint_Click" />
+							</td>
+						</tr>
+                </table>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
+                    <tr>
+                        <td colspan="20">
+                            <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
+                                PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+                                BorderStyle="Solid" >
+                                <RowStyle CssClass="Grid_Item" Wrap="True" />
+                                <SelectedRowStyle CssClass="Grid_SelectedItem" />
+                                <HeaderStyle CssClass="Grid_Header" Wrap="False" />
+                                <AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+                                <PagerSettings Visible="False" />
+                                <EmptyDataRowStyle HorizontalAlign="Center" />
+                                <Columns>
+                                    <asp:BoundField DataField="ID">
+                                        <itemstyle width="15%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="CardNo">
+                                        <itemstyle width="20%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="Imp_Date">
+                                        <itemstyle width="15%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="Maildate">
+                                        <itemstyle width="15%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="Mailno">
+                                        <itemstyle width="20%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="Info1Name">
+                                        <itemstyle width="15%" horizontalalign="Center" />
+                                    </asp:BoundField>
+                                </Columns>
+                            </cc1:CustGridView>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <cc1:GridPager ID="gpList" runat="server" AlwaysShow="True" CustomInfoTextAlign="Right"
+                                InputBoxStyle="height:15px" OnPageChanged="gpList_PageChanged">
+                            </cc1:GridPager>
+                        </td>
+                    </tr>
                 </table>
             </ContentTemplate>
         </asp:UpdatePanel>

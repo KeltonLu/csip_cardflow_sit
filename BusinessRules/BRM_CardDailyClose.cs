@@ -58,10 +58,13 @@ namespace BusinessRules
         {
             try
             {
-                string sql = @"Select * From [tbl_Card_DailyClose] Where  [DailyCloseDate] ='" + strDailyCloseDate + "'";
-                SqlCommand sqlcmd = new SqlCommand();
-                sqlcmd.CommandType = CommandType.Text;
-                sqlcmd.CommandText = sql;
+
+                // 專案代號:20200031-CSIP EOS 功能說明:處理資安-CSIP EOS 作者:Ares Luke 創建時間:2020/08/19
+                string sql = @"Select * From [tbl_Card_DailyClose] Where  [DailyCloseDate] = @strDailyCloseDate";
+                SqlCommand sqlcmd = new SqlCommand {CommandType = CommandType.Text, CommandText = sql};
+                SqlParameter paramDate = new SqlParameter("@strDailyCloseDate" , strDailyCloseDate);
+                sqlcmd.Parameters.Add(paramDate);
+
                 DataSet ds = BRM_CardDailyClose.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {

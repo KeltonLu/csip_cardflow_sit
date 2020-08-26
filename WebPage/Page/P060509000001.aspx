@@ -75,13 +75,29 @@
                         </cc1:DatePicker>
                     </td>
                     <td align="right" style="height: 25px; width: 15%">
+                        <cc1:CustLabel ID="CustLabel1" runat="server" FractionalDigit="2" IsColon="True"
+                                       IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                       SetOmit="False" StickHeight="False" ShowID="06_06050900_004" CurAlign="left"
+                                       CurSymbol="£">
+                        </cc1:CustLabel>
+                    </td>
+                    <td style="height: 25px; width: 35%">
+                        <cc1:DatePicker ID="txtIndateStart" runat="server" Width="74">
+                        </cc1:DatePicker>
+                        ~
+                        <cc1:DatePicker ID="txtIndateEnd" runat="server" Width="74">
+                        </cc1:DatePicker>
+                    </td>
+                </tr>
+                <tr class="trEven">
+                    <td align="right" style="height: 25px; width: 15%">
                         <cc1:CustLabel ID="CustLabel4" runat="server" FractionalDigit="2" IsColon="True"
                                        IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
                                        SetOmit="False" StickHeight="False" ShowID="06_06050900_002" CurAlign="left"
                                        CurSymbol="£">
                         </cc1:CustLabel>
                     </td>
-                    <td style="height: 25px; width: 35%">
+                    <td style="height: 25px; width: 85%" colspan="3">
                         <cc1:CustTextBox ID="txtCode" runat="server" InputType="Int" MaxLength="4" OnTextChanged="txtCode_TextChanged"
                                          AutoPostBack="True" Width="74px">
                         </cc1:CustTextBox>

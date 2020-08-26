@@ -185,11 +185,15 @@ public class AutoExportBackInfo : Quartz.IJob
                             //strFileContent1 +=  JobHelper.SetStrngValue(rowExport["NewName"].ToString().Trim(),10);//*姓名
                             if (rowExport["NewName"].ToString().Trim() != "")
                             {
-                                strFileContent1 += JobHelper.SetStrngValue(rowExport["NewName"].ToString().Trim().Substring(1), 10);//*新姓名
+                                String str = rowExport["NewName"].ToString().Trim();
+                                str = (str.Length > 0 ? str.Substring(1) : str);
+                                strFileContent1 += JobHelper.SetStrngValue(str, 10);//*新姓名
                             }
                             else
                             {
-                                strFileContent1 += JobHelper.SetStrngValue(rowExport["CustName"].ToString().Trim().Substring(1), 10);//*姓名
+                                String str = rowExport["CustName"].ToString().Trim();
+                                str = (str.Length > 0 ? str.Substring(1) : str);
+                                strFileContent1 += JobHelper.SetStrngValue(str, 10);//*姓名
                             }
                             //* end update
 

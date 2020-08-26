@@ -261,6 +261,8 @@ from (SELECt distinct maildate,
       FROM dbo.tbl_Card_BaseInfo base
       where (@maildatefrom is null or convert(datetime, maildate, 120) >= convert(datetime, @maildatefrom, 120))
         and (@maildateto is null or convert(datetime, maildate, 120) <= convert(datetime, @maildateto, 120))
+        and (@indatefrom is null or convert(datetime, indate1, 120) >= convert(datetime, @indatefrom, 120))
+        and (@indateto is null or convert(datetime, indate1, 120) <= convert(datetime, @indateto, 120))
         and branch_id = @branchid
         --and kind='23'
         and kind in ('21', '22', '23', '24')
@@ -430,32 +432,61 @@ group by ReasonName
     #region SearchExport0517
 
     private const string SearchExport0517 = @"
-select distinct  m.Reason,
-  CASE m.Reason WHEN '1' THEN '招領逾期' WHEN '2' THEN '無此人' 
-WHEN '3' THEN '址欠詳' WHEN '4' THEN '遷移不明' 
-WHEN '5' THEN '拒收' WHEN '6' THEN '離職'
-WHEN '7' THEN '死亡' WHEN '8' THEN '信箱退租'
-WHEN '9' THEN '原因不明' 
- END as ReasonName,
-(select count(cardno) from tbl_Card_BackInfo 
-	where Reason=m.Reason and Action='1' and (Action = @Action OR @Action = 'NULL')  and Backdate BETWEEN @MstatrDate AND @MendDate) as Action1,
-(select count(cardno) from tbl_Card_BackInfo 
-	where Reason=m.Reason and Action='2' and (Action = @Action OR @Action = 'NULL')  and Backdate BETWEEN @MstatrDate AND @MendDate ) as Action2,
-(select count(cardno) from tbl_Card_BackInfo 
-	where Reason=m.Reason and Action='3' and (Action = @Action OR @Action = 'NULL')  and Backdate BETWEEN @MstatrDate AND @MendDate ) as Action3,
-(select count(cardno) from tbl_Card_BackInfo 
-	where Reason=m.Reason and Action='4' and (Action = @Action OR @Action = 'NULL')   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action4,
-(select count(cardno) from tbl_Card_BackInfo 
-	where Reason=m.Reason and Action='5'  and (Action = @Action OR @Action = 'NULL')  and Backdate BETWEEN @MstatrDate AND @MendDate) as Action5
-from 
-(
-select Reason
-from tbl_Card_BackInfo 
-where
-(Backdate BETWEEN @MstatrDate AND @MendDate ) AND
-(Action = @Action OR @Action = 'NULL')
-group by Reason
-) m
+select distinct -- m.Reason,
+                CASE m.Reason
+                    WHEN '1' THEN '招領逾期'
+                    WHEN '2' THEN '無此人'
+                    WHEN '3' THEN '址欠詳'
+                    WHEN '4' THEN '遷移不明'
+                    WHEN '5' THEN '拒收'
+                    WHEN '6' THEN '離職'
+                    WHEN '7' THEN '死亡'
+                    WHEN '8' THEN '信箱退租'
+                    WHEN '9' THEN '原因不明'
+                    END                                            as ReasonName,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action = '1'
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action1,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action = '2'
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action2,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action = '3'
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action3,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action = '4'
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action4,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action = '5'
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action5,
+                (select count(cardno)
+                 from tbl_Card_BackInfo
+                 where Reason = m.Reason
+                   and Action in ('1','2','3','4','5')
+                   and (Action = @Action OR @Action = 'NULL')
+                   and Backdate BETWEEN @MstatrDate AND @MendDate) as Action6
+from (
+         select Reason
+         from tbl_Card_BackInfo
+         where (Backdate BETWEEN @MstatrDate AND @MendDate)
+           AND (Action = @Action OR @Action = 'NULL')
+         group by Reason
+     ) m
 ";
 
     #endregion
@@ -599,6 +630,155 @@ else
                 where a.CardBackStatus <> '2'
                 order by a.Enddate, a.Action, a.serial_no
             end
+";
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢需求功能SQL修改
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private const string SearchExport0518_1 = @"
+        select a.serial_no,
+               a.CustName,
+               a.id,
+               isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
+               (case
+                    when a.Action = '1' then '新卡'
+                    when a.Action = '2' then '掛失補發卡'
+                    when a.Action = '3' then '毀損補發卡'
+                    when a.Action = '4' then '補發密碼'
+                    when a.Action = '5' then '年度換卡'
+                    else '' end) as                                                               ActionName,
+               --a.Action,
+               a.CardNo,
+               a.Backdate,
+               (case
+                    when a.Reason = '1' then '招領逾期'
+                    when a.Reason = '2' then '無此人'
+                    when a.Reason = '3' then '址欠詳'
+                    when a.Reason = '4' then '遷移不明'
+                    when a.Reason = '5' then '拒收'
+                    when a.Reason = '6' then '離職'
+                    when a.Reason = '7' then '死亡'
+                    when a.Reason = '8' then '信箱退租'
+                    when a.Reason = '9' then '原因不明'
+                    else '' end) as                                                               Reason,
+               a.Closedate,
+               (case
+                    when a.Enditem = '0' then '自取'
+                    when a.Enditem = '1' then '普掛'
+                    when a.Enditem = '2' then '限掛'
+                    when a.Enditem = '3' then '快遞'
+                    when a.Enditem = '4' then '夜間投遞'
+                    when a.Enditem = '5' then '註銷'
+                    when a.Enditem = '6' then '碎卡'
+                    else '' end) as                                                               Enditem
+        from tbl_Card_BackInfo a
+                 join tbl_Card_BaseInfo b
+                      on a.cardno = b.cardno and a.action = b.action and a.id = b.id and a.trandate = b.trandate
+        where --a.CardBackStatus <> '2'
+          --and
+            (@datefrom is null or convert(datetime, a.ImportDate, 120) >= convert(datetime, @datefrom, 120))
+          and (@dateto is null or convert(datetime, a.ImportDate, 120) <= convert(datetime, @dateto, 120))
+        order by a.Enddate, a.Action, a.serial_no
+";
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢需求功能SQL修改
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private const string SearchExport0518_2 = @"
+            select a.serial_no,
+                   a.CustName,
+                   a.id,
+                   isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
+                   (case
+                        when a.Action = '1' then '新卡'
+                        when a.Action = '2' then '掛失補發卡'
+                        when a.Action = '3' then '毀損補發卡'
+                        when a.Action = '4' then '補發密碼'
+                        when a.Action = '5' then '年度換卡'
+                        else '' end) as                                                               ActionName,
+                   --a.Action,
+                   a.CardNo,
+                   a.Backdate,
+                   (case
+                        when a.Reason = '1' then '招領逾期'
+                        when a.Reason = '2' then '無此人'
+                        when a.Reason = '3' then '址欠詳'
+                        when a.Reason = '4' then '遷移不明'
+                        when a.Reason = '5' then '拒收'
+                        when a.Reason = '6' then '離職'
+                        when a.Reason = '7' then '死亡'
+                        when a.Reason = '8' then '信箱退租'
+                        when a.Reason = '9' then '原因不明'
+                        else '' end) as                                                               Reason,
+                   a.Closedate,
+                   (case
+                        when a.Enditem = '0' then '自取'
+                        when a.Enditem = '1' then '普掛'
+                        when a.Enditem = '2' then '限掛'
+                        when a.Enditem = '3' then '快遞'
+                        when a.Enditem = '4' then '夜間投遞'
+                        when a.Enditem = '5' then '註銷'
+                        when a.Enditem = '6' then '碎卡'
+                        else '' end) as                                                               Enditem
+            from tbl_Card_BackInfo a
+                     join tbl_Card_BaseInfo b
+                          on a.cardno = b.cardno and a.action = b.action and a.id = b.id and a.trandate = b.trandate
+            where a.CardBackStatus = '2'
+              and (@datefrom is null or convert(datetime, a.Closedate, 120) >= convert(datetime, @datefrom, 120))
+              and (@dateto is null or convert(datetime, a.Closedate, 120) <= convert(datetime, @dateto, 120))
+            order by a.Enddate, a.Action, a.serial_no
+";
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢需求功能SQL修改
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private const string SearchExport0518_3 = @"
+                select a.serial_no,
+                       a.CustName,
+                       a.id,
+                       isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
+                       (case
+                            when a.Action = '1' then '新卡'
+                            when a.Action = '2' then '掛失補發卡'
+                            when a.Action = '3' then '毀損補發卡'
+                            when a.Action = '4' then '補發密碼'
+                            when a.Action = '5' then '年度換卡'
+                            else '' end) as                                                               ActionName,
+                       --a.Action,
+                       a.CardNo,
+                       a.Backdate,
+                       (case
+                            when a.Reason = '1' then '招領逾期'
+                            when a.Reason = '2' then '無此人'
+                            when a.Reason = '3' then '址欠詳'
+                            when a.Reason = '4' then '遷移不明'
+                            when a.Reason = '5' then '拒收'
+                            when a.Reason = '6' then '離職'
+                            when a.Reason = '7' then '死亡'
+                            when a.Reason = '8' then '信箱退租'
+                            when a.Reason = '9' then '原因不明'
+                            else '' end) as                                                               Reason,
+                       a.Closedate,
+                       (case
+                            when a.Enditem = '0' then '自取'
+                            when a.Enditem = '1' then '普掛'
+                            when a.Enditem = '2' then '限掛'
+                            when a.Enditem = '3' then '快遞'
+                            when a.Enditem = '4' then '夜間投遞'
+                            when a.Enditem = '5' then '註銷'
+                            when a.Enditem = '6' then '碎卡'
+                            else '' end) as                                                               Enditem
+                from tbl_Card_BackInfo a
+                         join tbl_Card_BaseInfo b
+                              on a.cardno = b.cardno and a.action = b.action and a.id = b.id and a.trandate = b.trandate
+                where a.CardBackStatus <> '2'
+                order by a.Enddate, a.Action, a.serial_no
 ";
 
     #endregion
@@ -1613,7 +1793,7 @@ WHERE BASE.CARDNO = STOCK.CARDNO
 ";
 
     #endregion
-    
+
     #region SearchExport0604
 
     private const string SearchExport0604 = @"
@@ -1635,7 +1815,7 @@ ORDER BY L.CREATE_DT DESC
 ";
 
     #endregion
-    
+
     #region SearchExport0511
 
     private const string SearchExport0511 = @"
@@ -1706,7 +1886,7 @@ ORDER BY UPDDATE DESC
 ";
 
     #endregion
-    
+
     #region SearchExport0512_2
 
     private const string SearchExport0512_2 = @"
@@ -1741,9 +1921,9 @@ WHERE A.KIND NOT IN ('1', '2', '9', '10', '11')
 ";
 
     #endregion
-    
+
     #region SearchExport0512_1
-              
+
     private const string SearchExport0512_1 = @"
 SELECT TB1.CARD_FILE,
        ISNULL(TB1.ALLNUM, 0)                       AS ALLNUM,
@@ -1765,9 +1945,9 @@ FROM (SELECT A.CARD_FILE, COUNT(*) AS ALLNUM
         AND (@INDATETO IS NULL OR CONVERT(DATETIME, A.INDATE1, 120) <= CONVERT(DATETIME, @INDATETO, 120))
       GROUP BY A.CARD_FILE) TB2 ON TB1.CARD_FILE = TB2.CARD_FILE
               ";
-              
+
     #endregion
-    
+
     #region SearchExport0209
 
     private const string SearchExport0209 = @"
@@ -1914,13 +2094,15 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0502Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0502Report" + ".xlsx";
@@ -1977,7 +2159,8 @@ WHERE CANCELOASAFILE = @STRFILE
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SearchExport0503
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0503
             };
 
             foreach (var data in param)
@@ -2020,13 +2203,16 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0503Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int indexInSheetStart = 2;
 
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
 
             // 保存文件到程序運行目錄下
@@ -2084,7 +2270,8 @@ WHERE CANCELOASAFILE = @STRFILE
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SearchExport0504
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0504
             };
 
             foreach (var data in param)
@@ -2127,7 +2314,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0504Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int intRowIndexInSheet = 1;
@@ -2227,7 +2414,8 @@ WHERE CANCELOASAFILE = @STRFILE
             //* 聲明SQL Command變量
             SqlCommand sqlSearchData = new SqlCommand
             {
-                CommandType = CommandType.Text, CommandText = SearchExport0506
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0506
             };
 
             foreach (var data in param)
@@ -2270,7 +2458,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0506Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int indexInSheetStart = 2;
@@ -2328,7 +2516,7 @@ WHERE CANCELOASAFILE = @STRFILE
             int pageFooterNum = indexInSheetEnd;
             Range range1 = sheet.Range["A" + pageFooterNum, "D" + pageFooterNum];
             //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet) workbook.Sheets[2];
+            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
             Range range2 = sheet2.Range["A1", "D3"];
             //合併
             range2.Copy();
@@ -2444,7 +2632,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0507Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int indexInSheetStart = 2;
@@ -2548,25 +2736,9 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 取要下載的資料
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0508
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0508(param, ref count);
 
             #region 查無資料
 
@@ -2597,7 +2769,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0508Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //初始ROW位置
             int indexInSheetStart = 2;
@@ -2674,7 +2846,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/14
+    /// </summary>
+    public static Boolean GetDataTable0508(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0508(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/14
+    /// </summary>
+    private static DataSet searchData0508(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
 
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0508
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
     #endregion
 
     #region 製卡相關資料查詢 - Excel
@@ -2699,25 +2935,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0519
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0519(param, ref count);
 
             #region 查無資料
 
@@ -2748,13 +2968,16 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0519Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
+
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".xlsx";
@@ -2777,6 +3000,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    public static Boolean GetDataTable0519(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0519(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private static DataSet searchData0519(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0519
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -2853,10 +3141,9 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0516Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
-            int indexInSheetStart = 5;
 
             // 報表列印日
             sheet.Range["L2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
@@ -2864,8 +3151,14 @@ WHERE CANCELOASAFILE = @STRFILE
             // 處理日期
             sheet.Range["A2"].Value = "處理日期：" + param["Operaction"];
 
+            // 初始ROW位置
+            int indexInSheetStart = 5;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
+
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0516Report" + ".xlsx";
@@ -2964,10 +3257,12 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0517Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 4;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 報表列印日
             sheet.Range["G2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
@@ -2976,12 +3271,13 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["A2"].Value = "統計日期：" + param["MstatrDate"] + "~" + param["MendDate"];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
+
+
 
             // 總計
             sheet.Range["A" + (dt.Rows.Count + indexInSheetStart)].Value = "總計";
-            sheet.Range["B" + (dt.Rows.Count + indexInSheetStart)].Value = dt.Rows.Count;
-            string[] group = {"C", "D", "E", "F", "G"};
+            string[] group = { "B", "C", "D", "E", "F", "G" };
 
             // 總計公式
             foreach (string g in group)
@@ -3052,25 +3348,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0518
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0518(param, ref count);
 
             #region 查無資料
 
@@ -3101,10 +3381,12 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0518Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 4;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 報表列印日
             sheet.Range["J2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
@@ -3113,7 +3395,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["A2"].Value = "統計日期：" + param["datefrom"] + "~" + param["dateto"];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0518Report" + ".xlsx";
@@ -3138,7 +3420,81 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    public static Boolean GetDataTable0518(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0518(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private static DataSet searchData0518(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
 
+            String val = param["backtype"];
+            String sql = "";
+
+            switch (val)
+            {
+                case "1": { sql = SearchExport0518_1; } break;
+                case "2": { sql = SearchExport0518_2; } break;
+                case "3": { sql = SearchExport0518_3; } break;
+            }
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = sql
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
     #endregion
 
     #region 址更重寄異動記錄查詢 - Excel
@@ -3163,25 +3519,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0520
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0520(param, ref count);
 
             #region 查無資料
 
@@ -3212,10 +3552,12 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0520Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 4;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 報表列印日
             sheet.Range["L2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
@@ -3224,7 +3566,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["A2"].Value = "統計日期：" + param["strUpdFrom"] + "~" + param["strUpdTo"];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0520Report" + ".xlsx";
@@ -3247,6 +3589,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    public static Boolean GetDataTable0520(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0520(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/17
+    /// </summary>
+    private static DataSet searchData0520(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0520
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -3323,13 +3730,17 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0509Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
+
+
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0509Report" + ".xlsx";
@@ -3425,13 +3836,15 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0510Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0510Report" + ".xlsx";
@@ -3526,7 +3939,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0207Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 初始ROW位置
             int indexInSheetStart = 5;
@@ -3559,11 +3972,11 @@ WHERE CANCELOASAFILE = @STRFILE
 
                 if (intRowsLoop == 1)
                 {
-                    sumIntoStoreCount += (int) dt.Rows[intRowsLoop - 1][dt.Columns["IntoStoreCount"]];
-                    sumOutStoreFCount += (int) dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreFCount"]];
-                    sumOutStoreMCount += (int) dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreMCount"]];
-                    sumOutStoreDCount += (int) dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreDCount"]];
-                    sumDailyCloseCount += (int) dt.Rows[intRowsLoop - 1][dt.Columns["DailyCloseCount"]];
+                    sumIntoStoreCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["IntoStoreCount"]];
+                    sumOutStoreFCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreFCount"]];
+                    sumOutStoreMCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreMCount"]];
+                    sumOutStoreDCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["OutStoreDCount"]];
+                    sumDailyCloseCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["DailyCloseCount"]];
                     dailyCloseDate = dt.Rows[intRowsLoop - 1][dt.Columns["DailyClose_Date"]].ToString();
                 }
             }
@@ -3697,7 +4110,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0401Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             // 交寄日期年月日
             sheet.Cells.Replace("$year$", Convert.ToString(int.Parse(DateTime.Now.ToString("yyyy")) - 1911));
@@ -3812,7 +4225,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "020501Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //統計
             int totalNum = dt.Rows.Count;
@@ -3821,7 +4234,10 @@ WHERE CANCELOASAFILE = @STRFILE
             int indexInSheetStart = 5;
             int indexInSheetEnd = indexInSheetStart + totalNum;
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 移轉範本頁尾至資料結果下方
 
@@ -3829,7 +4245,7 @@ WHERE CANCELOASAFILE = @STRFILE
             int pageFooterNum = indexInSheetEnd;
             Range range1 = sheet.Range["A" + pageFooterNum, "K" + pageFooterNum];
             //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet) workbook.Sheets[2];
+            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
             Range range2 = sheet2.Range["A1", "K3"];
             //合併
             range2.Copy();
@@ -3949,7 +4365,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "020502Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             //統計
             int totalNum = dt.Rows.Count;
@@ -3958,7 +4374,9 @@ WHERE CANCELOASAFILE = @STRFILE
             int indexInSheetStart = 5;
             int indexInSheetEnd = indexInSheetStart + totalNum;
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 移轉範本頁尾至資料結果下方
 
@@ -3966,7 +4384,7 @@ WHERE CANCELOASAFILE = @STRFILE
             int pageFooterNum = indexInSheetEnd;
             Range range1 = sheet.Range["A" + pageFooterNum, "L" + pageFooterNum];
             //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet) workbook.Sheets[2];
+            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
             Range range2 = sheet2.Range["A1", "K3"];
             //合併
             range2.Copy();
@@ -4086,7 +4504,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0513Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
@@ -4094,7 +4512,10 @@ WHERE CANCELOASAFILE = @STRFILE
             int indexInSheetStart = 5;
             int indexInSheetEnd = indexInSheetStart + totalNum;
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 頁尾
 
@@ -4230,7 +4651,7 @@ WHERE CANCELOASAFILE = @STRFILE
             Worksheet sheet = new WorksheetClass();
 
             //sheet2 頁尾
-            Worksheet tempSheet = (Worksheet) workbook.Sheets[1];
+            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
             Range range2 = tempSheet.Range["A1", "J8"];
 
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -4268,7 +4689,7 @@ WHERE CANCELOASAFILE = @STRFILE
                             workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
                         }
 
-                        sheet = (Worksheet) workbook.Sheets[i + 1];
+                        sheet = (Worksheet)workbook.Sheets[i + 1];
                         sheet.Name = blkCode;
 
                         #region 製作分頁標題頭
@@ -4289,8 +4710,9 @@ WHERE CANCELOASAFILE = @STRFILE
 
                         //初始ROW位置
                         int indexInSheetStart = 9;
-
-                        ExportExcel(dt2, ref sheet, indexInSheetStart - 1);
+                        object start = sheet.Cells[indexInSheetStart, 1];
+                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
 
@@ -4420,7 +4842,7 @@ WHERE CANCELOASAFILE = @STRFILE
             Worksheet sheet = new WorksheetClass();
 
             //sheet1 表頭
-            Worksheet tempSheet = (Worksheet) workbook.Sheets[1];
+            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
             Range range2 = tempSheet.Range["A1", "L8"];
 
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -4458,7 +4880,7 @@ WHERE CANCELOASAFILE = @STRFILE
                             workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
                         }
 
-                        sheet = (Worksheet) workbook.Sheets[i + 1];
+                        sheet = (Worksheet)workbook.Sheets[i + 1];
                         sheet.Name = blkCode;
 
                         #region 製作分頁標題頭
@@ -4479,8 +4901,10 @@ WHERE CANCELOASAFILE = @STRFILE
 
                         //初始ROW位置
                         int indexInSheetStart = 9;
+                        object start = sheet.Cells[indexInSheetStart, 1];
+                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
-                        ExportExcel(dt2, ref sheet, indexInSheetStart - 1);
+                        ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
 
@@ -4610,7 +5034,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
@@ -4618,7 +5042,10 @@ WHERE CANCELOASAFILE = @STRFILE
             int indexInSheetStart = 5;
             int indexInSheetEnd = indexInSheetStart + totalNum;
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 頁尾
 
@@ -4632,6 +5059,8 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["F" + indexFooter].Formula = "=sum(F" + indexInSheetStart + ":F" + (indexFooter - 1) + ")";
             sheet.Range["G" + indexFooter].Formula = "=sum(G" + indexInSheetStart + ":G" + (indexFooter - 1) + ")";
 
+            var range = sheet.Range["A" + indexFooter, "G" + indexFooter];
+            CommonStyle(range);
             #endregion
 
             #region 表頭
@@ -4748,7 +5177,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_0Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet tempSheet = (Worksheet) workbook.Sheets[1];
+            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
             Range range2 = tempSheet.Range["A1", "J8"];
 
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -4785,7 +5214,7 @@ WHERE CANCELOASAFILE = @STRFILE
                             workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
                         }
 
-                        var sheet = (Worksheet) workbook.Sheets[i + 1];
+                        var sheet = (Worksheet)workbook.Sheets[i + 1];
                         sheet.Name = nblkCode;
 
                         #region 製作分頁標題頭
@@ -4806,8 +5235,10 @@ WHERE CANCELOASAFILE = @STRFILE
 
                         //初始ROW位置
                         int indexInSheetStart = 9;
+                        object start = sheet.Cells[indexInSheetStart, 1];
+                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
-                        ExportExcel(dt2, ref sheet, indexInSheetStart - 1);
+                        ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
 
@@ -4936,14 +5367,15 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_0Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
             //初始ROW位置
             int indexInSheetStart = 9;
-
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 表頭
 
@@ -5065,7 +5497,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_2Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet tempSheet = (Worksheet) workbook.Sheets[1];
+            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
             Range range2 = tempSheet.Range["A1", "L8"];
 
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -5102,7 +5534,7 @@ WHERE CANCELOASAFILE = @STRFILE
                             workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
                         }
 
-                        var sheet = (Worksheet) workbook.Sheets[i + 1];
+                        var sheet = (Worksheet)workbook.Sheets[i + 1];
                         sheet.Name = nblkCode;
 
                         #region 製作分頁標題頭
@@ -5123,8 +5555,9 @@ WHERE CANCELOASAFILE = @STRFILE
 
                         //初始ROW位置
                         int indexInSheetStart = 9;
-
-                        ExportExcel(dt2, ref sheet, indexInSheetStart - 1);
+                        object start = sheet.Cells[indexInSheetStart, 1];
+                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
 
@@ -5253,14 +5686,16 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_2Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
             //初始ROW位置
             int indexInSheetStart = 9;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 表頭
 
@@ -5309,7 +5744,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
     #region 卡片數量統計表 - Excel
 
     /// <summary>
@@ -5384,7 +5819,7 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0515Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
@@ -5392,7 +5827,9 @@ WHERE CANCELOASAFILE = @STRFILE
             int indexInSheetStart = 6;
             int indexInSheetEnd = indexInSheetStart + totalNum;
 
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            ExportExcel(dt, ref sheet, start, end);
 
             #region 頁尾
 
@@ -5525,24 +5962,26 @@ WHERE CANCELOASAFILE = @STRFILE
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0521Report.xlsx";
             Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
 
-            Worksheet sheet = (Worksheet) workbook.Sheets[1];
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             int totalNum = dt.Rows.Count;
 
             // 初始ROW位置
             int indexInSheetStart = 7;
-            
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
-            
+            ExportExcel(dt, ref sheet, start, end);
+
             #region 頁尾
 
             //合計位置
             int indexInSheetEnd = indexInSheetStart + totalNum;
             int indexFooter = indexInSheetEnd;
             sheet.Range["B" + indexFooter].Value = "上開掛號函件共　" + totalNum + "　件照收無誤";
-            sheet.Range["B" + (indexFooter + 1)].Value ="郵資共計           元" ;
-            sheet.Range["E" + indexFooter].Value ="共 " + totalNum +" 卡" ;
+            sheet.Range["B" + (indexFooter + 1)].Value = "郵資共計           元";
+            sheet.Range["E" + indexFooter].Value = "共 " + totalNum + " 卡";
 
             var range = sheet.Range["A" + indexFooter, "E" + (indexFooter + 1)];
             CommonStyle(range);
@@ -5554,7 +5993,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["A3"].Value = "日期:" + param["SelfPickDate"] + "　空號 : ";
 
             #endregion
-            
+
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0521Report" + ".xlsx";
@@ -5659,9 +6098,11 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 初始ROW位置
             int indexInSheetStart = 3;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0604Report" + ".xlsx";
@@ -5688,7 +6129,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
     #region 更改寄送方式記錄查詢 - Excel
 
     /// <summary>
@@ -5711,25 +6152,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0511
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0511(param, ref count);
 
             #region 查無資料
 
@@ -5766,9 +6191,11 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0511Report" + ".xlsx";
@@ -5793,9 +6220,74 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/14
+    /// </summary>
+    public static Boolean GetDataTable0511(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0511(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/08/14
+    /// </summary>
+    private static DataSet searchData0511(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0511
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
-    
+
     #region 郵件交寄狀況檢核-2 - Excel
 
     /// <summary>
@@ -5873,9 +6365,11 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 初始ROW位置
             int indexInSheetStart = 3;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0512_2Report" + ".xlsx";
@@ -5902,7 +6396,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
     #region 郵件交寄狀況檢核-1- Excel
 
     /// <summary>
@@ -5980,9 +6474,11 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 初始ROW位置
             int indexInSheetStart = 2;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0512_1Report" + ".xlsx";
@@ -6009,7 +6505,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
     #region 註銷記錄處理>記錄確認 - Excel
 
     /// <summary>
@@ -6087,9 +6583,12 @@ WHERE CANCELOASAFILE = @STRFILE
 
             // 初始ROW位置
             int indexInSheetStart = 6;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
             // 轉入結果資料
-            ExportExcel(dt, ref sheet, indexInSheetStart - 1);
+            ExportExcel(dt, ref sheet, start, end);
+
 
             #region 表頭
 
@@ -6100,7 +6599,8 @@ WHERE CANCELOASAFILE = @STRFILE
             if (param["strSource"] == "0")
             {
                 sheet.Range["A3"].Value = "來源：OU檔註銷";
-            }else if (param["strSource"] == "1")
+            }
+            else if (param["strSource"] == "1")
             {
                 sheet.Range["A3"].Value = "來源：人工注銷";
             }
@@ -6116,8 +6616,8 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet.Range["D4"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
 
             #endregion
-            
-            
+
+
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0209Report" + ".xlsx";
             sheet.SaveAs(strPathFile);
@@ -6143,8 +6643,8 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
-    #region 匯入EXCEL資料
+
+    #region 匯入EXCEL資料(舊版)
 
     /// <summary>
     /// 專案代號:20200031-CSIP EOS
@@ -6153,31 +6653,87 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 創建時間:2020/06/29
     /// </summary>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    private static void ExportExcel(DataTable dt, ref Worksheet sheet, int intRows)
+    //private static void ExportExcel(DataTable dt, ref Worksheet sheet, int intRows)
+    //{
+
+
+    //    // 總筆數
+    //    int totalRowsNum = dt.Rows.Count;
+
+    //    // 報表欄位筆數
+    //    int totalColumnsNum = dt.Columns.Count;
+    //    try
+
+    //    {
+    //        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();//引用stopwatch物件
+    //        sw.Reset();//碼表歸零
+    //        sw.Start();//碼表開始計時
+
+    //        #region Excel 依序塞資料
+
+    //        for (int intRowsLoop = 1; intRowsLoop <= totalRowsNum; intRowsLoop++)
+    //        {
+    //            for (int intColumnsLoop = 1; intColumnsLoop <= totalColumnsNum; intColumnsLoop++)
+    //            {
+    //                sheet.Cells[intRowsLoop + intRows, intColumnsLoop] = dt.Rows[intRowsLoop - 1][intColumnsLoop - 1];
+    //            }
+    //        }
+
+    //        #endregion
+
+    //        #region Excel Style 樣式
+
+    //        var range = sheet.Range[sheet.Cells[intRows, 1], sheet.Cells[totalRowsNum + intRows, totalColumnsNum]];
+    //        CommonStyle(range);
+
+    //        #endregion
+
+
+    //        sw.Stop();//碼錶停止
+    //                  //印出所花費的總豪秒數
+    //        string result1 = sw.Elapsed.TotalMilliseconds.ToString();
+    //        test("舊版:" + result1);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Logging.Log(ex);
+    //        throw;
+    //    }
+    //}
+
+    #endregion
+
+    #region 匯入EXCEL資料(新版)
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:共用匯入EXCEL資料 - Excel
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/08/06
+    /// </summary>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
+    private static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end)
     {
-        // 總筆數
-        int totalRowsNum = dt.Rows.Count;
 
-        // 報表欄位筆數
-        int totalColumnsNum = dt.Columns.Count;
         try
-
         {
-            #region Excel 依序塞資料
-
-            for (int intRowsLoop = 1; intRowsLoop <= totalRowsNum; intRowsLoop++)
+            string[,] data = new string[dt.Rows.Count, dt.Columns.Count];
+            int i = 0;
+            foreach (DataRow row in dt.Rows)
             {
-                for (int intColumnsLoop = 1; intColumnsLoop <= totalColumnsNum; intColumnsLoop++)
+                int j = 0;
+                foreach (DataColumn col in dt.Columns)
                 {
-                    sheet.Cells[intRowsLoop + intRows, intColumnsLoop] = dt.Rows[intRowsLoop - 1][intColumnsLoop - 1];
+                    data[i, j++] = row[col].ToString();
                 }
+                i++;
             }
 
-            #endregion
+            Range range = sheet.Range[start, end];
+            range.Value2 = data;
 
             #region Excel Style 樣式
 
-            var range = sheet.Range[sheet.Cells[intRows, 1], sheet.Cells[totalRowsNum + intRows, totalColumnsNum]];
             CommonStyle(range);
 
             #endregion
@@ -6187,9 +6743,13 @@ WHERE CANCELOASAFILE = @STRFILE
             Logging.Log(ex);
             throw;
         }
+
     }
 
     #endregion
+
+
+
 
     #region CommonStyle
 

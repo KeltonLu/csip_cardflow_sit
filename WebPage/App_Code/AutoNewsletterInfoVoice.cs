@@ -346,17 +346,17 @@ public class AutoNewsletterInfoVoice : Quartz.IJob
         string strStatus = string.Empty;
         string strMessage = string.Empty;
         DataRow[] rowStatus = dtLocalFile.Select("UploadStates='F'");
-        //*匯出成功
+        //*匯出失敗
         if (rowStatus != null && rowStatus.Length > 0)
         {
-            JobHelper.SaveLog("WriteLogToDB:匯出成功！", LogState.Info);
+            JobHelper.SaveLog("WriteLogToDB:匯出失敗！", LogState.Info);
             strStatus = "F";
             strMessage = Resources.JobResource.Job010201;
         }
-        //*匯出失敗
+        //*匯出成功
         else
         {
-            JobHelper.SaveLog("WriteLogToDB:匯出失敗！", LogState.Info);
+            JobHelper.SaveLog("WriteLogToDB:匯出成功！", LogState.Info);
             strStatus = "S";
             strMessage = Resources.JobResource.Job010200;
         }
