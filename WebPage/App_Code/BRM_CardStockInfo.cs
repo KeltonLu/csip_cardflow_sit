@@ -27,11 +27,11 @@ namespace BusinessRulesNew
                 sql += " and base.selfpick_type = '4'";  //自取逾期改限掛
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'";
+                    sql += " and base.id=@id";
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
                 //其他取卡方式+退件改自取
                 sql += " union";
@@ -44,11 +44,11 @@ namespace BusinessRulesNew
                 sql += " and base.selfpick_type = '4'";  //自取逾期改限掛
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'";
+                    sql += " and base.id=@id";
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
                 //其他取卡方式+退件改自取 且為 自取->郵寄出庫->退件->自取 的情況
                 sql += " union";
@@ -61,11 +61,11 @@ namespace BusinessRulesNew
                 sql += " and base.selfpick_type = '4'";  //自取逾期改限掛
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'";
+                    sql += " and base.id=@id";
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
 
                 sql += ")U ";
@@ -74,6 +74,10 @@ namespace BusinessRulesNew
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                if (!strId.Equals(string.Empty))
+                    sqlcmd.Parameters.Add(new SqlParameter("@id", strId));
+                if (!strCardNo.Equals(string.Empty))
+                    sqlcmd.Parameters.Add(new SqlParameter("@cardno", strCardNo));
                 DataSet ds = BRM_CardStockInfo.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);
                 if (ds != null)
                 {
@@ -106,14 +110,19 @@ namespace BusinessRulesNew
             {
                 string sql = @"Update dbo.tbl_Card_BaseInfo";
                 sql += " Set IntoStore_Status='0',IntoStore_Date='',OutStore_Status='0',OutStore_Date='',SelfPick_Type='',SelfPick_date = ''";
-                sql += " Where action='" + strAction + "' and id='" + strId + "' and cardno='" + strCardNo + "' and trandate='" + strTrandate + "'";
+                sql += " Where action=@@action and id=@id and cardno=@cardno and trandate=@trandate";
 
                 sql += " Delete from dbo.tbl_Card_StockInfo";
-                sql += " where IntoStore_Date='" + strIntoStoreDate + "' and cardno='" + strCardNo + "'";
+                sql += " where IntoStore_Date=@IntoStore_Date and cardno=@cardno";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@action", strAction));
+                sqlcmd.Parameters.Add(new SqlParameter("@id", strId));
+                sqlcmd.Parameters.Add(new SqlParameter("@cardno", strCardNo));
+                sqlcmd.Parameters.Add(new SqlParameter("@trandate", strTrandate));
+                sqlcmd.Parameters.Add(new SqlParameter("@IntoStore_Date", strIntoStoreDate));
                 if (BRM_CardStockInfo.Delete(sqlcmd))
                 {
                     return true;

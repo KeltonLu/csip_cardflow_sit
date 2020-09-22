@@ -86,9 +86,425 @@
                         <td colspan="2">
                             <cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
                                 ShowID="06_06051300_006" OnClick="btnSearch_Click" />&nbsp;&nbsp;
+								<cc1:CustButton ID="btnPrint" runat="Server" class="smallButton" Style="width: 50px;"
+									ShowID="06_06051300_007" OnClick="btnPrint_Click" />
                         </td>
                     </tr>
                 </table>
+				<table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
+					<tr>
+						<td colspan="20">
+							<cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
+								PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="16%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="XC">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CS">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="XC+CS">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CG+SB">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CG">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SB">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label1" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView1" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="PERMITDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SYS_DATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label2" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView2" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="PERMITDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SYS_DATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label3" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView3" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="PERMITDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SYS_DATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label4" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView4" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="PERMITDATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SYS_DATE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label5" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView5" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="3%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="FAIL_REASON">
+										<ItemStyle Width="5%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="8%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="REASON_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="ACTION_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CWB_REGIONS">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label6" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView6" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="3%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="FAIL_REASON">
+										<ItemStyle Width="5%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="8%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="REASON_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="ACTION_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CWB_REGIONS">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label7" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView7" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="3%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="FAIL_REASON">
+										<ItemStyle Width="5%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="8%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="REASON_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="ACTION_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CWB_REGIONS">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:Label ID="Label8" runat="server" Text="" />
+							<cc1:CustGridView ID="CustGridView8" runat="server" AllowSorting="True" AllowPaging="False"
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="ROW_NUM">
+										<ItemStyle Width="3%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SENDDATE">
+										<ItemStyle Width="7%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CARDNO">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="FAIL_REASON">
+										<ItemStyle Width="5%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="BLKCODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="MEMO">
+										<ItemStyle Width="8%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="REASON_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="ACTION_CODE">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CWB_REGIONS">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O1">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="O2">
+										<ItemStyle Width="10%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<cc1:GridPager ID="gpList" runat="server" AlwaysShow="True" CustomInfoTextAlign="Right"
+								InputBoxStyle="height:15px" OnPageChanged="gpList_PageChanged">
+							</cc1:GridPager>
+						</td>
+					</tr>
+				</table>
             </ContentTemplate>
         </asp:UpdatePanel>
     </form>

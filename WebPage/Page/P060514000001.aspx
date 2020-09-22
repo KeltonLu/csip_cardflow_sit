@@ -95,9 +95,59 @@
                     <td colspan="2" style="height: 25px">
                         <cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
                                         ShowID="06_06051400_006" OnClick="btnSearch_Click"/>&nbsp;&nbsp;
+								<cc1:CustButton ID="btnPrint" runat="Server" class="smallButton" Style="width: 50px;"
+									ShowID="06_06051400_009" OnClick="btnPrint_Click" />
                     </td>
                 </tr>
             </table>
+				<table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
+					<tr>
+						<td colspan="20">
+							<cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
+								PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
+								BorderStyle="Solid">
+								<RowStyle CssClass="Grid_Item" Wrap="True" />
+								<SelectedRowStyle CssClass="Grid_SelectedItem" />
+								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
+								<AlternatingRowStyle CssClass="Grid_AlternatingItem" Wrap="True" />
+								<PagerSettings Visible="False" />
+								<EmptyDataRowStyle HorizontalAlign="Center" />
+								<Columns>
+									<asp:BoundField DataField="OTYPE">
+										<ItemStyle Width="16%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="XC">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CS">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="XC+CS">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CG+SB">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="CG">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="SB">
+										<ItemStyle Width="14%" HorizontalAlign="Center" />
+									</asp:BoundField>
+								</Columns>
+							</cc1:CustGridView>
+							<asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true"></asp:UpdatePanel>
+							<asp:UpdatePanel ID="UpdatePanel3" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true"></asp:UpdatePanel>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<cc1:GridPager ID="gpList" runat="server" AlwaysShow="True" CustomInfoTextAlign="Right"
+								InputBoxStyle="height:15px" OnPageChanged="gpList_PageChanged">
+							</cc1:GridPager>
+						</td>
+					</tr>
+				</table>
         </ContentTemplate>
     </asp:UpdatePanel>
 </form>

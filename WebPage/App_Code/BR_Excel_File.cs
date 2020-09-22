@@ -1100,7 +1100,7 @@ ORDER BY BLKCODE
     #region SearchExport0513_1
 
     private const string SearchExport0513_1 = @"
-SELECT ROW_NUMBER() over (ORDER BY M.BLKCODE, M.OTYPE),*,'',''
+SELECT ROW_NUMBER() over (ORDER BY M.BLKCODE, M.OTYPE) AS ROW_NUM,*,'' AS O1,'' AS O2
 FROM (
          SELECT (CASE WHEN FILECODE = '0' THEN '主機' WHEN FILECODE IN ('1', '2') THEN '催收GUI' ELSE '' END) AS OTYPE,
                 SENDDATE,
@@ -1152,7 +1152,7 @@ ORDER BY BLKCODE
     #region SearchExport0513_3
 
     private const string SearchExport0513_3 = @"
-SELECT ROW_NUMBER() over (ORDER BY M.BLKCODE, M.OTYPE), *, '', ''
+SELECT ROW_NUMBER() over (ORDER BY M.BLKCODE, M.OTYPE) AS ROW_NUM, *, '' AS O1, '' AS O2
 FROM (
          SELECT (CASE WHEN FILECODE = '0' THEN '主機' WHEN FILECODE IN ('1', '2') THEN '催收GUI' ELSE '' END) AS OTYPE,
                 SENDDATE,
@@ -1234,7 +1234,7 @@ ORDER BY NBLKCODE
     #region SearchExport0514_1
 
     private const string SearchExport0514_1 = @"
-SELECT ROW_NUMBER() OVER (ORDER BY NBLKCODE),
+SELECT ROW_NUMBER() OVER (ORDER BY NBLKCODE) AS ROW_NUM,
        '監控補掛' AS OTYPE,
        SENDDATE,
        CARDNO,
@@ -1243,7 +1243,7 @@ SELECT ROW_NUMBER() OVER (ORDER BY NBLKCODE),
        PERMITDATE,
        SYS_DATE,
        UPDUSER,
-       ''
+       '' AS O1
 FROM TBL_CANCELOASA_UD
 WHERE FILECODE = '3'
   AND SUCCESS_FLAG = @FLAG
@@ -1274,7 +1274,7 @@ ORDER BY NBLKCODE
     #region SearchExport0514_3
 
     private const string SearchExport0514_3 = @"
-SELECT ROW_NUMBER() over (ORDER BY NBLKCODE),
+SELECT ROW_NUMBER() over (ORDER BY NBLKCODE) AS ROW_NUM,
        '監控補掛'        AS OTYPE,
        SENDDATE,
        CARDNO,
@@ -1284,8 +1284,8 @@ SELECT ROW_NUMBER() over (ORDER BY NBLKCODE),
        REASON_CODE,
        ACTION_CODE,
        CWB_REGIONS,
-       '',
-       ''
+       '' AS O1,
+       '' AS O2
 FROM TBL_CANCELOASA_UD
 WHERE FILECODE = '3'
   AND SUCCESS_FLAG = @FLAG
@@ -1305,18 +1305,18 @@ ORDER BY NBLKCODE, OTYPE
 --2. 取卡方式為「包裹」，則同一製卡日、相同掛號號碼的卡片封數算為1;取卡方式不為「包裹」，則一張卡片封數算1(只計CARDNO,不計CARDNO2)
 --CT3->CARDNO數量 CT1->CARDNO2數量  CT2 ->封數
 SELECT kindName,
-       (OT1 + ot3),
+       (OT1 + ot3) AS OT1,
        OT2,
-       (C1 + C3),
+       (C1 + C3) AS C1,
        C2,
-       (V1 + V3),
+       (V1 + V3) AS V1,
        V2,
-       (CE1 + CE3),
+       (CE1 + CE3) AS CE1,
        CE2,
-       (EC1 + EC3),
+       (EC1 + EC3) AS EC1,
        EC2,
-       (OT1 + ot3 + C1 + c3 + v1 + v3 + ce1 + ce3 + ec1 + ec3),
-       (ot2 + c2 + v2 + ce2 + ec2)
+       (OT1 + ot3 + C1 + c3 + v1 + v3 + ce1 + ce3 + ec1 + ec3) AS A1,
+       (ot2 + c2 + v2 + ce2 + ec2) AS A2
 FROM (
          SELECT U1.KIND,
                 U1.KINDORDER,
@@ -1777,11 +1777,11 @@ ORDER BY U.KINDORDER
     #region SearchExport0521
 
     private const string SearchExport0521 = @"
-SELECT ROW_NUMBER() OVER (ORDER BY STOCK.MAILNO),
+SELECT ROW_NUMBER() OVER (ORDER BY STOCK.MAILNO) AS ROWID,
        STOCK.MAILNO,
        SUBSTRING(LTRIM(RTRIM(BASE.CUSTNAME)), 2, LEN(LTRIM(RTRIM(BASE.CUSTNAME))) - 1) AS CUSTNAME,
        LTRIM(RTRIM(BASE.ZIP)) + LTRIM(RTRIM(BASE.ADD1))                                AS ZIP_ADD1,
-       ''
+       '' AS MEMO
 FROM TBL_CARD_BASEINFO BASE,
      TBL_CARD_STOCKINFO STOCK
 WHERE BASE.CARDNO = STOCK.CARDNO
@@ -1789,7 +1789,8 @@ WHERE BASE.CARDNO = STOCK.CARDNO
   AND BASE.TRANDATE = STOCK.TRANDATE
   AND BASE.ID = STOCK.ID
   AND BASE.SELFPICK_TYPE = '4'
-  AND BASE.SELFPICK_DATE = @SELFPICKDATE  
+  AND BASE.SELFPICK_DATE = @SELFPICKDATE 
+ORDER BY STOCK.MAILNO
 ";
 
     #endregion
@@ -2045,25 +2046,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0502
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0502(param, ref count);
 
             #region 查無資料
 
@@ -2127,6 +2112,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/07
+    /// </summary>
+    public static Boolean GetDataTable0502(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0502(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/07
+    /// </summary>
+    private static DataSet searchData0502(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0502
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -2152,27 +2202,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0503
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0503(param, ref count);
 
             #region 查無資料
 
@@ -2238,6 +2270,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/07
+    /// </summary>
+    public static Boolean GetDataTable0503(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0503(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/07
+    /// </summary>
+    private static DataSet searchData0503(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0503
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -2263,27 +2360,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0504
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0504(param, ref count);
 
             #region 查無資料
 
@@ -2382,6 +2461,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    public static Boolean GetDataTable0504(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0504(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    private static DataSet searchData0504(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0504
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -2407,27 +2551,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0506
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0506(param, ref count);
 
             #region 查無資料
 
@@ -2556,6 +2682,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    public static Boolean GetDataTable0506(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0506(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    private static DataSet searchData0506(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0506
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -2581,27 +2772,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0507
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0507(param, ref count);
 
             #region 查無資料
 
@@ -2707,6 +2880,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    public static Boolean GetDataTable0507(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0507(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/08
+    /// </summary>
+    private static DataSet searchData0507(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0507
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -3092,25 +3330,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0516
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0516(param, ref count);
 
             #region 查無資料
 
@@ -3183,6 +3405,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean GetDataTable0516(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0516(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private static DataSet searchData0516(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0516
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -3208,25 +3495,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0517
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0517(param, ref count);
 
             #region 查無資料
 
@@ -3321,6 +3592,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/04
+    /// </summary>
+    public static Boolean GetDataTable0517(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0517(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/04
+    /// </summary>
+    private static DataSet searchData0517(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0517
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -3681,25 +4017,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0509
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0509(param, ref count);
 
             #region 查無資料
 
@@ -3763,6 +4083,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
+    /// </summary>
+    public static Boolean GetDataTable0509(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0509(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
+    /// </summary>
+    private static DataSet searchData0509(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0509
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -3890,25 +4275,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0207
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0207(param, ref count);
 
             #region 查無資料
 
@@ -4038,6 +4407,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
+    /// </summary>
+    public static Boolean GetDataTable0207(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0207(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
+    /// </summary>
+    private static DataSet searchData0207(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0207
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 
@@ -4452,27 +4886,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0513
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0513(param, ref count);
 
             #region 查無資料
 
@@ -4573,6 +4989,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean GetDataTable0513(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0513(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private static DataSet searchData0513(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0513
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -4598,46 +5079,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0513_0
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
-            //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
-
-            #region 查無資料
-
-            if (null == dstSearchData)
-            {
-                strMsgId = "06_06051800_003";
+            DataTable dt = new DataTable();
+            if (!getPageType05130(ref param, ref strMsgId, ref dt))
                 return false;
-            }
-
-            DataTable dt = dstSearchData.Tables[0];
-
-            if (dt.Rows.Count == 0)
-            {
-                strMsgId = "06_06051800_003";
-                return false;
-            }
-
-            #endregion
-
 
             // 不顯示Excel文件，如果為true則顯示Excel文件
             excel.Visible = false;
@@ -4658,23 +5102,8 @@ WHERE CANCELOASAFILE = @STRFILE
             {
                 String blkCode = dt.Rows[i][dt.Columns["BLKCode"]].ToString();
 
-                //* 聲明SQL Command變量
-                SqlCommand tempSqlSearchData = new SqlCommand
-                {
-                    CommandType = CommandType.Text,
-                    CommandText = SearchExport0513_1
-                };
-
-                foreach (var data in param)
-                {
-                    SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                    tempSqlSearchData.Parameters.Add(paramStartDate);
-                }
-
-                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", blkCode));
-
                 //* 查詢數據
-                dstSearchData = BR_Excel_File.SearchOnDataSet(tempSqlSearchData);
+                DataSet dstSearchData = searchData05130(param, blkCode);
 
                 #region 查無資料
 
@@ -4711,7 +5140,7 @@ WHERE CANCELOASAFILE = @STRFILE
                         //初始ROW位置
                         int indexInSheetStart = 9;
                         object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
                         ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
@@ -4735,10 +5164,10 @@ WHERE CANCELOASAFILE = @STRFILE
                             : "失敗" + " 總卡數：" + param["num"];
 
                         #endregion
+                        #endregion
                     }
                 }
-
-                #endregion
+                #endregion 匯入文檔結束
             }
 
             // 保存文件到程序運行目錄下
@@ -4748,8 +5177,6 @@ WHERE CANCELOASAFILE = @STRFILE
             // 關閉Excel文件且不保存
             excel.ActiveWorkbook.Close(false);
             return true;
-
-            #endregion 匯入文檔結束
         }
         catch (Exception ex)
         {
@@ -4763,6 +5190,126 @@ WHERE CANCELOASAFILE = @STRFILE
             // 將 Excel 實例設置為空
             excel = null;
         }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得分頁類別資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean getPageType05130(ref Dictionary<string, string> param, ref string strMsgId, ref DataTable dt)
+    {
+        #region 依據Request查詢資料庫
+
+        //* 聲明SQL Command變量
+        SqlCommand sqlSearchData = new SqlCommand
+        {
+            CommandType = CommandType.Text,
+            CommandText = SearchExport0513_0
+        };
+
+        foreach (var data in param)
+        {
+            SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+            sqlSearchData.Parameters.Add(paramStartDate);
+        }
+
+        //* 查詢數據
+        DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+        #endregion 依據Request查詢資料庫
+
+        #region 查無資料
+
+        if (null == dstSearchData)
+        {
+            strMsgId = "06_05130000_005";
+            return false;
+        }
+
+        dt = dstSearchData.Tables[0];
+
+        if (dt.Rows.Count == 0)
+        {
+            strMsgId = "06_05130000_005";
+            return false;
+        }
+
+        #endregion
+        return true;
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private static DataSet searchData05130(Dictionary<String, String> param, String blkCode)
+    {
+        try
+        {
+            //* 聲明SQL Command變量
+            SqlCommand tempSqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0513_1
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                tempSqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", blkCode));
+
+            //* 查詢數據
+            return SearchOnDataSet(tempSqlSearchData);
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean GetDataTable05130(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    {
+        try
+        {
+            String strMsgId = "";
+            DataTable dt = new DataTable();
+            if (!getPageType05130(ref param, ref strMsgId, ref dt))
+                return false;
+
+            list = new List<DataTable>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                String blkCode = dt.Rows[i][dt.Columns["BLKCode"]].ToString();
+
+                //* 查詢數據
+                DataSet ds = searchData05130(param, blkCode);
+                if (null != ds)
+                {
+                    list.Add(ds.Tables[0]);
+                    name.Add(blkCode);
+                }
+                else
+                    return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+        return true;
     }
 
     #endregion
@@ -4789,46 +5336,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0513_2
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
-            //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
-
-            #region 查無資料
-
-            if (null == dstSearchData)
-            {
-                strMsgId = "06_06051800_003";
+            DataTable dt = new DataTable();
+            if (!getPageType05132(ref param, ref strMsgId, ref dt))
                 return false;
-            }
-
-            DataTable dt = dstSearchData.Tables[0];
-
-            if (dt.Rows.Count == 0)
-            {
-                strMsgId = "06_06051800_003";
-                return false;
-            }
-
-            #endregion
-
 
             // 不顯示Excel文件，如果為true則顯示Excel文件
             excel.Visible = false;
@@ -4849,23 +5359,8 @@ WHERE CANCELOASAFILE = @STRFILE
             {
                 String blkCode = dt.Rows[i][dt.Columns["BLKCode"]].ToString();
 
-                //* 聲明SQL Command變量
-                SqlCommand tempSqlSearchData = new SqlCommand
-                {
-                    CommandType = CommandType.Text,
-                    CommandText = SearchExport0513_3
-                };
-
-                foreach (var data in param)
-                {
-                    SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                    tempSqlSearchData.Parameters.Add(paramStartDate);
-                }
-
-                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", blkCode));
-
                 //* 查詢數據
-                dstSearchData = BR_Excel_File.SearchOnDataSet(tempSqlSearchData);
+                DataSet dstSearchData = searchData05132(param, blkCode);
 
                 #region 查無資料
 
@@ -4902,7 +5397,7 @@ WHERE CANCELOASAFILE = @STRFILE
                         //初始ROW位置
                         int indexInSheetStart = 9;
                         object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
 
                         ExportExcel(dt2, ref sheet, start, end);
 
@@ -4928,9 +5423,9 @@ WHERE CANCELOASAFILE = @STRFILE
                             : "失敗" + " 總卡數：" + param["num"];
 
                         #endregion
+                        #endregion
                     }
                 }
-
                 #endregion
             }
 
@@ -4942,7 +5437,6 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.ActiveWorkbook.Close(false);
             return true;
 
-            #endregion 匯入文檔結束
         }
         catch (Exception ex)
         {
@@ -4956,6 +5450,126 @@ WHERE CANCELOASAFILE = @STRFILE
             // 將 Excel 實例設置為空
             excel = null;
         }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得分頁類別資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean getPageType05132(ref Dictionary<string, string> param, ref string strMsgId, ref DataTable dt)
+    {
+        #region 依據Request查詢資料庫
+
+        //* 聲明SQL Command變量
+        SqlCommand sqlSearchData = new SqlCommand
+        {
+            CommandType = CommandType.Text,
+            CommandText = SearchExport0513_2
+        };
+
+        foreach (var data in param)
+        {
+            SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+            sqlSearchData.Parameters.Add(paramStartDate);
+        }
+
+        //* 查詢數據
+        DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+        #endregion 依據Request查詢資料庫
+
+        #region 查無資料
+
+        if (null == dstSearchData)
+        {
+            strMsgId = "06_05130000_005";
+            return false;
+        }
+
+        dt = dstSearchData.Tables[0];
+
+        if (dt.Rows.Count == 0)
+        {
+            strMsgId = "06_05130000_005";
+            return false;
+        }
+
+        #endregion
+        return true;
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private static DataSet searchData05132(Dictionary<String, String> param, String blkCode)
+    {
+        try
+        {
+            //* 聲明SQL Command變量
+            SqlCommand tempSqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0513_3
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                tempSqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", blkCode));
+
+            //* 查詢數據
+            return SearchOnDataSet(tempSqlSearchData);
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean GetDataTable05132(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    {
+        try
+        {
+            String strMsgId = "";
+            DataTable dt = new DataTable();
+            if (!getPageType05132(ref param, ref strMsgId, ref dt))
+                return false;
+
+            list = new List<DataTable>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                String blkCode = dt.Rows[i][dt.Columns["BLKCode"]].ToString();
+
+                //* 查詢數據
+                DataSet ds = searchData05132(param, blkCode);
+                if (null != ds)
+                {
+                    list.Add(ds.Tables[0]);
+                    name.Add(blkCode);
+                }
+                else
+                    return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+        return true;
     }
 
     #endregion
@@ -4982,27 +5596,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0514
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0514(param, ref count);
 
             #region 查無資料
 
@@ -5102,6 +5698,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean GetDataTable0514(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0514(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    private static DataSet searchData0514(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0514
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -5127,46 +5788,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0514_0
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
-            //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
-
-            #region 查無資料
-
-            if (null == dstSearchData)
-            {
-                strMsgId = "06_06051800_003";
+            DataTable dt = new DataTable();
+            if (!getPageType05140(ref param, ref strMsgId, ref dt))
                 return false;
-            }
-
-            DataTable dt = dstSearchData.Tables[0];
-
-            if (dt.Rows.Count == 0)
-            {
-                strMsgId = "06_06051800_003";
-                return false;
-            }
-
-            #endregion
-
 
             // 不顯示Excel文件，如果為true則顯示Excel文件
             excel.Visible = false;
@@ -5184,26 +5808,10 @@ WHERE CANCELOASAFILE = @STRFILE
             {
                 String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
 
-                //* 聲明SQL Command變量
-                SqlCommand tempSqlSearchData = new SqlCommand
-                {
-                    CommandType = CommandType.Text,
-                    CommandText = SearchExport0514_1
-                };
-
-                foreach (var data in param)
-                {
-                    SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                    tempSqlSearchData.Parameters.Add(paramStartDate);
-                }
-
-                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", nblkCode));
-
                 //* 查詢數據
-                dstSearchData = BR_Excel_File.SearchOnDataSet(tempSqlSearchData);
+                DataSet dstSearchData = searchData05140(param, nblkCode);
 
                 #region 查無資料
-
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
@@ -5236,7 +5844,7 @@ WHERE CANCELOASAFILE = @STRFILE
                         //初始ROW位置
                         int indexInSheetStart = 9;
                         object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
 
                         ExportExcel(dt2, ref sheet, start, end);
 
@@ -5261,9 +5869,9 @@ WHERE CANCELOASAFILE = @STRFILE
                             : "失敗" + " 總卡數：" + param["num"];
 
                         #endregion
+                        #endregion
                     }
                 }
-
                 #endregion
             }
 
@@ -5274,8 +5882,6 @@ WHERE CANCELOASAFILE = @STRFILE
             // 關閉Excel文件且不保存
             excel.ActiveWorkbook.Close(false);
             return true;
-
-            #endregion 匯入文檔結束
         }
         catch (Exception ex)
         {
@@ -5289,6 +5895,127 @@ WHERE CANCELOASAFILE = @STRFILE
             // 將 Excel 實例設置為空
             excel = null;
         }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得分頁類別資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean getPageType05140(ref Dictionary<string, string> param, ref string strMsgId, ref DataTable dt)
+    {
+        #region 依據Request查詢資料庫
+
+        //* 聲明SQL Command變量
+        SqlCommand sqlSearchData = new SqlCommand
+        {
+            CommandType = CommandType.Text,
+            CommandText = SearchExport0514_0
+        };
+
+        foreach (var data in param)
+        {
+            SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+            sqlSearchData.Parameters.Add(paramStartDate);
+        }
+
+        //* 查詢數據
+        DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+        #endregion 依據Request查詢資料庫
+
+        #region 查無資料
+
+        if (null == dstSearchData)
+        {
+            strMsgId = "06_05140000_005";
+            return false;
+        }
+
+        dt = dstSearchData.Tables[0];
+
+        if (dt.Rows.Count == 0)
+        {
+            strMsgId = "06_05140000_005";
+            return false;
+        }
+
+        #endregion
+        return true;
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    private static DataSet searchData05140(Dictionary<String, String> param, String nblkCode = "")
+    {
+        try
+        {
+            //* 聲明SQL Command變量
+            SqlCommand tempSqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0514_1
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                tempSqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            if(nblkCode != "")
+                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", nblkCode));
+
+            //* 查詢數據
+            return SearchOnDataSet(tempSqlSearchData);
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean GetDataTable05140(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    {
+        try
+        {
+            String strMsgId = "";
+            DataTable dt = new DataTable();
+            if (!getPageType05140(ref param, ref strMsgId, ref dt))
+                return false;
+
+            list = new List<DataTable>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
+
+                //* 查詢數據
+                DataSet ds = searchData05140(param, nblkCode);
+                if (null != ds)
+                {
+                    list.Add(ds.Tables[0]);
+                    name.Add(nblkCode);
+                }
+                else
+                    return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+        return true;
     }
 
     #endregion
@@ -5315,27 +6042,8 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0514_1
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            DataSet dstSearchData = searchData05140(param);
 
             #region 查無資料
 
@@ -5422,6 +6130,32 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean GetDataTable05141(Dictionary<String, String> param, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData05140(param);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
 
     #endregion
 
@@ -5447,45 +6181,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0514_2
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
-            //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
-
-            #region 查無資料
-
-            if (null == dstSearchData)
-            {
-                strMsgId = "06_06051800_003";
+            DataTable dt = new DataTable();
+            if (!getPageType05142(ref param, ref strMsgId, ref dt))
                 return false;
-            }
-
-            DataTable dt = dstSearchData.Tables[0];
-
-            if (dt.Rows.Count == 0)
-            {
-                strMsgId = "06_06051800_003";
-                return false;
-            }
-
-            #endregion
 
 
             // 不顯示Excel文件，如果為true則顯示Excel文件
@@ -5504,26 +6202,10 @@ WHERE CANCELOASAFILE = @STRFILE
             {
                 String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
 
-                //* 聲明SQL Command變量
-                SqlCommand tempSqlSearchData = new SqlCommand
-                {
-                    CommandType = CommandType.Text,
-                    CommandText = SearchExport0514_3
-                };
-
-                foreach (var data in param)
-                {
-                    SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                    tempSqlSearchData.Parameters.Add(paramStartDate);
-                }
-
-                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", nblkCode));
-
                 //* 查詢數據
-                dstSearchData = BR_Excel_File.SearchOnDataSet(tempSqlSearchData);
+                DataSet dstSearchData = searchData05142(param, nblkCode);
 
                 #region 查無資料
-
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
@@ -5556,7 +6238,7 @@ WHERE CANCELOASAFILE = @STRFILE
                         //初始ROW位置
                         int indexInSheetStart = 9;
                         object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
                         ExportExcel(dt2, ref sheet, start, end);
 
                         #region 表頭
@@ -5580,9 +6262,9 @@ WHERE CANCELOASAFILE = @STRFILE
                             : "失敗" + " 總卡數：" + param["num"];
 
                         #endregion
+                        #endregion
                     }
                 }
-
                 #endregion
             }
 
@@ -5593,8 +6275,6 @@ WHERE CANCELOASAFILE = @STRFILE
             // 關閉Excel文件且不保存
             excel.ActiveWorkbook.Close(false);
             return true;
-
-            #endregion 匯入文檔結束
         }
         catch (Exception ex)
         {
@@ -5608,6 +6288,127 @@ WHERE CANCELOASAFILE = @STRFILE
             // 將 Excel 實例設置為空
             excel = null;
         }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得分頁類別資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean getPageType05142(ref Dictionary<string, string> param, ref string strMsgId, ref DataTable dt)
+    {
+        #region 依據Request查詢資料庫
+
+        //* 聲明SQL Command變量
+        SqlCommand sqlSearchData = new SqlCommand
+        {
+            CommandType = CommandType.Text,
+            CommandText = SearchExport0514_2
+        };
+
+        foreach (var data in param)
+        {
+            SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+            sqlSearchData.Parameters.Add(paramStartDate);
+        }
+
+        //* 查詢數據
+        DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
+
+        #endregion 依據Request查詢資料庫
+
+        #region 查無資料
+
+        if (null == dstSearchData)
+        {
+            strMsgId = "06_05140000_005";
+            return false;
+        }
+
+        dt = dstSearchData.Tables[0];
+
+        if (dt.Rows.Count == 0)
+        {
+            strMsgId = "06_05140000_005";
+            return false;
+        }
+
+        #endregion
+        return true;
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    private static DataSet searchData05142(Dictionary<String, String> param, String nblkCode = "")
+    {
+        try
+        {
+            //* 聲明SQL Command變量
+            SqlCommand tempSqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0514_3
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                tempSqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            if (nblkCode != "")
+                tempSqlSearchData.Parameters.Add(new SqlParameter("@" + "BLKCode", nblkCode));
+
+            //* 查詢數據
+            return SearchOnDataSet(tempSqlSearchData);
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean GetDataTable05142(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    {
+        try
+        {
+            String strMsgId = "";
+            DataTable dt = new DataTable();
+            if (!getPageType05142(ref param, ref strMsgId, ref dt))
+                return false;
+
+            list = new List<DataTable>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
+
+                //* 查詢數據
+                DataSet ds = searchData05142(param, nblkCode);
+                if (null != ds)
+                {
+                    list.Add(ds.Tables[0]);
+                    name.Add(nblkCode);
+                }
+                else
+                    return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+        return true;
     }
 
     #endregion
@@ -5634,27 +6435,8 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0514_3
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            DataSet dstSearchData = searchData05142(param);
 
             #region 查無資料
 
@@ -5742,6 +6524,32 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/18
+    /// </summary>
+    public static Boolean GetDataTable05143(Dictionary<String, String> param, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData05142(param);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
 
     #endregion
 
@@ -5767,27 +6575,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            // 取要下載的資料
-
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0515
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = BR_Excel_File.SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0515(param, ref count);
 
             #region 查無資料
 
@@ -5888,6 +6678,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel = null;
         }
     }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    public static Boolean GetDataTable0515(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0515(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private static DataSet searchData0515(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0515
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
 
     #endregion
 
@@ -5913,25 +6768,9 @@ WHERE CANCELOASAFILE = @STRFILE
             // 檢查目錄，並刪除以前的文檔資料
             CheckDirectory(ref strPathFile);
 
-            #region 依據Request查詢資料庫
-
-            //* 聲明SQL Command變量
-            SqlCommand sqlSearchData = new SqlCommand
-            {
-                CommandType = CommandType.Text,
-                CommandText = SearchExport0521
-            };
-
-            foreach (var data in param)
-            {
-                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
-                sqlSearchData.Parameters.Add(paramStartDate);
-            }
-
             //* 查詢數據
-            DataSet dstSearchData = SearchOnDataSet(sqlSearchData);
-
-            #endregion 依據Request查詢資料庫
+            Int32 count = 0;
+            DataSet dstSearchData = searchData0521(param, ref count);
 
             #region 查無資料
 
@@ -6016,6 +6855,71 @@ WHERE CANCELOASAFILE = @STRFILE
             excel.Quit();
             // 將 Excel 實例設置為空
             excel = null;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/10
+    /// </summary>
+    public static Boolean GetDataTable0521(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    {
+        try
+        {
+            //* 查詢數據
+            DataSet ds = searchData0521(param, ref count, idx, size);
+            if (null != ds)
+            {
+                dt = ds.Tables[0];
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢共用取得資料需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/10
+    /// </summary>
+    private static DataSet searchData0521(Dictionary<String, String> param, ref Int32 count, Int32 idx = -1, Int32 size = -1)
+    {
+        try
+        {
+            #region 依據Request查詢資料庫
+
+            //* 聲明SQL Command變量
+            SqlCommand sqlSearchData = new SqlCommand
+            {
+                CommandType = CommandType.Text,
+                CommandText = SearchExport0521
+            };
+
+            foreach (var data in param)
+            {
+                SqlParameter paramStartDate = new SqlParameter("@" + data.Key, data.Value);
+                sqlSearchData.Parameters.Add(paramStartDate);
+            }
+
+            //* 查詢數據
+            if (idx >= 0)
+                return SearchOnDataSet(sqlSearchData, idx, size, ref count);
+            else
+                return SearchOnDataSet(sqlSearchData);
+
+            #endregion 依據Request查詢資料庫
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
         }
     }
 

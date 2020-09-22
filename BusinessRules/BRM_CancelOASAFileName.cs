@@ -62,11 +62,12 @@ namespace BusinessRules
             try
             {
                 string sql = @"insert into dbo.tbl_CancelOASA_FileName(CancelOASADate,CancelOASAFile)";
-                sql += " values(convert(nvarchar(10),getdate(),111),'" + strOASAFileName + "')";
+                sql += " values(convert(nvarchar(10),getdate(),111),@CancelOASAFile)";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAFile", strOASAFileName));
 
                 if (BRM_CancelOASAFileName.Add(sqlcmd))
                 {

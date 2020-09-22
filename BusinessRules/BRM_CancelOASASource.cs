@@ -74,12 +74,13 @@ namespace BusinessRules
                         sql += "convert(varchar(10),dateadd(dd,-0,getdate()),111)";
                         break;
                 }
-                       sql += " and left(ltrim(rtrim(ImportFile)),4)='" + strFtpFileName + "'";
+                       sql += " and left(ltrim(rtrim(ImportFile)),4)=@ImportFile";
                        sql += " and Stauts='0'";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@ImportFile", strFtpFileName));
                 DataSet ds = BRM_CancelOASASource.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {
@@ -128,12 +129,13 @@ namespace BusinessRules
                         break;
 
                 }
-                sql += " and left(ltrim(rtrim(ImportFile)),4)='" + strFtpFileName + "'";
+                sql += " and left(ltrim(rtrim(ImportFile)),4)=@ImportFile";
                 sql += " and Stauts='0'";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@ImportFile", strFtpFileName));
                 DataSet ds = BRM_CancelOASASource.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {
@@ -169,11 +171,13 @@ namespace BusinessRules
 
                 string sql = @"update dbo.tbl_CancelOASA_Source";
                 sql += " set Stauts='1'";
-                sql += " where ImportFile='" + strImportFile + "'and ImportDate='" + strImportDate + "'";
+                sql += " where ImportFile=@ImportFile and ImportDate=@ImportDate";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@ImportFile", strImportFile));
+                sqlcmd.Parameters.Add(new SqlParameter("@ImportDate", strImportDate));
                 if (BRM_CancelOASASource.Update(sqlcmd))
                 {
                     return true;

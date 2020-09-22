@@ -318,8 +318,8 @@ public partial class P060205000003 : System.Web.UI.Page
                 string strFetchDate0205 = Session["FetchDate0205"].ToString().Trim();
                 string strMerchDate0205 = Session["MerchDate0205"].ToString().Trim();
                 string strMerch0205 = Session["Merch0205"].ToString().Trim();
-                string strId0205 = Session["Id0205"].ToString().Trim();
-                string strCardNo0205 = Session["CardNo0205"].ToString().Trim();
+                string strId0205 = (Session["Id0205"] == null ? "" : Session["Id0205"]).ToString().Trim();
+                string strCardNo0205 = (Session["CardNo0205"] == null ? "" : Session["CardNo0205"]).ToString().Trim();
                 string strFromDate0205 = Session["FromDate0205"].ToString().Trim();
                 string strToDate0205 = Session["ToDate0205"].ToString().Trim();
                 string strPageIndex0205 = Session["PageIndex0205"].ToString().Trim();

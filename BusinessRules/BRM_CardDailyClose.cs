@@ -95,32 +95,33 @@ namespace BusinessRules
             try
             {
                 string sql = @"insert into dbo.tbl_Card_DailyClose(DailyCloseDate,IntoStoreCount)";
-                sql += " select '"+strCloseDate+"',count(0)";
+                sql += " select @strCloseDate,count(0)";
                 sql += " from dbo.tbl_Card_StockInfo"; 
-                sql += " where IntoStore_Date='"+strCloseDate+"'";
+                sql += " where IntoStore_Date=@strCloseDate";
 
                 sql += " update dbo.tbl_Card_DailyClose";
-                sql += " set OutStoreFCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date='"+strCloseDate+"' and substring(rtrim(ltrim(OutStore_Status)),1,2)='»â¥d')";
-                sql += " where DailyCloseDate='"+strCloseDate+"'";
+                sql += " set OutStoreFCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date=@strCloseDate and substring(rtrim(ltrim(OutStore_Status)),1,2)='»â¥d')";
+                sql += " where DailyCloseDate=@strCloseDate";
 
                 sql += " update dbo.tbl_Card_DailyClose";
-                sql += " set OutStoreMCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date='"+strCloseDate+"' and substring(rtrim(ltrim(OutStore_Status)),1,2)='¶l±H')";
-                sql += " where DailyCloseDate='"+strCloseDate+"'";
+                sql += " set OutStoreMCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date=@strCloseDate and substring(rtrim(ltrim(OutStore_Status)),1,2)='¶l±H')";
+                sql += " where DailyCloseDate=@strCloseDate";
 
                 sql += " update dbo.tbl_Card_DailyClose";
-                sql += " set OutStoreDCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date='" + strCloseDate + "' and substring(rtrim(ltrim(OutStore_Status)),1,2)='µù¾P')";
-                sql += " where DailyCloseDate='"+strCloseDate+"'";
+                sql += " set OutStoreDCount=(select count(0) from dbo.tbl_Card_StockInfo where OutStore_Date=@strCloseDate and substring(rtrim(ltrim(OutStore_Status)),1,2)='µù¾P')";
+                sql += " where DailyCloseDate=@strCloseDate";
 
                 sql += " declare @LastCount int "; 
-                sql += " select @LastCount=C.DailyCloseCount from (select top 1 DailyCloseCount from dbo.tbl_Card_DailyClose where DailyCloseDate<'"+strCloseDate+"' order by DailyCloseDate desc) as C";
+                sql += " select @LastCount=C.DailyCloseCount from (select top 1 DailyCloseCount from dbo.tbl_Card_DailyClose where DailyCloseDate<@strCloseDate order by DailyCloseDate desc) as C";
                 sql += " if @LastCount is null begin set @LastCount=0 end";
                 sql += " update dbo.tbl_Card_DailyClose set DailyCloseCount=@LastCount+IntoStoreCount-OutStoreFCount-OutStoreMCount-OutStoreDCount";
                 sql += " from tbl_Card_DailyClose";
-                sql += " where DailyCloseDate='"+strCloseDate+"'";
+                sql += " where DailyCloseDate=@strCloseDate";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strCloseDate", strCloseDate));
                 if (BRM_CardDailyClose.Add(sqlcmd))
                 {
                     return true;
@@ -150,11 +151,12 @@ namespace BusinessRules
             try
             {
                 string sql = @"delete from tbl_Card_DailyClose ";
-                sql += " where DailyCloseDate='" + strCloseDate + "'";
+                sql += " where DailyCloseDate=@DailyCloseDate";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@DailyCloseDate", strCloseDate));
                 if (BRM_CardDailyClose.Delete(sqlcmd))
                 {
                     return true;
@@ -184,14 +186,15 @@ namespace BusinessRules
             try
             {
                 string sql = @"insert into dbo.tbl_Card_DailyStockInfo(DailyClose_Date,cardno,IntoStore_Date,OutStore_Status,OutStore_Date,custname)";
-                sql += " select '" + strCloseDate + "',cardno,IntoStore_Date,OutStore_Status,OutStore_Date,custname ";
+                sql += " select @strCloseDate,cardno,IntoStore_Date,OutStore_Status,OutStore_Date,custname ";
                 sql += " from dbo.tbl_Card_StockInfo";
-                sql += " where IntoStore_Date='" + strCloseDate + "' or OutStore_Date='"+ strCloseDate + "'";
-                sql += " or (IntoStore_Date<'" + strCloseDate + "' and isnull(OutStore_Date,'')='')";
+                sql += " where IntoStore_Date=@strCloseDate or OutStore_Date=@strCloseDate";
+                sql += " or (IntoStore_Date<@strCloseDate and isnull(OutStore_Date,'')='')";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strCloseDate", strCloseDate));
                 if (BRM_CardDailyClose.Add(sqlcmd))
                 {
                     return true;
@@ -220,11 +223,12 @@ namespace BusinessRules
             try
             {
                 string sql = @"delete from tbl_Card_DailyStockInfo ";
-                sql += " where DailyClose_Date='" + strCloseDate + "'";
+                sql += " where DailyClose_Date=@DailyClose_Date";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@DailyClose_Date", strCloseDate));
                 if (BRM_CardDailyClose.Delete(sqlcmd))
                 {
                     return true;

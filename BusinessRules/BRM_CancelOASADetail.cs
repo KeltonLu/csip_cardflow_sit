@@ -60,18 +60,17 @@ namespace BusinessRules
 
             try
             {
-                string sql = @" select CardNo,BlockLog,MemoLog,case SFFlg when '0' then '未註銷' when '1' then '註銷成功' when '2' then '註銷失敗' when '3' then '人工註銷成功' end as SFFlgName,SFFlg";
-                sql += " from dbo.tbl_CancelOASA_Detail";
-                sql += " where CancelOASAFile='" + strFile + "' and CancelOASADate='" + strDate + "'";
-                if (strSFFlg != "4")
-                {
-                    sql += " and SFFlg='" + strSFFlg + "'";
-                }
-
+                string sql = @" select CardNo,BlockLog,MemoLog,case SFFlg when '0' then '未註銷' when '1' then '註銷成功' when '2' then '註銷失敗' when '3' then '人工註銷成功' end as SFFlgName,SFFlg
+                                from dbo.tbl_CancelOASA_Detail
+                                where CancelOASAFile=@CancelOASAFile and CancelOASADate=@CancelOASADate
+                                AND ((@SFFlg != '4' AND SFFlg = @SFFlg) OR (@SFFlg = '4'))";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAFile", strFile));
+                sqlcmd.Parameters.Add(new SqlParameter("@CancelOASADate", strDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@SFFlg", strSFFlg));
                 DataSet ds = BRM_CancelOASADetail.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);
                 if (ds != null)
                 {

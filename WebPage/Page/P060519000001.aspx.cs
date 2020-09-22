@@ -49,19 +49,6 @@ public partial class P060519000001 : PageBase
         this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_06051900_019");
         this.grvUserView.Columns[8].HeaderText = BaseHelper.GetShowText("06_06051900_020");
         this.grvUserView.Columns[9].HeaderText = BaseHelper.GetShowText("06_06051900_021");
-        this.grvUserView.Columns[10].HeaderText = BaseHelper.GetShowText("06_06051900_022");
-        this.grvUserView.Columns[11].HeaderText = BaseHelper.GetShowText("06_06051900_023");
-        this.grvUserView.Columns[12].HeaderText = BaseHelper.GetShowText("06_06051900_024");
-        this.grvUserView.Columns[13].HeaderText = BaseHelper.GetShowText("06_06051900_025");
-        this.grvUserView.Columns[14].HeaderText = BaseHelper.GetShowText("06_06051900_026");
-        this.grvUserView.Columns[15].HeaderText = BaseHelper.GetShowText("06_06051900_027");
-        this.grvUserView.Columns[16].HeaderText = BaseHelper.GetShowText("06_06051900_028");
-        this.grvUserView.Columns[17].HeaderText = BaseHelper.GetShowText("06_06051900_029");
-        this.grvUserView.Columns[18].HeaderText = BaseHelper.GetShowText("06_06051900_030");
-        this.grvUserView.Columns[19].HeaderText = BaseHelper.GetShowText("06_06051900_031");
-        this.grvUserView.Columns[20].HeaderText = BaseHelper.GetShowText("06_06051900_032");
-        this.grvUserView.Columns[21].HeaderText = BaseHelper.GetShowText("06_06051900_033");
-        this.grvUserView.Columns[22].HeaderText = BaseHelper.GetShowText("06_06051900_034");
 
         //* 設置一頁顯示最大筆數
         this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));

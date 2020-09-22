@@ -2,7 +2,8 @@
 //*  作    者：Wallace Liu
 //*  功能說明：刪除一年前的卡片基本資料檔資料(以轉檔日挑選資料)
 //*  創建日期：2015/02/06
-//*  修改記錄：
+//*  修改記錄：2020/08/25 Area Luke , 新增寄信功能
+
 //*<author>            <time>            <TaskID>                <desc>
 //*******************************************************************
 
@@ -34,6 +35,9 @@ public class JobDEL_HistoryData : IJob
     private string strJobMsg;
     private string strDelCount="";
 
+    protected JobHelper JobHelper = new JobHelper();
+    private readonly string _strFrom = UtilHelper.GetAppSettings("MailSender");
+
     #region IJob 成員
     /// <summary>
     /// Job 調用入口
@@ -46,6 +50,9 @@ public class JobDEL_HistoryData : IJob
 
         strJobMsg = "";
         //string parameter = "";
+
+        string mailTo = context.JobDetail.JobDataMap.GetString("mail");
+        string strSubject = context.JobDetail.JobDataMap.GetString("title");
 
         try
         {
@@ -89,6 +96,18 @@ public class JobDEL_HistoryData : IJob
             strJobMsg += Resources.JobResource.JobDEL_HistoryData001 + strDelCount;
 
             UpdateBatchLog(strJobMsg, dTimeStart);
+
+            //*JOB成功發送MAIL
+            if (!string.IsNullOrWhiteSpace(mailTo))
+            {
+                string[] strTo = new[] { mailTo.Trim() };
+                JobHelper.SendMail(_strFrom, strTo, strSubject + "執行成功！", strJobMsg);
+            }
+            else
+            {
+                Logging.Log("寄信失敗，無 Email通知人資料。", strJobID, LogState.Info);
+            }
+
             Logging.Log("JOB結束！", strJobID, LogState.Info);
         }   
         catch (Exception exp)
@@ -99,10 +118,12 @@ public class JobDEL_HistoryData : IJob
             Logging.Log(exp, strJobID);
 
             //*JOB失敗發送MAIL
-            //    string strMail = context.JobDetail.JobDataMap.GetString("mail").Trim();
-            //    string strTitle = context.JobDetail.JobDataMap.GetString("title").Trim();
-            //    if (!string.IsNullOrEmpty(strMail))
-            //        BRM_FileInfo.SendFailMail(strMail, strTitle, exp.Message, dTimeStart);
+            if (!string.IsNullOrWhiteSpace(mailTo))
+            {
+                string[] strTo = new[] { mailTo.Trim() };
+                JobHelper.SendMail(_strFrom, strTo, strSubject + "執行失敗！", strJobMsg);
+            }
+
         }
         finally
         {

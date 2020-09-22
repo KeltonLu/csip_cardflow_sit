@@ -809,29 +809,23 @@ public class JobHelper : FTPFactory
     /// <returns></returns>
     public static bool GetUserNameByUserId(DataTable dtUserId, string strColName, ref DataTable dtResult)
     {
-        string strCon = string.Empty;
         try
         {
-            string strSql = @"Select USER_ID,USER_NAME From CSIP.dbo.M_USER Where USER_ID in ({0})";
+            string strSql = @"Select USER_ID,USER_NAME From CSIP.dbo.M_USER Where USER_ID in (";
 
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
 
             for (int i = 0; i < dtUserId.Rows.Count; i++)
             {
-                strCon += "'" + dtUserId.Rows[i][strColName].ToString() + "',";
+                strSql += ((i == 0 ? "" : ",") + ("@USER_ID" + i));
+                sqlcmd.Parameters.Add(new SqlParameter("@USER_ID" + i, dtUserId.Rows[i][strColName].ToString()));
             }
 
-            if (strCon.Length > 0)
-            {
-                strCon = strCon.Substring(0, strCon.Length - 1);
-            }
+            if (dtUserId.Rows.Count <= 0)
+                strSql += "'')";
             else
-            {
-                strCon = "''";
-            }
-
-            strSql = string.Format(strSql, strCon);
+                strSql += ")";
 
             sqlcmd.CommandText = strSql;
             DataSet ds = CSIPCommonModel.BusinessRules.BRM_USER.SearchOnDataSet(sqlcmd, "Connection_CSIP");

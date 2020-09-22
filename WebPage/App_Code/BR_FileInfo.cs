@@ -41,11 +41,14 @@ public class BR_FileInfo : BRBase<Entity_FileInfo>
         try
         {
             string sql = @"select  *  from  dbo.tbl_CancelOASA_Source ";
-            sql += " where ImportFile='" + fname + "'and ImportDate='" + importDate + "' and CardNo='" + CardNo + "'";
+            sql += " where ImportFile=@ImportFile and ImportDate=@ImportDate and CardNo=@CardNo";
 
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = sql;
+            sqlcmd.Parameters.Add(new SqlParameter("@ImportFile", fname));
+            sqlcmd.Parameters.Add(new SqlParameter("@ImportDate", importDate));
+            sqlcmd.Parameters.Add(new SqlParameter("@CardNo", CardNo));
             DataSet ds = BRM_CancelOASASource.SearchOnDataSet(sqlcmd);
             if (ds != null)
             {

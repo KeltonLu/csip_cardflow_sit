@@ -69,11 +69,13 @@ VALUES(@indate1,@id,@cardno,@kind,@card_file,@result,@fail_reason,@reason,@impor
         try
         {
             string sql = @"select  *  from  dbo.tbl_Card_DataChange ";
-            sql += " where indate1='" + paramObj.indate1 + "'and id='" + paramObj.id + "' and NewWay is not null ";
+            sql += " where indate1=@indate1 and id=@id and NewWay is not null ";
 
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = sql;
+            sqlcmd.Parameters.Add(new SqlParameter("@indate1", paramObj.indate1));
+            sqlcmd.Parameters.Add(new SqlParameter("@id", paramObj.id));
             DataSet ds = BRBatchImport_UrgencyCard.SearchOnDataSet(sqlcmd);
             if (ds != null)
             {

@@ -30,11 +30,11 @@ namespace BusinessRules
 
                 string sql = @"SELECT * FROM(";
                 //自取
-                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'')  as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and (indate1='" + strMerchDateSQL + "' or (indate1<'" + strMerchDateSQL + "' and isnull(IntoStore_Status,'0')='0'))";
+                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'')  as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and (indate1=@strMerchDateSQL or (indate1<@strMerchDateSQL and isnull(IntoStore_Status,'0')='0'))";
                 sql += " and cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 if (strFactory != "0")
                 {
-                    sql += " and Merch_Code='" + strFactory + "'";
+                    sql += " and Merch_Code=@Merch_Code";
                 }
                 sql += " union";
                 //自取+緊急製卡
@@ -42,7 +42,7 @@ namespace BusinessRules
                 sql += " and cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 if (strFactory !="0")
                 {
-                    sql += " and Merch_Code='" + strFactory + "'";
+                    sql += " and Merch_Code=@Merch_Code";
                 }
                 sql += " union";
                 //其他取卡方式+退件改自取
@@ -51,11 +51,11 @@ namespace BusinessRules
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
-                sql += " and ((InformMerchDate<'" + strMerchDate + "' and isnull(IntoStore_Status,'0')<>'1') or ";
-                sql += " (InformMerchDate='" + strMerchDate + "' and (isnull(IntoStore_Status,'0')<>'1' or (IntoStore_Status='1' and IntoStore_Date>=back.ImportDate))))";
+                sql += " and ((InformMerchDate<@InformMerchDate and isnull(IntoStore_Status,'0')<>'1') or ";
+                sql += " (InformMerchDate=@InformMerchDate and (isnull(IntoStore_Status,'0')<>'1' or (IntoStore_Status='1' and IntoStore_Date>=back.ImportDate))))";
                 if (strFactory != "0")
                 {
-                    sql += " and base.Merch_Code='" + strFactory + "'";
+                    sql += " and base.Merch_Code=@Merch_Code";
                 }
                 sql += " union";
                 //其他取卡方式+退件改自取 且為 自取->郵寄出庫->退件->自取 的情況
@@ -63,10 +63,10 @@ namespace BusinessRules
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base ";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate ";
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
-                sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0' and (InformMerchDate='" + strMerchDate + "' or InformMerchDate<'" + strMerchDate + "')  and IntoStore_Status='1' and IntoStore_Date<back.ImportDate";
+                sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0' and (InformMerchDate=@InformMerchDate or InformMerchDate<@InformMerchDate)  and IntoStore_Status='1' and IntoStore_Date<back.ImportDate";
                 if (strFactory != "0")
                 {
-                    sql += " and base.Merch_Code='" + strFactory + "'";
+                    sql += " and base.Merch_Code=@Merch_Code";
                 }
 
                 sql += ")U ";
@@ -75,6 +75,10 @@ namespace BusinessRules
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strMerchDateSQL", strMerchDateSQL));
+                if (strFactory != "0")
+                    sqlcmd.Parameters.Add(new SqlParameter("@Merch_Code", strFactory));
+                sqlcmd.Parameters.Add(new SqlParameter("@InformMerchDate", strMerchDate));
                 DataSet ds = BRM_CardStockInfo.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);
                 if (ds != null)
                 {
@@ -185,15 +189,15 @@ namespace BusinessRules
 
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
-                sql += " and IntoStore_Date between '" + strFromDate + "' and '" + strToDate + "'";
+                sql += " and IntoStore_Date between @strFromDate and @strToDate";
                 
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'"; 
+                    sql += " and base.id=@id"; 
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
                 //其他取卡方式+退件改自取
                 sql += " union";
@@ -203,15 +207,15 @@ namespace BusinessRules
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date>=back.ImportDate";
-                sql += " and IntoStore_Date between '" + strFromDate + "' and '" + strToDate + "'";
+                sql += " and IntoStore_Date between @strFromDate and @strToDate";
 
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'";
+                    sql += " and base.id=@id";
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
                 //其他取卡方式+退件改自取 且為 自取->郵寄出庫->退件->自取 的情況
                 sql += " union";
@@ -221,14 +225,14 @@ namespace BusinessRules
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date<back.ImportDate";
-                sql += " and IntoStore_Date between '" + strFromDate + "' and '" + strToDate + "'";
+                sql += " and IntoStore_Date between @strFromDate and @strToDate";
                 if (!strId.Equals(string.Empty))
                 {
-                    sql += " and base.id='" + strId + "'";
+                    sql += " and base.id=@id";
                 }
                 if (!strCardNo.Equals(string.Empty))
                 {
-                    sql += " and base.cardno='" + strCardNo + "'";
+                    sql += " and base.cardno=@cardno";
                 }
 
                 sql += ")U ";
@@ -237,6 +241,12 @@ namespace BusinessRules
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strFromDate", strFromDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strToDate", strToDate));
+                if (!strId.Equals(string.Empty))
+                    sqlcmd.Parameters.Add(new SqlParameter("@id", strId));
+                if (!strCardNo.Equals(string.Empty))
+                    sqlcmd.Parameters.Add(new SqlParameter("@cardno", strCardNo));
                 DataSet ds = BRM_CardStockInfo.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);
                 if (ds != null)
                 {

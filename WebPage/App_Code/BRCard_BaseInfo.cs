@@ -31,11 +31,13 @@ public class BRCard_BaseInfo :CSIPCommonModel.BusinessRules.BRBase<EntityL_Card_
             sbSql.Append(",[is_LackCard],[Urgency_Flg],[IntoStore_Status],[IntoStore_Date],[OutStore_Status]");
             sbSql.Append(",[OutStore_Date],[SelfPick_Type],[SelfPick_Date] ");
             sbSql.Append("FROM [tbl_Card_BaseInfo] ");            
-            sbSql.Append(" WHERE  [indate1] = '" + intDate  + "' and [id] = '" + splidID  + "' ");  
+            sbSql.Append(" WHERE  [indate1] = @indate1 and [id] = @id ");  
 
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = sbSql.ToString();
+            sqlcmd.Parameters.Add(new SqlParameter("@indate1", intDate));
+            sqlcmd.Parameters.Add(new SqlParameter("@id", splidID));
             DataSet ds = BRCard_BaseInfo.SearchOnDataSet(sqlcmd);
             if (ds != null)
             {

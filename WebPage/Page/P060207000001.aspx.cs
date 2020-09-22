@@ -58,22 +58,20 @@ public partial class P060207000001 : PageBase
     }
 
     /// <summary>
-    /// 功能說明:卡片自取庫存盤點表查詢
-    /// 作    者:Linda
-    /// 創建時間:2010/06/17
-    /// 修改記錄:
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增共用條件檢核需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    protected void btnSearch_Click(object sender, EventArgs e)
+    protected Boolean chkCond(ref String strDailyCloseDate)
     {
         if (!this.radStockInfo.Checked)
         {
             jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020700_012") + "');");
-            return;
+            return false;
         }
-        DataTable dtCloseInfo=new DataTable();
-        string strDailyCloseDate=this.dpCloseDate.Text.Trim();
+        DataTable dtCloseInfo = new DataTable();
+        strDailyCloseDate = this.dpCloseDate.Text.Trim();
 
         if (this.radStockInfo.Checked)
         {
@@ -88,6 +86,7 @@ public partial class P060207000001 : PageBase
         if (strDailyCloseDate.Equals(string.Empty))
         {
             jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020700_007") + "');");
+            return false;
         }
         else
         {
@@ -95,19 +94,49 @@ public partial class P060207000001 : PageBase
             {
                 if (dtCloseInfo.Rows.Count > 0)
                 {
-                    Response.Redirect("P060207000002.aspx?DailyCloseDate=" + RedirectHelper.GetEncryptParam(strDailyCloseDate) + "");
+                    strDailyCloseDate = RedirectHelper.GetEncryptParam(strDailyCloseDate);
+                    return true;
                 }
                 else
                 {
                     jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020700_008") + "');");
+                    return false;
                 }
 
             }
             else
             {
                 jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020700_008") + "');");
+                return false;
             }
-        }        
+        }
+    }
+    /// <summary>
+    /// 功能說明:卡片自取庫存盤點表查詢
+    /// 作    者:Linda
+    /// 創建時間:2010/06/17
+    /// 修改記錄:
+    /// Ares JaJa 2020/09/03 原功能整合移至列印功能，調整為查詢顯示
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void btnSearch_Click(object sender, EventArgs e)
+    {
+        String strDailyCloseDate = "";
+        if (chkCond(ref strDailyCloseDate))
+            Response.Redirect("P060207000002.aspx?DailyCloseDate=" + strDailyCloseDate + "&Type=Search");
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增列印需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/03
+    /// </summary>
+    protected void btnPrint_Click(object sender, EventArgs e)
+    {
+        String strDailyCloseDate = "";
+        if (chkCond(ref strDailyCloseDate))
+            Response.Redirect("P060207000002.aspx?DailyCloseDate=" + strDailyCloseDate + "&Type=Print");
     }
     /// <summary>
     /// 功能說明:日結操作

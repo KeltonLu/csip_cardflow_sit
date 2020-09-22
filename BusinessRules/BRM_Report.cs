@@ -177,26 +177,18 @@ namespace BusinessRules
             try
             {
                 StringBuilder sbSql = new StringBuilder();
-                sbSql.Append(" Insert into dbo.tbl_HoldCard");
-                sbSql.Append(" Values('");
-                sbSql.Append(strId);
-                sbSql.Append("','");
-                sbSql.Append(strCustname);
-                sbSql.Append("','");
-                sbSql.Append(strCardno);
-                sbSql.Append("','");
-                sbSql.Append(strIndate1);
-                sbSql.Append("','");
-                sbSql.Append(strUpdDate);
-                sbSql.Append("','");
-                sbSql.Append(strCNote);
-                sbSql.Append("','");
-                sbSql.Append(strkktime);
-                sbSql.Append("')");
+                sbSql.Append(" Insert into dbo.tbl_HoldCard Values(@strId, @strCustname, @strCardno, @strIndate1, @strUpdDate, @strCNote, @strkktime)");
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sbSql.ToString();
+                sqlcmd.Parameters.Add(new SqlParameter("@strId", strId));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCustname", strCustname));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCardno", strCardno));
+                sqlcmd.Parameters.Add(new SqlParameter("@strIndate1", strIndate1));
+                sqlcmd.Parameters.Add(new SqlParameter("@strUpdDate", strUpdDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strCNote", strCNote));
+                sqlcmd.Parameters.Add(new SqlParameter("@strkktime", strkktime));
                 if (BRM_Report.Update(sqlcmd))
                 {
                     return true;

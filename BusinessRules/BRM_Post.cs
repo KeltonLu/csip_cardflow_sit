@@ -103,10 +103,11 @@ namespace BusinessRules
         {
             try
             {
-                string strSql = "SELECT ROLE_ID FROM M_USER WHERE USER_ID ='" + strUserID + "' AND ROLE_ID IN (" + strRoleIdList + ")";
+                string strSql = "SELECT ROLE_ID FROM M_USER WHERE USER_ID =@USER_ID AND ROLE_ID IN (" + strRoleIdList + ")";
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandText = strSql;
                 sqlcmd.CommandType = CommandType.Text;
+                sqlcmd.Parameters.Add(new SqlParameter("@USER_ID", strUserID));
                 DataSet ds = BRM_Post.SearchOnDataSet(sqlcmd,"Connection_CSIP");
                 if (ds != null)
                 {

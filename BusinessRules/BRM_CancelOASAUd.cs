@@ -59,12 +59,14 @@ namespace BusinessRules
             {
                 string strCount = "";
                 string sql = @"select count(*) from dbo.tbl_CancelOASA_UD";
-                sql += " where FileName_Real='"+strFileName+"' and File_Date='"+strFileDate+"'";
+                sql += " where FileName_Real=@FileName_Real and File_Date=@File_Date";
                 sql += " and success_flag <> '0'";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@FileName_Real", strFileName));
+                sqlcmd.Parameters.Add(new SqlParameter("@File_Date", strFileDate));
                 DataSet ds = BRM_CancelOASAUd.SearchOnDataSet(sqlcmd);
 
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -106,11 +108,13 @@ namespace BusinessRules
             try
             {
                 string sql = @"select * from dbo.tbl_CancelOASA_UD";
-                sql += " where FileName_Real='" + strFileName + "' and File_Date='" + strFileDate + "'";
+                sql += " where FileName_Real=@FileName_Real and File_Date=@File_Date";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@FileName_Real", strFileName));
+                sqlcmd.Parameters.Add(new SqlParameter("@File_Date", strFileDate));
                 DataSet ds = BRM_CancelOASAUd.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {

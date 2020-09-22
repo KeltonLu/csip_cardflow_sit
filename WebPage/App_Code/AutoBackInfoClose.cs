@@ -457,7 +457,7 @@ public class AutoBackInfoClose : Quartz.IJob
 
             string sql = @"Select * from dbo.tbl_Card_BackInfo";
             sql += " where CardBackStatus='0'";
-            sql += " and Backdate<=convert(nvarchar(10), dateadd(mm,-" + strMinusDate + ",getdate()),111)";
+            sql += " and Backdate<=convert(nvarchar(10), dateadd(mm,-@strMinusDate,getdate()),111)";
             switch (intCardType)
             {
                 case 1: //信用卡
@@ -485,6 +485,7 @@ public class AutoBackInfoClose : Quartz.IJob
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = sql;
+            sqlcmd.Parameters.Add(new SqlParameter("@strMinusDate", strMinusDate));
             DataSet ds = BRM_CardBackInfo.SearchOnDataSet(sqlcmd);
             if (ds != null)
             {
@@ -520,7 +521,7 @@ public class AutoBackInfoClose : Quartz.IJob
             string sql = "update dbo.tbl_Card_BackInfo";
             sql += " set Enditem='6',EndFunction='1',Enduid='sys',Enddate=convert(nvarchar(10),getdate(),111),CardBackStatus='2',Closedate=convert(nvarchar(10),getdate(),111)";
             sql += " where CardBackStatus='0'";
-            sql += " and Backdate<=convert(nvarchar(10), dateadd(mm,-" + strMinusDate + ",getdate()),111)";
+            sql += " and Backdate<=convert(nvarchar(10), dateadd(mm,-@strMinusDate,getdate()),111)";
             switch (intCardType)
             {
                 case 1: //信用卡
@@ -548,6 +549,7 @@ public class AutoBackInfoClose : Quartz.IJob
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = sql;
+            sqlcmd.Parameters.Add(new SqlParameter("@strMinusDate", strMinusDate));
             if (BRM_CardBackInfo.Update(sqlcmd))
             {
                 return true;

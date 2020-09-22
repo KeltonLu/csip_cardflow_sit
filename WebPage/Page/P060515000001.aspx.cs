@@ -26,7 +26,162 @@ public partial class P060515000001 : PageBase
             BindFactory();
             //* 設定Tittle
             this.Page.Title = BaseHelper.GetShowText("06_06051500_000");
+            ShowControlsText();
+            this.gpList.Visible = false;
+            this.gpList.RecordCount = 0;
+            this.grvUserView.Visible = false;
         }
+    }
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢標頭需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private void ShowControlsText()
+    {
+        //* 設置查詢結果GridView的列頭標題
+        this.grvUserView.Columns[0].HeaderText = BaseHelper.GetShowText("06_06051500_008");
+        this.grvUserView.Columns[1].HeaderText = BaseHelper.GetShowText("06_06051500_009");
+        this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_06051500_010");
+        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06051500_011");
+        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06051500_012");
+        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_06051500_013");
+        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06051500_014");
+        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_06051500_015");
+        this.grvUserView.Columns[8].HeaderText = BaseHelper.GetShowText("06_06051500_016");
+        this.grvUserView.Columns[9].HeaderText = BaseHelper.GetShowText("06_06051500_017");
+        this.grvUserView.Columns[10].HeaderText = BaseHelper.GetShowText("06_06051500_018");
+        this.grvUserView.Columns[11].HeaderText = BaseHelper.GetShowText("06_06051500_019");
+        this.grvUserView.Columns[12].HeaderText = BaseHelper.GetShowText("06_06051500_020");
+
+        //* 設置一頁顯示最大筆數
+        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+        this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢顯示需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    private void BindGridView()
+    {
+        // 初始化報表參數
+        Dictionary<String, String> param = new Dictionary<String, String>();
+        if (chkCond(ref param))
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                Int32 count = 0;
+                Boolean result = BR_Excel_File.GetDataTable0515(param, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref count, ref dt);
+                //* 查詢成功
+                if (result)
+                {
+                    this.gpList.Visible = true;
+                    this.gpList.RecordCount = count;
+                    this.grvUserView.Visible = true;
+                    this.grvUserView.DataSource = dt;
+                    this.grvUserView.DataBind();
+                    jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051500_001"));
+                }
+                //* 查詢不成功
+                else
+                {
+                    this.gpList.RecordCount = 0;
+                    this.grvUserView.DataSource = null;
+                    this.grvUserView.DataBind();
+                    this.gpList.Visible = false;
+                    this.grvUserView.Visible = false;
+                    jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051500_002"));
+                }
+            }
+            catch (Exception exp)
+            {
+                Logging.Log(exp, LogLayer.UI);
+                jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051500_002"));
+            }
+        }
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增查詢切換頁需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    protected void gpList_PageChanged(object src, Framework.WebControls.PageChangedEventArgs e)
+    {
+        gpList.CurrentPageIndex = e.NewPageIndex;
+        BindGridView();
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增共用條件檢核需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    protected Boolean chkCond(ref Dictionary<String, String> param)
+    {
+        string strMsgId = string.Empty;
+        if (!CheckCondition(ref strMsgId))
+        {
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgId) + "')");
+            return false;
+        }
+
+        try
+        {
+            // 初始化報表參數
+            param = new Dictionary<String, String>();
+
+            //*製卡日期
+            if (rdbMake.Checked)
+            {
+                param.Add("MstatrDate", this.dpMakeStime.Text.Trim());
+                param.Add("MendDate", this.dpMakeEtime.Text.Trim());
+                param.Add("CountS", this.dpMakeStime.Text.Trim());
+                param.Add("CountE", this.dpMakeEtime.Text.Trim());
+            }
+            else
+            {
+                param.Add("MstatrDate", "NULL");
+                param.Add("MendDate", "NULL");
+            }
+
+            //*郵寄日期
+            if (rdbPost.Checked)
+            {
+                param.Add("PstatrDate", this.dpPostStime.Text.Trim());
+                param.Add("PendDate", this.dpPostEtime.Text.Trim());
+                param.Add("CountS", this.dpPostStime.Text.Trim());
+                param.Add("CountE", this.dpPostEtime.Text.Trim());
+            }
+            else
+            {
+                param.Add("PstatrDate", "NULL");
+                param.Add("PendDate", "NULL");
+            }
+
+            if (ddlFactory.SelectedValue.Equals("0"))
+            {
+                param.Add("Factory", "00");
+                param.Add("FactoryName", BaseHelper.GetShowText("06_06051900_009"));
+            }
+            else
+            {
+                param.Add("Factory", this.ddlFactory.SelectedValue);
+                param.Add("FactoryName", this.ddlFactory.SelectedItem.Text.Trim());
+            }
+        }
+        catch (Exception exp)
+        {
+            Logging.Log(exp, LogLayer.BusinessRule);
+            MessageHelper.ShowMessage(this, "06_05150000_003");
+            return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -134,79 +289,46 @@ public partial class P060515000001 : PageBase
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        string strMsgId = string.Empty;
-        if (!CheckCondition(ref strMsgId))
+        BindGridView();
+    }
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增列印需求功能
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/17
+    /// </summary>
+    protected void btnPrint_Click(object sender, EventArgs e)
+    {
+        // 初始化報表參數
+        Dictionary<String, String> param = new Dictionary<String, String>();
+        if (chkCond(ref param))
         {
-            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgId) + "')");
-            return;
-        }
+            try
+            {
+                string strMsgId = string.Empty;
+                string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
 
-        string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath").ToString());
-        
-        try
-        {
-            // 初始化報表參數
-            Dictionary<string, string> param = new Dictionary<string, string>();
-            
-            //*製卡日期
-            if (rdbMake.Checked)
-            {
-                param.Add("MstatrDate", this.dpMakeStime.Text.Trim());
-                param.Add("MendDate", this.dpMakeEtime.Text.Trim());
-                param.Add("CountS", this.dpMakeStime.Text.Trim());
-                param.Add("CountE", this.dpMakeEtime.Text.Trim());
-            }
-            else
-            {
-                param.Add("MstatrDate", "NULL");
-                param.Add("MendDate", "NULL");
-            }
+                //產生報表
+                Boolean result = BR_Excel_File.CreateExcelFile_0515Report(param, ref strServerPathFile, ref strMsgId);
 
-            //*郵寄日期
-            if (rdbPost.Checked)
-            {
-                param.Add("PstatrDate", this.dpPostStime.Text.Trim());
-                param.Add("PendDate", this.dpPostEtime.Text.Trim());
-                param.Add("CountS", this.dpPostStime.Text.Trim());
-                param.Add("CountE", this.dpPostEtime.Text.Trim());
+                if (result)
+                {
+                    FileInfo fs = new FileInfo(strServerPathFile);
+                    Session["ServerFile"] = strServerPathFile;
+                    Session["ClientFile"] = fs.Name;
+                    string urlString = @"location.href='DownLoadFile.aspx';";
+                    jsBuilder.RegScript(this.Page, urlString);
+                }
+                else
+                {
+                    MessageHelper.ShowMessage(this, strMsgId);
+                }
             }
-            else
+            catch (Exception exp)
             {
-                param.Add("PstatrDate", "NULL");
-                param.Add("PendDate", "NULL");
+                Logging.Log(exp, LogLayer.BusinessRule);
+                MessageHelper.ShowMessage(this, "06_05150000_003");
             }
-
-            if (ddlFactory.SelectedValue.Equals("0"))
-            {
-                param.Add("Factory", "00");
-                param.Add("FactoryName", BaseHelper.GetShowText("06_06051900_009"));
-            }
-            else
-            {
-                param.Add("Factory", this.ddlFactory.SelectedValue);
-                param.Add("FactoryName", this.ddlFactory.SelectedItem.Text.Trim());
-            }
-
-            Boolean result = BR_Excel_File.CreateExcelFile_0515Report(param, ref strServerPathFile, ref strMsgId);
-            
-            if (result)
-            {
-                FileInfo fs = new FileInfo(strServerPathFile);
-                Session["ServerFile"] = strServerPathFile;
-                Session["ClientFile"] = fs.Name;
-                string urlString = @"location.href='DownLoadFile.aspx';";
-                jsBuilder.RegScript(this.Page, urlString);
-            }
-            else
-            {
-                MessageHelper.ShowMessage(this, strMsgId);
-            }
-        }
-        catch (Exception exp)
-        {
-            Logging.Log(exp, LogLayer.BusinessRule);
-            MessageHelper.ShowMessage(this, "06_05150000_003");
-
         }
     }
 }

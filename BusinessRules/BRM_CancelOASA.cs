@@ -70,11 +70,13 @@ namespace BusinessRules
             try
             {
                 string NowDate = DateTime.Now.ToString("yyyy/MM/dd");
-                string sql = "select * from  tbl_CancelOASA where ImportDate <= '" + NowDate + "' and Stauts='0'";
+                string sql = "select * from  tbl_CancelOASA where ImportDate <= @ImportDate and Stauts=@Stauts";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@ImportDate", NowDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@Stauts", "0"));
                 DataSet ds = BRM_CancelOASA.SearchOnDataSet(sqlcmd);
                 if (ds != null)
                 {
@@ -118,12 +120,14 @@ namespace BusinessRules
                 sql += " CancelOASAFile,TotalCount,SCount,FCount,ConfirmUser,ModStautsUser,ModStautsDate,ChangeNote,";
                 sql += " isnull(Stauts,'0') as Stauts,case isnull(Stauts,'0') when '0' then '記錄未確認' when '1' then '記錄確認' when '2' then '覆核' when '3' then '取消覆核' when '4' then '放行' when '5' then '取消放行'end as StautsName";
                 sql += " from dbo.tbl_CancelOASA";
-                sql += " where CancelOASADate between '"+strFromDate+"' and '"+strToDate+"'";
+                sql += " where CancelOASADate between @strFromDate and @strToDate";
                 sql += " order by CancelOASADate desc";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@strFromDate", strFromDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strToDate", strToDate));
                 DataSet ds = BRM_CancelOASA.SearchOnDataSet(sqlcmd, iPageIndex, iPageSize, ref iTotalCount);               
                 if (ds != null)
                 {
@@ -160,13 +164,22 @@ namespace BusinessRules
             try
             {
                 string sql = @"update dbo.tbl_CancelOASA ";
-                sql += " set Stauts='1',ConfirmUser='" + strLogUserId + "',ModStautsUser='" + strLogUserId + "',ModStautsDate=convert(varchar(10),getdate(),111),SCount=SCount+" + strScount + "-" + strFcount+",FCount=FCount+" + strFcount + "-" + strScount+",";
-                sql += " ChangeNote=isnull(ChangeNote,'')+'" + strNote + "'";
-                sql += " where CancelOASADate ='" + strDate + "'and CancelOASAFile='" + strFile + "'";
+                sql += " set Stauts='1',ConfirmUser=@ConfirmUser,ModStautsUser=@ModStautsUser,ModStautsDate=convert(varchar(10),getdate(),111),SCount=SCount+@strScount1-@strFcount1,FCount=FCount+@strFcount2-@strScount2,";
+                sql += " ChangeNote=isnull(ChangeNote,'')+@strNote";
+                sql += " where CancelOASADate =@strDate and CancelOASAFile=@strFile";
 
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
+                sqlcmd.Parameters.Add(new SqlParameter("@ConfirmUser", strLogUserId));
+                sqlcmd.Parameters.Add(new SqlParameter("@ModStautsUser", strLogUserId));
+                sqlcmd.Parameters.Add(new SqlParameter("@strScount1", strScount));
+                sqlcmd.Parameters.Add(new SqlParameter("@strFcount1", strFcount));
+                sqlcmd.Parameters.Add(new SqlParameter("@strFcount2", strFcount));
+                sqlcmd.Parameters.Add(new SqlParameter("@strScount2", strScount));
+                sqlcmd.Parameters.Add(new SqlParameter("@strNote", strNote));
+                sqlcmd.Parameters.Add(new SqlParameter("@strDate", strDate));
+                sqlcmd.Parameters.Add(new SqlParameter("@strFile", strFile));
                 if (BRM_CancelOASA.Update(sqlcmd))
                 {
                     return true;

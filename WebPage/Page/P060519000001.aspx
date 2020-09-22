@@ -166,73 +166,34 @@
 								<EmptyDataRowStyle HorizontalAlign="Center" />
 								<Columns>
 									<asp:BoundField DataField="id">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="cardno">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="indate1">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="Backdate">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="action">
-										<ItemStyle width="2%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="ActionName">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="Closedate">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="CloseCode">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="CloseReason">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="maildate">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="Reason">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="ReasonName">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="cardtype">
-										<ItemStyle width="3%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="affinity">
-										<ItemStyle width="3%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="photo">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="Factory">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="kind">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="expdate">
-										<ItemStyle width="2%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="kindName">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="zip">
-										<ItemStyle width="3%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="address">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="branch_id">
-										<ItemStyle width="2%" HorizontalAlign="Center" />
-									</asp:BoundField>
-									<asp:BoundField DataField="seq">
-										<ItemStyle width="5%" HorizontalAlign="Center" />
+										<ItemStyle width="10%" HorizontalAlign="Center" />
 									</asp:BoundField>
 								</Columns>
 							</cc1:CustGridView>

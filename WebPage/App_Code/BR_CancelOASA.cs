@@ -58,11 +58,13 @@ public class BR_CancelOASA : BRBase<Entity_CancelOASA>
 	                    FROM [tbl_CancelOASA]";
         try
         {
-            strSQL += " where CancelOASAFile='" + inData.CancelOASAFile + "'and  CancelOASADate='" + inData.CancelOASADate + "' ";
+            strSQL += " where CancelOASAFile=@CancelOASAFile and  CancelOASADate=@CancelOASADate ";
 
             SqlCommand sqlcmd = new SqlCommand();
             sqlcmd.CommandType = CommandType.Text;
             sqlcmd.CommandText = strSQL;
+            sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAFile", inData.CancelOASAFile));
+            sqlcmd.Parameters.Add(new SqlParameter("@CancelOASADate", inData.CancelOASADate));
             DataSet ds = SearchOnDataSet(sqlcmd);
             if (ds != null)
             {
@@ -123,7 +125,7 @@ VALUES(@CancelOASAFile,@CancelOASADate,@CancelOASAUser,@TotalCount,@SCount,@FCou
 set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource = @CancelOASASource 
  
 ";
-        strSQL += " where CancelOASAFile='" + paramObj.CancelOASAFile + "'and  CancelOASADate='" + paramObj.CancelOASADate + "' ";
+        strSQL += " where CancelOASAFile=@CancelOASAFile and  CancelOASADate=@CancelOASADate ";
         SqlCommand sqlcmd = new SqlCommand();
         sqlcmd.CommandType = CommandType.Text; 
         sqlcmd.CommandText = strSQL;
@@ -132,6 +134,8 @@ set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource 
         sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
         sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
         sqlcmd.Parameters.Add(new SqlParameter("@CancelOASASource", paramObj.CancelOASASource));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASAFile", paramObj.CancelOASAFile));
+        sqlcmd.Parameters.Add(new SqlParameter("@CancelOASADate", paramObj.CancelOASADate));
         result = Update(sqlcmd);
         return result;
     }

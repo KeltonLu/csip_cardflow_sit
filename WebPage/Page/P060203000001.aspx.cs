@@ -16,6 +16,8 @@ using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
 using CSIPCommonModel.EntityLayer;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public partial class Page_P060203000001 : PageBase
 {
@@ -211,42 +213,41 @@ public partial class Page_P060203000001 : PageBase
 
         if (!ddlState.SelectedValue.Equals("0"))
         {
-            sqlhelp.AddCondition(Entity_CardDataChange.M_OutputFlg, Operator.Equal, DataTypeUtils.String, ddlState.SelectedValue);
+            sqlhelp.AddCondition(Entity_CardDataChange.M_OutputFlg, Operator.Equal, DataTypeUtils.String, EncodeForSQL(ddlState.SelectedValue));
         }
         if (!string.IsNullOrEmpty(txtUser.Text))
         {
-            sqlhelp.AddCondition(Entity_CardDataChange.M_UpdUser, Operator.Equal, DataTypeUtils.String, txtUser.Text.Trim());
+            sqlhelp.AddCondition(Entity_CardDataChange.M_UpdUser, Operator.Equal, DataTypeUtils.String, EncodeForSQL(txtUser.Text.Trim()));
         }
 
         strCondition = sqlhelp.GetFilterCondition();
         if (!string.IsNullOrEmpty(txtId.Text))
         {
-            strCondition += " And a.ID='" + this.txtId.Text.Trim() + "' ";
+            strCondition += " And a.ID='" + EncodeForSQL(this.txtId.Text.Trim()) + "' ";
         }
 
         if (!string.IsNullOrEmpty(txtCardNo.Text))
         {
-            strCondition += " And a.CardNo='" + this.txtCardNo.Text.Trim() + "' ";
+            strCondition += " And a.CardNo='" + EncodeForSQL(this.txtCardNo.Text.Trim()) + "' ";
             sqlhelp.AddCondition(Entity_CardDataChange.M_CardNo, Operator.Equal, DataTypeUtils.String, this.txtCardNo.Text.Trim());
         }
 
         if (ddlFactory.SelectedIndex != 0)
         {
-            strCondition += " And b.Merch_Code='" + ddlFactory.SelectedValue + "' ";
+            strCondition += " And b.Merch_Code='" + EncodeForSQL(ddlFactory.SelectedValue) + "' ";
         }
 
         if (!ddlChangeField.SelectedValue.Equals("0"))
         {
-            strCondition += " AND " + ddlChangeField.SelectedValue + " IS NOT NULL ";
+            strCondition += " AND " + EncodeForSQL(ddlChangeField.SelectedValue) + " IS NOT NULL ";
         }
 
         if (!string.IsNullOrEmpty(dpStart.Text) && !string.IsNullOrEmpty(dpEnd.Text))
         {
             string strSdate = dpStart.Text.ToString();
             string strEnd = dpEnd.Text.ToString();
-            strCondition += " AND UpdDate BETWEEN '" + strSdate + "' AND '" + strEnd + "'";
+            strCondition += " AND UpdDate BETWEEN '" + EncodeForSQL(strSdate) + "' AND '" + EncodeForSQL(strEnd) + "'";
         }
-
 
         return strCondition;
     }
@@ -456,5 +457,72 @@ public partial class Page_P060203000001 : PageBase
         ddlState.Visible = true;
         ddlChangeField.Visible = true;
         ModalPopupExtenderC.Hide();
+    }
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:SQL Injection
+    /// 作    者:Ares JaJa
+    /// 修改時間:2020/09/16
+    /// </summary>
+    public static String EncodeForSQL(String str, Int32 layer = 1)
+    {
+        List<String> oldList = new List<String>();
+        List<String> newList = new List<String>();
+        List<String> typeList = new List<String>();
+        if (layer >= 0)
+            AddReplaceList(
+                new String[] { "'" },
+                new String[] { "''" },
+                new String[] { "" },
+                ref oldList, ref newList, ref typeList);
+        if (layer >= 1)
+            AddReplaceList(
+                new String[] {
+                    ";", ",", "?", "<", ">",
+                    "(", ")", "@", "--", "=",
+                    "+", "*", "&", "#", "%",
+                    "$" },
+                new String[] {
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "" },
+                new String[] {
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "" },
+                ref oldList, ref newList, ref typeList);
+        if (layer >= 2)
+            AddReplaceList(
+                new String[] {
+                    "select", "insert", "delete from", "count", "drop table",
+                    "truncate", "asc", "mid", "char", "xp_cmdshell",
+                    "exec master", "net localgroup administrators", "and", "net user", "or",
+                    "net", "delete", "drop", "script", "update",
+                    "chr", "master", "declare", "exec" },
+                new String[] {
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "", "", "", "", "",
+                    "", "", "", "" },
+                new String[] {
+                    "1", "1", "1", "1", "1",
+                    "1", "1", "1", "1", "1",
+                    "1", "1", "1", "1", "1",
+                    "1", "1", "1", "1", "1",
+                    "1", "1", "1", "1" },
+                ref oldList, ref newList, ref typeList);
+        for (int i = 0; i < oldList.Count && i < newList.Count && i < typeList.Count; i++)
+            str = (typeList[i] == "" ? str.Replace(oldList[i], newList[i]) : Regex.Replace(str, oldList[i], newList[i], RegexOptions.IgnoreCase));
+        return str;
+    }
+    public static void AddReplaceList(String[] oldArr, String[] newArr, String[] typeArr, ref List<String> oldList, ref List<String> newList, ref List<String> typeList)
+    {
+        oldList.AddRange(oldArr);
+        newList.AddRange(newArr);
+        typeList.AddRange(typeArr);
     }
 }
