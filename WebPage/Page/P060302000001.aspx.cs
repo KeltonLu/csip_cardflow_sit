@@ -296,9 +296,17 @@ public partial class P060302000001 : PageBase
                 if (File.Exists(strLocalFilePath))
                 {
                     //對傳遞的文件路徑和文件名稱進行加密,再傳遞路徑給下載頁面
-                    string strJS = " $(\"#iDownLoadFrame1\").attr(\"src\",\"P060302000002.aspx?" +
-                        "Path=" + RedirectHelper.GetEncryptParam(strLocalFilePath) + "&FileName=" + RedirectHelper.GetEncryptParam(strFileName) + "\");";
-                    jsBuilder.RegScript(this.UpdatePanel1, strJS);
+                    //string strJS = " $(\"#iDownLoadFrame1\").attr(\"src\",\"P060302000002.aspx?" +
+                    //    "Path=" + RedirectHelper.GetEncryptParam(strLocalFilePath) + "&FileName=" + RedirectHelper.GetEncryptParam(strFileName) + "\");";
+                    //jsBuilder.RegScript(this.UpdatePanel1, strJS);
+
+                    this.Response.Clear();
+                    this.Response.Buffer = true;
+                    this.Session.CodePage = 950;
+                    this.Response.ContentType = "text/plain";
+                    this.Response.AppendHeader("Content-Disposition", "attachment;filename=" + HttpUtility.UrlEncode(strFileName, System.Text.Encoding.UTF8));
+                    this.Response.TransmitFile(strLocalFilePath);
+
                     //更新下載狀態
                     BRM_InOutFile.UpdateLoadFlag(ref strErrorID);
                     CustButton btnDelete = this.grvUserView.Rows[rowIndex].Cells[2].FindControl("btnDelete") as CustButton;
