@@ -21,7 +21,7 @@
 			var DailyClose = document.getElementById("radDailyClose");
 			var StockInfo = document.getElementById("radStockInfo");
 			var nowDate = new Date();
-			var year = nowDate.getYear();
+			var year = nowDate.getFullYear();
 			var month = nowDate.getMonth() + 1;
 			var day = nowDate.getDate();
 			var strDate = "";

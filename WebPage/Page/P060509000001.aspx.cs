@@ -112,40 +112,53 @@ public partial class P060509000001 : PageBase
     /// 功能說明:業務新增共用條件檢核需求功能
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/03
+    /// 修改歷程:2020/09/29
+    /// Area Luke 查詢限制業務需求調整
     /// </summary>
     protected Boolean chkCond(ref Dictionary<String, String> param)
     {
         string strMsgId = string.Empty;
-
-        if (txtMaildateStart.Text.Trim().Equals(""))
-        {
-            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
-            return false;
-        }
-
-        if (txtMaildateEnd.Text.Trim().Equals(""))
-        {
-            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
-            return false;
-        }
-
-        if (txtIndateStart.Text.Trim().Equals(""))
-        {
-            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
-            return false;
-        }
-
-        if (txtIndateEnd.Text.Trim().Equals(""))
-        {
-            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
-            return false;
-        }
 
         if (txtCode.Text.Trim().Equals(""))
         {
             MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_002");
             return false;
         }
+
+        if (txtMaildateStart.Text.Trim().Equals("") && txtMaildateEnd.Text.Trim().Equals("") &&
+            txtIndateStart.Text.Trim().Equals("") && txtIndateEnd.Text.Trim().Equals(""))
+        {
+
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_008");
+            return false;
+        }
+        else
+        {
+            if (!txtMaildateStart.Text.Trim().Equals("") && txtMaildateEnd.Text.Trim().Equals(""))
+            {
+                    MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+                    return false;
+            }
+
+            if (!txtMaildateEnd.Text.Trim().Equals("") && txtMaildateStart.Text.Trim().Equals(""))
+            {
+                    MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_000");
+                    return false;
+            }
+
+            if (!txtIndateStart.Text.Trim().Equals("") && txtIndateEnd.Text.Trim().Equals(""))
+            {
+                    MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_009");
+                    return false;
+            }
+
+            if (!txtIndateEnd.Text.Trim().Equals("") && txtIndateStart.Text.Trim().Equals(""))
+            {
+                    MessageHelper.ShowMessage(UpdatePanel1, "06_06050900_009");
+                    return false;
+            }
+        }
+
 
         try
         {

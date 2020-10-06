@@ -21,6 +21,30 @@
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnablePageMethods="True" runat="server">
         </asp:ScriptManager>
+        
+        <script language="javascript" type="text/javascript">
+            window.addEventListener("scroll", scroll, false);
+            function   scroll()   
+            {   
+                $("#divProgress").css("top",290+document.documentElement.scrollTop);
+            }    
+        </script>
+
+    <asp:UpdateProgress ID="updateProgress1" runat="server">
+        <ProgressTemplate>
+            <div id="divProgress" align="center" class="progress" style="position: absolute; top: 290px; width: 100%; filter: Alpha(opacity=80); text-align: center;">
+                <div id="divProgress2" align="center" class="progress" style="background-color: White; width: 50%; margin: 0px auto;">
+                    <br/>
+                    <img alt="Please Wait..." src="../Common/images/Waiting.gif"/>
+                    <br/>
+                    <cc1:CustLabel ID="lblWaiting" runat="server" CurAlign="center" CurSymbol="£" FractionalDigit="2"
+                                   IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                   SetBreak="False" SetOmit="False" ShowID="00_00000000_000" StickHeight="False">
+                    </cc1:CustLabel>
+                </div>
+            </div>
+        </ProgressTemplate>
+    </asp:UpdateProgress>
         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
             <ContentTemplate>
                 <table width="100%" border="0" cellpadding="0" cellspacing="1">
@@ -101,7 +125,10 @@
                     <tr align="center" class="itemTitle">
                         <td colspan="4">
                             <cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
-                                ShowID="06_02030001_018" OnClick="btnSearch_Click" /></td>
+                                ShowID="06_02030001_018" OnClick="btnSearch_Click" />
+                            <cc1:CustButton ID="btnPring" runat="server" class="smallButton" Style="width: 50px;"
+                                            ShowID="06_02030001_027" OnClick="btnPrint_Click" />
+                        </td>
                     </tr>
                 </table>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">

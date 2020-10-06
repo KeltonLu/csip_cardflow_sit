@@ -2,7 +2,7 @@
 //*  功能說明：異動作業單查詢
 //*  作    者：HAO CHEN
 //*  創建日期：2010/06/25
-//*  修改記錄：
+//*  修改記錄：2020/10/05 AREA LUKE 新增匯出列印
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -17,7 +17,11 @@ using Framework.Data.OM;
 using Framework.Common.Utility;
 using CSIPCommonModel.EntityLayer;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.Office.Interop.Excel;
+using DataTable = System.Data.DataTable;
+using ExcelApplication = Microsoft.Office.Interop.Excel.ApplicationClass;
 
 public partial class Page_P060203000001 : PageBase
 {
@@ -258,21 +262,26 @@ public partial class Page_P060203000001 : PageBase
     /// 創建時間:2010/06/17
     /// 修改記錄:
     /// </summary>
-    private void BindGridView()
+    private void BindGridView(ref DataTable dtCardDataChange, bool isReport = false)
     {
         string strMsgID = string.Empty;
         int iTotalCount = 0;
-        DataTable dtCardDataChange = new DataTable();
+
         try
         {
             //* 查詢不成功
-            if (!BRM_CardDataChange.SearchFor0203(GetFilterCondition(), ref dtCardDataChange, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID))
+            if (!BRM_CardDataChange.SearchFor0203(GetFilterCondition(), ref dtCardDataChange,
+                this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID, isReport))
             {
-                this.gpList.RecordCount = 0;
-                this.grvUserView.DataSource = null;
-                this.grvUserView.DataBind();
-                this.gpList.Visible = false;
-                this.grvUserView.Visible = false;
+                if (!isReport)
+                {
+                    this.gpList.RecordCount = 0;
+                    this.grvUserView.DataSource = null;
+                    this.grvUserView.DataBind();
+                    this.gpList.Visible = false;
+                    this.grvUserView.Visible = false;
+                }
+
                 jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow(strMsgID));
                 return;
             }
@@ -280,12 +289,15 @@ public partial class Page_P060203000001 : PageBase
             else
             {
                 MergeTable(ref dtCardDataChange);
-                m_dtCardBaseInfo = dtCardDataChange;
-                this.gpList.Visible = true;
-                this.gpList.RecordCount = iTotalCount;
-                this.grvUserView.Visible = true;
-                this.grvUserView.DataSource = dtCardDataChange;
-                this.grvUserView.DataBind();
+                if (!isReport)
+                {
+                    m_dtCardBaseInfo = dtCardDataChange;
+                    this.gpList.Visible = true;
+                    this.gpList.RecordCount = iTotalCount;
+                    this.grvUserView.Visible = true;
+                    this.grvUserView.DataSource = dtCardDataChange;
+                    this.grvUserView.DataBind();
+                }
             }
         }
         catch (Exception exp)
@@ -374,7 +386,9 @@ public partial class Page_P060203000001 : PageBase
             jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
             return;
         }
-        BindGridView();
+
+        DataTable dtCardDataChange = new DataTable();
+        BindGridView(ref dtCardDataChange);
     }
 
     /// <summary>
@@ -448,7 +462,9 @@ public partial class Page_P060203000001 : PageBase
     protected void gpList_PageChanged(object src, Framework.WebControls.PageChangedEventArgs e)
     {
         this.gpList.CurrentPageIndex = e.NewPageIndex;
-        this.BindGridView();
+        
+        DataTable dtCardDataChange = new DataTable();
+        this.BindGridView(ref dtCardDataChange);
     }
 
 
@@ -524,5 +540,112 @@ public partial class Page_P060203000001 : PageBase
         oldList.AddRange(oldArr);
         newList.AddRange(newArr);
         typeList.AddRange(typeArr);
+    }
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:業務新增列印需求功能
+    /// 作    者:Ares Luke
+    /// 修改時間:2020/10/05
+    /// </summary>
+    protected void btnPrint_Click(object sender, EventArgs e)
+    {
+        string strMsgID = string.Empty;
+
+        // 初始化報表參數
+        Dictionary<String, String> param = new Dictionary<String, String>();
+        if (!CheckCondition(ref strMsgID))
+        {
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
+            return;
+        }
+
+        DataTable dt = new DataTable();
+        BindGridView(ref dt, true);
+
+        #region 查無資料
+
+        if (null == dt)
+        {
+            strMsgID = "06_02030000_008";
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
+            return;
+        }
+
+        if (dt.Rows.Count == 0)
+        {
+            strMsgID = "06_02030000_008";
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "')");
+            return;
+        }
+
+        #endregion
+
+
+        // 創建一個Excel實例
+        ExcelApplication excel = new ExcelApplication();
+        string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+        try
+        {
+            // 檢查目錄，並刪除以前的文檔資料
+            BR_Excel_File.CheckDirectory(ref strServerPathFile);
+
+            #region 匯入Excel文檔
+
+            // 不顯示Excel文件，如果為true則顯示Excel文件
+            excel.Visible = false;
+            // 停用警告訊息
+            excel.Application.DisplayAlerts = false;
+
+            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+                                      UtilHelper.GetAppSettings("ReportTemplate") + "0203Report.xlsx";
+            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+
+            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+
+            DataTable selectDataTable = dt.DefaultView.ToTable(false, new String[]
+                {"CardNo", "UpdDate", "Datachange", "UpdUser", "OutputFlg", "OutputFileName", "CNote" });
+
+            int totalNum = selectDataTable.Rows.Count;
+
+            // 初始ROW位置
+            int indexInSheetStart = 3;
+            object start = sheet.Cells[indexInSheetStart, 1];
+            object end = sheet.Cells[indexInSheetStart + selectDataTable.Rows.Count - 1, selectDataTable.Columns.Count];
+
+
+            // 轉入結果資料
+            BR_Excel_File.ExportExcel(selectDataTable, ref sheet, start, end);
+
+            // 保存文件到程序運行目錄下
+            strServerPathFile = strServerPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0203Report" + ".xlsx";
+            sheet.SaveAs(strServerPathFile);
+
+            // 關閉Excel文件且不保存
+            excel.ActiveWorkbook.Close(false);
+            #endregion
+
+            if (File.Exists(strServerPathFile))
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+        finally
+        {
+            // 退出 Excel
+            excel.Quit();
+            // 將 Excel 實例設置為空
+            excel = null;
+        }
+
     }
 }

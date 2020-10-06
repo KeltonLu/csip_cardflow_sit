@@ -259,10 +259,10 @@ from (SELECt distinct maildate,
                       count(*)                                                                              as allnum,
                       substring(dbo.f_AppendMailno(maildate, cardtype, @branchid), 1, 6)                    as mailno
       FROM dbo.tbl_Card_BaseInfo base
-      where (@maildatefrom is null or convert(datetime, maildate, 120) >= convert(datetime, @maildatefrom, 120))
-        and (@maildateto is null or convert(datetime, maildate, 120) <= convert(datetime, @maildateto, 120))
-        and (@indatefrom is null or convert(datetime, indate1, 120) >= convert(datetime, @indatefrom, 120))
-        and (@indateto is null or convert(datetime, indate1, 120) <= convert(datetime, @indateto, 120))
+      where (@maildatefrom = '' or convert(datetime, maildate, 120) >= convert(datetime, @maildatefrom, 120))
+        and (@maildateto = '' or convert(datetime, maildate, 120) <= convert(datetime, @maildateto, 120))
+        and (@indatefrom = '' or convert(datetime, indate1, 120) >= convert(datetime, @indatefrom, 120))
+        and (@indateto = '' or convert(datetime, indate1, 120) <= convert(datetime, @indateto, 120))
         and branch_id = @branchid
         --and kind='23'
         and kind in ('21', '22', '23', '24')
@@ -377,6 +377,8 @@ where (@backdate = 'NULL' or b.backdate in (select max(b.Backdate)
   and (@photostart = '00' or @photoend = '00' or
        (convert(int, a.photo) between convert(int, @photostart) and convert(int, @photoend)))
   and (@factory = '00' or a.Merch_Code = @factory)
+  and (@mailDateFrom = 'NULL' or a.maildate between @mailDateFrom and @mailDateTo)
+  and (@mailNo = 'NULL' or a.mailno = @mailNo)
 ";
 
     #endregion
@@ -5984,11 +5986,10 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/18
     /// </summary>
-    public static Boolean GetDataTable05140(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    public static Boolean GetDataTable05140(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name, ref String strMsgId)
     {
         try
         {
-            String strMsgId = "";
             DataTable dt = new DataTable();
             if (!getPageType05140(ref param, ref strMsgId, ref dt))
                 return false;
@@ -6377,11 +6378,10 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/18
     /// </summary>
-    public static Boolean GetDataTable05142(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    public static Boolean GetDataTable05142(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name, ref String strMsgId)
     {
         try
         {
-            String strMsgId = "";
             DataTable dt = new DataTable();
             if (!getPageType05142(ref param, ref strMsgId, ref dt))
                 return false;
@@ -7548,6 +7548,7 @@ WHERE CANCELOASAFILE = @STRFILE
 
     #endregion
 
+
     #region 匯入EXCEL資料(舊版)
 
     /// <summary>
@@ -7616,7 +7617,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 創建時間:2020/08/06
     /// </summary>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    private static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end)
+    public static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end)
     {
 
         try

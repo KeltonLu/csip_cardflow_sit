@@ -291,8 +291,6 @@ namespace BusinessRules
                 sqlcmd.Parameters.Add(new SqlParameter("@strCardNo", strCardNo));
                 sqlcmd.Parameters.Add(new SqlParameter("@strTrandate", strTrandate));
                 sqlcmd.Parameters.Add(new SqlParameter("@strCustname", strCustname));
-                sqlcmd.Parameters.Add(new SqlParameter("@strAction", strAction));
-                sqlcmd.Parameters.Add(new SqlParameter("@strTrandate", strTrandate));
 
                 if (BRM_CardStockInfo.Add(sqlcmd))
                 {

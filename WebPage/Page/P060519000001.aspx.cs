@@ -119,26 +119,50 @@ public partial class P060519000001 : PageBase
     /// 功能說明:業務新增共用條件檢核需求功能
     /// 作    者:Ares JaJa
     /// 修改時間:2020/08/17
+    /// 修改歷程:
+    /// 2020/10/05 Area Luke 新增需求:查詢欄位【郵寄日】、【掛號號碼】，與製卡日期條件至少擇一輸入
     /// </summary>
     protected Boolean chkCond(ref Dictionary<String, String> param)
     {
         String strMsgId = String.Empty;
-        if (txtMaildateStart.Text.Trim().Equals(""))
+
+        Boolean check = false;
+        if (!txtInDateFromStart.Text.Trim().Equals("") && !txtInDateToEnd.Text.Trim().Equals(""))
         {
-            txtMaildateStart.Focus();
+            check = true;
+        }else if (!txtMailDateStart.Text.Trim().Equals("") && !txtMailDateEnd.Text.Trim().Equals(""))
+        {
+            check = true;
+        }else if (!txtMailNo.Text.Trim().Equals(""))
+        {
+            if ((!txtInDateFromStart.Text.Trim().Equals("") && txtInDateToEnd.Text.Trim().Equals("")) || 
+                (txtInDateFromStart.Text.Trim().Equals("") && !txtInDateToEnd.Text.Trim().Equals("")))
+            {
+                check = false;
+            }
+            else if ((!txtMailDateStart.Text.Trim().Equals("") && txtMailDateEnd.Text.Trim().Equals("")) ||
+                     (txtMailDateStart.Text.Trim().Equals("") && !txtMailDateEnd.Text.Trim().Equals("")))
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+            }
+        }
+
+        if (!check)
+        {
+            MessageHelper.ShowMessage(UpdatePanel1, "06_06051900_006");
             return false;
         }
-        if (txtMaildateEnd.Text.Trim().Equals(""))
-        {
-            txtMaildateEnd.Focus();
-            return false;
-        }
+
         // 交寄日期起
-        String inDateFrom = txtMaildateStart.Text.Trim().Equals("") ? "NULL" : this.txtMaildateStart.Text.Trim();
+        String inDateFrom = txtInDateFromStart.Text.Trim().Equals("") ? "NULL" : this.txtInDateFromStart.Text.Trim();
         param.Add("inDateFrom", inDateFrom);
 
         // 交寄日期訖
-        String inDateTo = txtMaildateEnd.Text.Trim().Equals("") ? "NULL" : this.txtMaildateEnd.Text.Trim();
+        String inDateTo = txtInDateToEnd.Text.Trim().Equals("") ? "NULL" : this.txtInDateToEnd.Text.Trim();
         param.Add("inDateTo", inDateTo);
 
         // 退件日期起迄
@@ -211,6 +235,19 @@ public partial class P060519000001 : PageBase
         // Take card flag 訖
         String kindEnd = txtKindEnd.Text.Trim().Equals("") ? "00" : txtKindEnd.Text.Trim();
         param.Add("kindEnd", kindEnd);
+
+        // 郵寄日期起
+        String mailDateFrom = txtMailDateStart.Text.Trim().Equals("") ? "NULL" : this.txtMailDateStart.Text.Trim();
+        param.Add("mailDateFrom", mailDateFrom);
+
+        // 郵寄日期訖
+        String mailDateTo = txtMailDateEnd.Text.Trim().Equals("") ? "NULL" : this.txtMailDateEnd.Text.Trim();
+        param.Add("mailDateTo", mailDateTo);
+
+        // 掛號號碼
+        String mailNo = txtMailNo.Text.Trim().Equals("") ? "NULL" : this.txtMailNo.Text.Trim();
+        param.Add("mailNo", mailNo);
+
         return true;
     }
     /// <summary>

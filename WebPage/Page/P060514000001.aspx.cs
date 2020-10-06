@@ -144,9 +144,10 @@ public partial class P060514000001 : PageBase
 
                         if (ddlStatus.SelectedValue.Equals("0"))
                         {
+                            String strMsgId = "";
                             List<DataTable> list = new List<DataTable>();
                             List<String> name = new List<String>();
-                            Boolean result = BR_Excel_File.GetDataTable05140(param, ref list, ref name);
+                            Boolean result = BR_Excel_File.GetDataTable05140(param, ref list, ref name, ref strMsgId);
                             //* 查詢成功
                             if (result)
                             {
@@ -169,7 +170,7 @@ public partial class P060514000001 : PageBase
                             //* 查詢不成功
                             else
                             {
-                                jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_002"));
+                                jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow(strMsgId == "" ? "06_05140000_002" : strMsgId));
                             }
                         }
                         else
@@ -222,9 +223,10 @@ public partial class P060514000001 : PageBase
 
                         if (ddlStatus.SelectedValue.Equals("0"))
                         {
+                            String strMsgId = "";
                             List<DataTable> list = new List<DataTable>();
                             List<String> name = new List<String>();
-                            Boolean result = BR_Excel_File.GetDataTable05142(param, ref list, ref name);
+                            Boolean result = BR_Excel_File.GetDataTable05142(param, ref list, ref name, ref strMsgId);
                             //* 查詢成功
                             if (result)
                             {
@@ -247,7 +249,7 @@ public partial class P060514000001 : PageBase
                             //* 查詢不成功
                             else
                             {
-                                jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_002"));
+                                jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow(strMsgId == "" ? "06_05140000_002" : strMsgId));
                             }
                         }
                         else

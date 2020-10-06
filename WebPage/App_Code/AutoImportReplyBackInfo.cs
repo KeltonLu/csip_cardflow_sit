@@ -134,7 +134,7 @@ public class AutoImportReplyBackInfo : Quartz.IJob
 
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
-                        string[] arrFileList = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString());
+                        string[] arrFileList = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString(), true);
 
                         if (null != arrFileList)
                         {
@@ -145,7 +145,7 @@ public class AutoImportReplyBackInfo : Quartz.IJob
                                     if (arrFileList[i].Trim().Substring(13, 10).Equals("退件聯絡報表.ZIP"))
                                     {
                                         JobHelper.SaveLog(arrFileList[i].Trim() + "開始下載檔案！", LogState.Info);
-                                        if (objFtp.Download(rowFileInfo["FtpPath"].ToString() + "//" + arrFileList[i].Trim(), strLocalPath + "\\" + strFolderName + "\\", arrFileList[i].Trim()))
+                                        if (objFtp.Download(rowFileInfo["FtpPath"].ToString() + "//" + arrFileList[i].Trim(), strLocalPath + "\\" + strFolderName + "\\", arrFileList[i].Trim(), true))
                                         {
                                             //*記錄下載的檔案信息
                                             DataRow row = dtLocalFile.NewRow();
@@ -158,6 +158,10 @@ public class AutoImportReplyBackInfo : Quartz.IJob
                                             JobHelper.SaveLog(arrFileList[i].Trim() + "下載檔案成功！", LogState.Info);
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("XXXX");
                                 }
                             }
                         }

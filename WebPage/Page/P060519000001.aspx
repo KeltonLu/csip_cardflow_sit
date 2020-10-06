@@ -59,10 +59,10 @@
 									SetOmit="False" StickHeight="False" ShowID="06_06051900_001" CurAlign="left"
 									CurSymbol="£"></cc1:CustLabel></td>
 							<td style="height: 25px; width: 35%">
-								<cc1:DatePicker ID="txtMaildateStart" runat="server" Width="74">
+								<cc1:DatePicker ID="txtInDateFromStart" runat="server" Width="74">
 								</cc1:DatePicker>
 								~
-                                <cc1:DatePicker ID="txtMaildateEnd" runat="server" Width="74">
+                                <cc1:DatePicker ID="txtInDateToEnd" runat="server" Width="74">
 								</cc1:DatePicker>
 							</td>
 							<td align="right" style="height: 25px; width: 15%">
@@ -143,6 +143,28 @@
 								</cc1:CustDropDownList>
 							</td>
 						</tr>
+                    <tr class="trOdd">
+                        <td align="right" style="height: 25px; width: 15%">
+                            <cc1:CustLabel ID="CustLabel1" runat="server" FractionalDigit="2" IsColon="True"
+                                           IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                           SetOmit="False" StickHeight="False" ShowID="06_06051900_021" CurAlign="left"
+                                           CurSymbol="£"></cc1:CustLabel></td>
+                        <td style="height: 25px; width: 35%">
+                            <cc1:DatePicker ID="txtMailDateStart" runat="server" Width="74">
+                            </cc1:DatePicker>
+                            ~
+                            <cc1:DatePicker ID="txtMailDateEnd" runat="server" Width="74">
+                            </cc1:DatePicker>
+                        </td>
+                        <td align="right" style="height: 25px; width: 15%">
+                            <cc1:CustLabel ID="CustLabel2" runat="server" FractionalDigit="2" IsColon="True"
+                                           IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                           SetOmit="False" StickHeight="False" ShowID="06_06051900_022" CurAlign="left"
+                                           CurSymbol="£"></cc1:CustLabel></td>
+                        <td style="height: 25px; width: 35%">
+                            <cc1:CustTextBox ID="txtMailNo" runat="server" Width="150"></cc1:CustTextBox>
+                        </td>
+                    </tr>
 						<tr align="center" class="itemTitle">
 							<td colspan="4">
 								<cc1:CustButton ID="btnSearch" runat="server" class="smallButton" Style="width: 50px;"
