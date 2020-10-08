@@ -192,7 +192,7 @@ public class AutoImportFilesReturn : Quartz.IJob
                         }
 
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         string strFileName = string.Empty;
                         for (int iFileCount = 0; iFileCount < alImportFiles.Count; iFileCount++)
                         {

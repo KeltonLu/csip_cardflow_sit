@@ -632,7 +632,9 @@ public class AutoOutputDataChange : Quartz.IJob
                         }
                         //*異動取卡方式
 
-                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) && rowDataChange["Newway"].ToString().Equals(rowDataChange["Oldway"].ToString())) && (rowDataChange["Urgency_Flg"].ToString() == rowDataChange["NewUrgencyFlg"].ToString()))
+                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) && 
+                             rowDataChange["Newway"].ToString().Equals(rowDataChange["Oldway"].ToString())) &&
+                            (rowDataChange["Urgency_Flg"].ToString() == rowDataChange["NewUrgencyFlg"].ToString()))
                         {
                             //                if (BaseHelper.ObjToString(drTempData["Urgency_Flg"]) == BaseHelper.ObjToString(drTempData["NewUrgencyFlg"]))
 
@@ -798,14 +800,14 @@ public class AutoOutputDataChange : Quartz.IJob
             CCrow["CardNo"] = BaseHelper.ObjToString(drDataCard[0]["CardNo"]); //卡號
             CCrow["Oldway"] = getKind(BaseHelper.ObjToString(drDataCard[0]["Kind"])); //原取卡方式中文
 
-            //CCrow["UrgencyFlg"] = BaseHelper.ObjToString(drDataCard[0]["Urgency_Flg"]); //緊急製卡
-            //if (null != CCrow["UrgencyFlg"])
-            //{
-            //    if (string.IsNullOrEmpty(CCrow["UrgencyFlg"].ToString()))
-            //    {
-            //        CCrow["UrgencyFlg"] = "0";
-            //    }
-            //}
+            // CCrow["UrgencyFlg"] = BaseHelper.ObjToString(drDataCard[0]["Urgency_Flg"]); //緊急製卡
+            // if (null != CCrow["UrgencyFlg"])
+            // {
+            //     if (string.IsNullOrEmpty(CCrow["UrgencyFlg"].ToString()))
+            //     {
+            //         CCrow["UrgencyFlg"] = "0";
+            //     }
+            // }
 
             CCrow["Oldmailno"] = BaseHelper.ObjToString(drDataCard[0]["Mailno"]);    //原掛號號碼
             CCrow["Merch_Code"] = BaseHelper.ObjToString(drDataCard[0]["Merch_Code"]);  //製卡廠代碼 
@@ -856,7 +858,10 @@ public class AutoOutputDataChange : Quartz.IJob
             }
             else
             {
-                CCrow["UrgencyFlg"] = BaseHelper.ObjToString(drTempData["NewUrgencyFlg"]);//緊急製卡
+                if (CCrow["UrgencyFlg"].ToString() == "")
+                {
+                    CCrow["UrgencyFlg"] = BaseHelper.ObjToString(drTempData["NewUrgencyFlg"]); //緊急製卡
+                }
             }
 
             if (!string.IsNullOrEmpty(strNewmailno))

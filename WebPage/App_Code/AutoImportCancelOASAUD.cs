@@ -122,7 +122,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion

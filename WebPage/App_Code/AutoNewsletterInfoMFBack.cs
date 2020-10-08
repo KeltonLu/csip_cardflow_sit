@@ -164,7 +164,7 @@ public class AutoNewsletterInfoMFBack : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         //為了排除工作日的問題，抓取前一個工作日
                         // string  strImportDate = "";

@@ -136,7 +136,7 @@ public class AutoImportAffinity : Quartz.IJob
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         string strFileInfo = rowFileInfo["FtpFileName"].ToString() + ".TXT";
                         //FTP 路徑+檔名

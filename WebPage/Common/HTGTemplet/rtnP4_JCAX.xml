@@ -12,7 +12,7 @@
             <data id="TRAN_ID" value=""/>
             <data id="PROGRAM_ID" value=""/>
             <data id="USER_ID" value=""/>
-            <data id="RTN_CD" value="0001"/>
+            <data id="RTN_CD" value=""/>
             <data id="ERROR_DESC" value="NOT FOUND"/>
             <data id="SOURCE_CODE" value=""/>
             <data id="FUNCTION_CODE" value=""/>

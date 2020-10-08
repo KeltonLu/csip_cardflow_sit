@@ -60,7 +60,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             #region load jobid and LocalPath
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             #endregion
 
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
@@ -173,7 +173,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                         if (null != arrFileList && arrFileList.Length > 0)
                         {
                             //本地路徑
-                            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
 
                             foreach (string strFile in arrFileList)
                             {

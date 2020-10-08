@@ -171,7 +171,7 @@ public class AutoImportCardChange : Quartz.IJob
                         //獲取FTP路徑下的所有檔案
                         string[] strFiles = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString() + "//");
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
 
                         foreach (string strFile in strFiles)
                         {

@@ -137,7 +137,7 @@ public class AutoImportLackFiles : Quartz.IJob
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         ArrayList arrFileList = new ArrayList();
                         if (rowFileInfo["FtpFileName"].ToString().Length >= 2)

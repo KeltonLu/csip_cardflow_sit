@@ -58,7 +58,7 @@ public class AutoImportDataChange : Quartz.IJob
             //strJobId = "0105";
             strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
             JobHelper.strJobId = strJobId;
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             #endregion
 
             #region 記錄job啟動時間的分段

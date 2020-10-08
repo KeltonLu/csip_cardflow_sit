@@ -48,9 +48,6 @@ public class Com_FileInfo
                                       ,[FtpUserName]
                                       ,[FtpPwd]
                                       ,[Status]
-                                      ,[LoopMinutes]
-                                      ,[Parameter]
-                                      ,[ForceImp]
                                   FROM [dbo].[tbl_FileInfo]
                                 where Status ='U'and Job_ID ='" + strJobId + "'";
 
@@ -75,38 +72,4 @@ public class Com_FileInfo
         }
 
     }
-
-    /// <summary>
-    /// 功能說明:依據jobID更新檔案交換設定中的參數為空白
-    /// 作    者:Annie Chou
-    /// 創建時間:2018/09/14
-    /// 修改記錄:
-    /// </summary>
-    /// <param name="jobID">要更新的jobID</param>
-    public static bool UpdateParameter(string jobID)
-    {
-        DataHelper dh = new DataHelper("Connection_System");
-
-        string strSql = @"update dbo.tbl_FileInfo set Parameter = '',ForceImp = ''  where Job_ID = @jobID ";
-
-        SqlCommand sqlComm = new SqlCommand();
-        sqlComm.CommandType = CommandType.Text;
-        sqlComm.CommandText = strSql;
-
-        SqlParameter spjb = new SqlParameter("jobID", jobID);
-        sqlComm.Parameters.Add(spjb);
-
-        try
-        {
-            dh.ExecuteNonQuery(sqlComm);
-            return true;
-        }
-        catch (Exception exp)
-        {
-            BRM_FileInfo.SaveLog(exp.Message);
-            return false;
-        }
-
-    }
-
 }

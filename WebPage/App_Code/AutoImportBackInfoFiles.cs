@@ -171,7 +171,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         //本地路徑
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         string strFileInfo = _jobDate.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
                         //FTP 路徑+檔名

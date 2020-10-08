@@ -57,7 +57,7 @@ public class AutoImportReplyBackInfo : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             #endregion
 
             #region 記錄job啟動時間

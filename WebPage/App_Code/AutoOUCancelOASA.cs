@@ -71,7 +71,7 @@ public class AutoOUCancelOASA : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion
@@ -585,7 +585,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                         if (isOu13)
                         {
                             // strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath");
-                            strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
+                            strLocalPath = strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
 
                             if (!Directory.Exists(strLocalPath))
                             {
@@ -594,7 +594,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
                         else
                         {
-                            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         }
 
 
@@ -645,7 +645,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                     if (isOu13)
                     {
                         //指定回真正作業目錄
-                        strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //增加目錄檢核
                         if (!Directory.Exists(strLocalPath))
                         {
@@ -654,7 +654,7 @@ public class AutoOUCancelOASA : Quartz.IJob
 
                         //到  strLocalPath 找 31天前的檔名
                         string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate + ".EXE";
-                        string WorkPath = UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
+                        string WorkPath = strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
                         if (File.Exists(importFile))
@@ -1114,7 +1114,7 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// <returns></returns>
     public Dictionary<string, string> GetFileDic()
     {
-        string sPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+        string sPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
         if (!Directory.Exists(sPath))
         {
             return new Dictionary<string, string>();

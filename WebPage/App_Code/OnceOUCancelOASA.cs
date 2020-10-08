@@ -64,7 +64,7 @@ public class OnceOUCancelOASA : Quartz.IJob
             #endregion
 
             #region 获取本地路徑
-            strLocalPath = UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+            strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
             strFolderName = strJobId + StartTime.ToString("yyyyMMddHHmmss");
             strLocalPath = strLocalPath + "\\" + strFolderName + "\\";
             #endregion
@@ -155,7 +155,7 @@ public class OnceOUCancelOASA : Quartz.IJob
                     for (int i = 1; i < 40; i++)
                     {
                         string strGetDate = DateTime.Today.AddDays(-1 * i).ToString("yyyyMMdd").Substring(4, 4);
-                        strLocalPath =   UtilHelper.GetAppSettings("OU13TmpFilePath");
+                        strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");
                         if (!Directory.Exists(strLocalPath)){
                             Directory.CreateDirectory(strLocalPath);
                         }

@@ -2,7 +2,7 @@
 //*  功能說明：上傳 Audit Log
 //*  作    者：James
 //*  創建日期：2019/07/4
-//*  修改記錄：
+//*  修改記錄：2020/10/07 Area Luke 調整業務需求此功能移至卡流，且移除擴充原本沒有的屬性，並新增手動ReRun參數
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 // using CSIPACQ.EntityLayer;
@@ -12,18 +12,20 @@ using Framework.Data;
 using Quartz;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
+using BusinessRules;
 using EntityLayer;
+using Framework.Common.Logging;
 
 public class JobApLog2SOC : IJob
 {
     #region job基本參數設置
     protected string strJobId = string.Empty;
     protected string strErrMsg = string.Empty;
+    protected string strFunctionKey = "06";
     protected DateTime StartTime = DateTime.Now;//記錄job啟動時間
     protected DateTime EndTime;
     protected JobHelper JobHelper = new JobHelper();
@@ -40,40 +42,77 @@ public class JobApLog2SOC : IJob
     public void Execute(JobExecutionContext context)
     {
         strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
-        ExecuteManual(strJobId);
-    }
-    #endregion
 
-    public bool ExecuteManual(string jobID)
-    {
-        bool result = true;
         try
         {
             string strMsgID = string.Empty;
             string strRETSTR = string.Empty;
-            strJobId = jobID;
 
             strRETSTR = "*********** " + strJobId + " START **************";
             JobHelper.Write(strJobId, strRETSTR);
 
             #region 取得 查詢條件和取值
-            string strRunDate = "";
-            string strRunFlag = "";//  若 strRunFlag = Y => 代表只會依 strRunDate 撈資料
-            //若 strRunFlag = N => 代表只會撈 uploadFlag = 0 和 strRunDate
+            //若沒指定日期就是要查前一天,但放置的目錄還是當天
+            string strRunDate = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
+            #endregion
 
-            //取得 查詢日期和是否強制執行
-            getFileInfoParameter(ref strRunDate, ref strRunFlag);
 
-            //匯入日期            
-            if (string.IsNullOrEmpty(strRunDate) == true)
+            #region 判斷是否手動啟動排程
+            if (context.JobDetail.JobDataMap["param"] != null)
             {
-                //若沒指定日期就是要查前一天,但放置的目錄還是當天
-                strRunDate = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
+                if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+                {
+                    string strParam = context.JobDetail.JobDataMap["param"].ToString();
+                    string[] arrStrParam = strParam.Split(',');
+                    if (arrStrParam.Length == 2)
+                    {
+                        DateTime tempDt;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+                        {
+                            strRunDate = tempDt.ToString("yyyyMMdd");
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        return;
+                    }
+                }
             }
             #endregion
 
+
+
+            #region 判斷job工作狀態
+            if (JobHelper.SerchJobStatus(strJobId) == "" || JobHelper.SerchJobStatus(strJobId) == "0")
+            {
+                JobHelper.SaveLog("JOB 工作狀態為：停止！", LogState.Info);
+                return;
+            }
+            #endregion
+
+            #region 檢測JOB是否在執行中
+            if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
+            {
+                JobHelper.SaveLog("JOB 工作狀態為：正在執行！", LogState.Info);
+                // 返回不在執行           
+                return;
+            }
+            else
+            {
+                BRM_LBatchLog.Insert(strFunctionKey, strJobId, StartTime, "R", "開始執行");
+            }
+            #endregion
+
+
             int intDataCnt = 0;
-            DataTable dt = getData(strRunDate, strRunFlag);
+            DataTable dt = getData(strRunDate);
             if (dt != null)
             {
                 intDataCnt = dt.Rows.Count;
@@ -95,57 +134,43 @@ public class JobApLog2SOC : IJob
             {
                 strReturnMsg += ". 失敗訊息:" + strErrMsg;
                 strJobStatus = "F";
-                result = false;
                 JobHelper.Write(strJobId, strErrMsg);
             }
 
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
+            BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
 
             #endregion
 
             strRETSTR = "*********** " + strJobId + " End **************";
             JobHelper.Write(strJobId, strRETSTR);
 
-            //一律更新上傳狀態, 若需重產, 就 ForceImp 給 "Y" 值
             updateUploadflag(strRunDate);
             strErrMsg = strReturnMsg;
         }
         catch (Exception ex)
         {
-            result = false;
-
             JobHelper.Write(strJobId, ex.Message);
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "F", "發生錯誤：" + ex.Message);
 
             //*JOB失敗發送MAIL 
             strErrMsg = ex.Message;
-            //sendMailmsg(strErrMsg);
         }
-        finally
-        {
-            //清空參數值
-            Com_FileInfo.UpdateParameter(strJobId);
-        }
+
 
         sendMailmsg(strErrMsg);
 
-        return result;
     }
+    #endregion
 
-    private DataTable getData(string strRunDate, string strRunFlag)
+    private DataTable getData(string strRunDate)
     {
         SqlCommand sqlcmd = new SqlCommand();
         string sql = "Select System_Code,Login_Account_Nbr,convert(char(23),Query_Datetime,121)Query_Datetime,AP_Txn_Code,Server_Name,User_Terminal,AP_Account_Nbr,Txn_Type_Code," +
             "Statement_Text,Object_Name,Txn_Status_Code,Customer_Id,Account_Nbr,Branch_Nbr,Role_Id,Import_Source,As_Of_Date " +
-            "From L_AP_LOG (nolock) where As_Of_Date=@As_Of_Date";
+            "From L_AP_LOG (nolock) where As_Of_Date=@As_Of_Date  and IsUpload='0'";
 
         sqlcmd.Parameters.Add(new SqlParameter("@As_Of_Date", strRunDate));
-        //只要不是強制執行, 那就只需撈 IsUpload= 0 的資料
-        if (strRunFlag != "Y" && strRunFlag != "1")
-        {
-            sql += " and IsUpload=@IsUpload";
-            sqlcmd.Parameters.Add(new SqlParameter("@IsUpload", "0"));
-        }
 
         sql += " order by Query_Datetime";
         DataHelper dh = new DataHelper("Connection_CSIP");
@@ -183,50 +208,13 @@ public class JobApLog2SOC : IJob
     }
 
     /// <summary>
-    /// 查看tbl_FileInfo 
-    /// </summary>
-    /// <param name="strRunDate"></param>
-    /// <param name="strRunFlag">是否要強制匯入，(ForceImp=Y) =>要</param>
-    private void getFileInfoParameter(ref string strRunDate, ref string strRunFlag)
-    {
-        DataHelper dh = new DataHelper("Connection_System");
-        SqlCommand sqlcmd = new SqlCommand();
-        sqlcmd.CommandType = CommandType.Text;
-        sqlcmd.CommandTimeout = int.Parse(UtilHelper.GetAppSettings("SqlCmdTimeoutMax"));
-        sqlcmd.CommandText = "Select isnull(Parameter,'') Parameter,isnull(ForceImp,'') ForceImp From tbl_FileInfo where Job_ID='" + strJobId + "'";
-
-        DataSet ds = new DataSet();
-        ds = dh.ExecuteDataSet(sqlcmd);
-        try
-        {
-            if (ds == null)
-            {
-            }
-            else
-            {
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    DataRow dt = ds.Tables[0].Rows[0];
-                    strRunDate = dt.ItemArray[0].ToString().Trim();
-                    strRunFlag = dt.ItemArray[1].ToString().Trim();
-                }
-            }
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
-
-
-    /// <summary>
     /// 讀取FTP設定
     /// </summary>
     /// <param name="Jobid"></param>
     /// <returns></returns>
-    private ftpInfo GetFtpSetting()
+    private Entity_FileInfo GetFtpSetting()
     {
-        ftpInfo result = new ftpInfo();
+        Entity_FileInfo result = new Entity_FileInfo();
         DataTable dt = new DataTable();
         Com_FileInfo.selectFileInfo(ref dt, strJobId);
         if (dt.Rows.Count == 0)
@@ -235,13 +223,11 @@ public class JobApLog2SOC : IJob
         }
         result.FtpFileName = dt.Rows[0]["FtpFileName"].ToString();
         result.FtpUserName = dt.Rows[0]["FtpUserName"].ToString();
-        result.FtpPwd = RedirectHelper.GetDecryptString(dt.Rows[0]["FtpPwd"].ToString());
+        result.FtpPwd = dt.Rows[0]["FtpPwd"].ToString();
         result.FtpIP = dt.Rows[0]["FtpIP"].ToString();
         result.FtpPath = dt.Rows[0]["FtpPath"].ToString();
         result.ZipPwd = dt.Rows[0]["ZipPwd"].ToString();
-        result.Parameter = dt.Rows[0]["Parameter"].ToString();
-        result.ForceImp = dt.Rows[0]["ForceImp"].ToString();
-
+        
         return result;
     }
 
@@ -328,7 +314,7 @@ public class JobApLog2SOC : IJob
             }
         }
         //取得 FTP 相關設定值
-        ftpInfo _ftpInfo = GetFtpSetting();
+        Entity_FileInfo _ftpInfo = GetFtpSetting();
         if (_ftpInfo == null)
         {
             result = "讀取FTP設定失敗！";
@@ -376,7 +362,7 @@ public class JobApLog2SOC : IJob
         //上傳檔案        
         try
         {
-            FTPFactory objFtp_UpLoad = new FTPFactory(_ftpInfo.FtpIP, _ftpInfo.FtpPath, _ftpInfo.FtpUserName, _ftpInfo.FtpPwd, "21", folderName, "Y");
+            FTPFactory objFtp_UpLoad = new FTPFactory(_ftpInfo.FtpIP, _ftpInfo.FtpPath, _ftpInfo.FtpUserName, _ftpInfo.FtpPwd, "21", @"C:\CS09", "Y");
             bool ftpUploadFlagD = objFtp_UpLoad.Upload(_ftpInfo.FtpPath, fileNameD, fileFullNameD_new);
             bool ftpUploadFlagH = objFtp_UpLoad.Upload(_ftpInfo.FtpPath, fileNameH, fileFullNameH_new);
 
@@ -431,41 +417,4 @@ public class JobApLog2SOC : IJob
 
         return result;
     }
-
-    /// <summary>
-    /// 擴充原本沒有的屬性
-    /// </summary>
-    private class ftpInfo : Entity_FileInfo
-    {
-        private string _ForceImp;
-        private string _Parameter;
-
-
-        public string Parameter
-        {
-            get
-            {
-                return this._Parameter;
-            }
-            set
-            {
-                this._Parameter = value;
-            }
-        }
-
-
-
-        public string ForceImp
-        {
-            get
-            {
-                return this._ForceImp;
-            }
-            set
-            {
-                this._ForceImp = value;
-            }
-        }
-    }
-
 }
