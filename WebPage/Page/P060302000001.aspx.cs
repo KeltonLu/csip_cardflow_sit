@@ -320,15 +320,34 @@ public partial class P060302000001 : PageBase
                 {
                     try
                     {
-                        String[] strBatchFilePathArr = strFilePath.Split(new string[] { "\\FileUpload\\" }, StringSplitOptions.None);
-                        if (strBatchFilePathArr.Length == 2)
+                        String[] strBatchFilePathArr = new string[]{};
+                        String basePath = "";
+
+                        if (strFilePath.Contains("\\"+  UtilHelper.GetAppSettings("FileDownload") + "\\"))
+                        {
+                            //JOB: FileDownload
+                            basePath = "FileDownload";
+                            strBatchFilePathArr = strFilePath.Split(new string[] { "\\" + UtilHelper.GetAppSettings("FileDownload") + "\\" }, StringSplitOptions.None);
+                        }
+                        else if (strFilePath.Contains("\\" + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\"))
+                        {
+                            //手動上傳: UpLoadFilePath(FileUpload)
+                            basePath = "UpLoadFilePath";
+                            strBatchFilePathArr =
+                                strFilePath.Split(
+                                    new string[] {"\\" + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\"},
+                                    StringSplitOptions.None);
+                        }
+
+
+                        if (strBatchFilePathArr.Length == 2 && !string.IsNullOrWhiteSpace(basePath))
                         {
                             //結尾路徑
                             String commonPath = strBatchFilePathArr[1].ToString();
                             //本機儲存位子
-                            String strLocalFilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + commonPath;
+                            String strLocalFilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings(basePath) + "\\" + commonPath;
                             //Batch Api url
-                            String batchUrl = UtilHelper.GetAppSettings("BatchUrl") + UtilHelper.GetAppSettings("UpLoadFilePath") + "/" + commonPath.Replace("\\", "/");
+                            String batchUrl = UtilHelper.GetAppSettings("BatchUrl") + UtilHelper.GetAppSettings(basePath) + "/" + commonPath.Replace("\\", "/");
 
                             HttpWebRequest request = null;
                             HttpWebResponse response = null;
@@ -337,7 +356,7 @@ public partial class P060302000001 : PageBase
 
                             response = (System.Net.HttpWebResponse)request.GetResponse();
 
-                            using (var file = File.OpenWrite(strLocalFilePath))
+                            
                             using (Stream stream = response.GetResponseStream())
                             {
                                 if (stream == null)
@@ -347,7 +366,13 @@ public partial class P060302000001 : PageBase
                                 }
                                 else
                                 {
-                                    stream.CopyTo(file);
+                                    if (!File.Exists(strLocalFilePath))
+                                    {
+                                        Directory.CreateDirectory(Path.GetDirectoryName(strLocalFilePath) ?? string.Empty);
+                                    }
+                                    
+                                    using (var file = File.OpenWrite(strLocalFilePath))
+                                        stream.CopyTo(file);
 
                                     if (File.Exists(strLocalFilePath))
                                     {
