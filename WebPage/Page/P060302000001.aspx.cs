@@ -291,57 +291,96 @@ public partial class P060302000001 : PageBase
                 strErrorID = grvUserView.DataKeys[rowIndex].Value.ToString();
                 //得到路徑
                 HiddenField hidFilePath = grvUserView.Rows[rowIndex].Cells[2].FindControl("hidFilePath") as HiddenField;
-                String strBatchFilePath = hidFilePath.Value;
+                String strFilePath = hidFilePath.Value;
 
-
-                String[] strBatchFilePathArr = strBatchFilePath.Split(new string[] { "\\FileUpload\\" }, StringSplitOptions.None);
-                if (strBatchFilePathArr.Length == 2)
+                //ServerAP有檔案則下載AP，反之去BatchServer
+                if (File.Exists(strFilePath))
                 {
-                    //結尾路徑
-                    String commonPath = strBatchFilePathArr[1].ToString();
-                    //本機儲存位子
-                    String strLocalFilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + commonPath;
-                    //Batch Api url
-                    String batchUrl = UtilHelper.GetAppSettings("BatchUrl") + UtilHelper.GetAppSettings("UpLoadFilePath") + "/" + commonPath.Replace("\\", "/");
+                    
+                    this.Response.Clear();
 
-                    HttpWebRequest request = null;
-                    HttpWebResponse response = null;
-                    request = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(batchUrl);
-                    request.Timeout = 300000;
+                    this.Response.Buffer = true;
+                    this.Session.CodePage = 950;
+                    this.Response.ContentType = "text/plain";
+                    //this.Response.ContentType = "application/download";
+                    this.Response.AppendHeader("Content-Disposition", "attachment;filename=" + HttpUtility.UrlEncode(strFileName, System.Text.Encoding.UTF8));
+                    this.Response.TransmitFile(strFilePath);
 
-                    response = (System.Net.HttpWebResponse)request.GetResponse();
 
-                    using (var file = File.OpenWrite(strLocalFilePath))
-                    using (Stream stream = response.GetResponseStream())
+                    //更新下載狀態
+                    BRM_InOutFile.UpdateLoadFlag(ref strErrorID);
+                    CustButton btnDelete = this.grvUserView.Rows[rowIndex].Cells[2].FindControl("btnDelete") as CustButton;
+                    btnDelete.Enabled = true;
+
+                    HttpContext.Current.Response.Flush();
+                    HttpContext.Current.Response.SuppressContent = true;
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                }
+                else if (!string.IsNullOrWhiteSpace(strFilePath))
+                {
+                    try
                     {
-                        if (stream == null)
+                        String[] strBatchFilePathArr = strFilePath.Split(new string[] { "\\FileUpload\\" }, StringSplitOptions.None);
+                        if (strBatchFilePathArr.Length == 2)
+                        {
+                            //結尾路徑
+                            String commonPath = strBatchFilePathArr[1].ToString();
+                            //本機儲存位子
+                            String strLocalFilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\" + commonPath;
+                            //Batch Api url
+                            String batchUrl = UtilHelper.GetAppSettings("BatchUrl") + UtilHelper.GetAppSettings("UpLoadFilePath") + "/" + commonPath.Replace("\\", "/");
+
+                            HttpWebRequest request = null;
+                            HttpWebResponse response = null;
+                            request = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(batchUrl);
+                            request.Timeout = 300000;
+
+                            response = (System.Net.HttpWebResponse)request.GetResponse();
+
+                            using (var file = File.OpenWrite(strLocalFilePath))
+                            using (Stream stream = response.GetResponseStream())
+                            {
+                                if (stream == null)
+                                {
+                                    jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030200_014") + "');");
+                                    Logging.Log("06_06030200_014", LogLayer.UI);
+                                }
+                                else
+                                {
+                                    stream.CopyTo(file);
+
+                                    if (File.Exists(strLocalFilePath))
+                                    {
+                                        FileInfo fs = new FileInfo(strLocalFilePath);
+                                        Session["ServerFile"] = strLocalFilePath;
+                                        Session["ClientFile"] = fs.Name;
+                                        string urlString = @"location.href='DownLoadFile.aspx';";
+                                        jsBuilder.RegScript(this.Page, urlString);
+
+                                        //更新下載狀態
+                                        BRM_InOutFile.UpdateLoadFlag(ref strErrorID);
+                                        CustButton btnDelete = this.grvUserView.Rows[rowIndex].Cells[2].FindControl("btnDelete") as CustButton;
+                                        btnDelete.Enabled = true;
+                                    }
+                                    else
+                                    {
+                                        jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030200_014") + "');");
+                                        Logging.Log("06_06030200_014", LogLayer.UI);
+                                    }
+                                }
+                            }
+                        }
+                        else
                         {
                             jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030200_014") + "');");
                             Logging.Log("06_06030200_014", LogLayer.UI);
                         }
-                        else
-                        {
-                            stream.CopyTo(file);
-
-                            if (File.Exists(strLocalFilePath))
-                            {
-                                FileInfo fs = new FileInfo(strLocalFilePath);
-                                Session["ServerFile"] = strLocalFilePath;
-                                Session["ClientFile"] = fs.Name;
-                                string urlString = @"location.href='DownLoadFile.aspx';";
-                                jsBuilder.RegScript(this.Page, urlString);
-
-                                //更新下載狀態
-                                BRM_InOutFile.UpdateLoadFlag(ref strErrorID);
-                                CustButton btnDelete = this.grvUserView.Rows[rowIndex].Cells[2].FindControl("btnDelete") as CustButton;
-                                btnDelete.Enabled = true;
-                            }
-                            else
-                            {
-                                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030200_014") + "');");
-                                Logging.Log("06_06030200_014", LogLayer.UI);
-                            }
-                        }
+                    }
+                    catch (Exception exp)
+                    {
+                        string strExp = exp.Message;
+                        Logging.Log(strExp, LogLayer.UI);
+                        jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030200_014") + "');");
                     }
                 }
                 else {

@@ -42,6 +42,7 @@ public class JobApLog2SOC : IJob
     public void Execute(JobExecutionContext context)
     {
         strJobId = context.JobDetail.JobDataMap["JOBID"].ToString();
+        JobHelper.strJobId = strJobId;
 
         try
         {
@@ -49,7 +50,7 @@ public class JobApLog2SOC : IJob
             string strRETSTR = string.Empty;
 
             strRETSTR = "*********** " + strJobId + " START **************";
-            JobHelper.Write(strJobId, strRETSTR);
+            JobHelper.SaveLog(strRETSTR);
 
             #region 取得 查詢條件和取值
             //若沒指定日期就是要查前一天,但放置的目錄還是當天
@@ -134,7 +135,7 @@ public class JobApLog2SOC : IJob
             {
                 strReturnMsg += ". 失敗訊息:" + strErrMsg;
                 strJobStatus = "F";
-                JobHelper.Write(strJobId, strErrMsg);
+                JobHelper.SaveLog(strErrMsg);
             }
 
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
@@ -143,14 +144,14 @@ public class JobApLog2SOC : IJob
             #endregion
 
             strRETSTR = "*********** " + strJobId + " End **************";
-            JobHelper.Write(strJobId, strRETSTR);
+            JobHelper.SaveLog(strRETSTR);
 
             updateUploadflag(strRunDate);
             strErrMsg = strReturnMsg;
         }
         catch (Exception ex)
         {
-            JobHelper.Write(strJobId, ex.Message);
+            JobHelper.SaveLog(ex.Message);
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "F", "發生錯誤：" + ex.Message);
 
             //*JOB失敗發送MAIL 
@@ -260,7 +261,7 @@ public class JobApLog2SOC : IJob
         }
         catch (Exception ex)
         {
-            JobHelper.Write(strJobId, ex.ToString());
+            JobHelper.SaveLog(ex.ToString());
             return false;
         }
     }
@@ -317,6 +318,7 @@ public class JobApLog2SOC : IJob
         Entity_FileInfo _ftpInfo = GetFtpSetting();
         if (_ftpInfo == null)
         {
+            JobHelper.SaveLog(strJobId + "讀取FTP設定失敗。");
             result = "讀取FTP設定失敗！";
             return result;
         }
@@ -344,16 +346,24 @@ public class JobApLog2SOC : IJob
         //檔案:刪除, 建立 ,複製
         try
         {
+            JobHelper.SaveLog("刪除舊檔D:" + fileFullNameD, LogState.Info);
             FileTools.DeleteFile(fileFullNameD);
+            JobHelper.SaveLog("刪除舊檔H:" + fileFullNameH, LogState.Info);
             FileTools.DeleteFile(fileFullNameH);
+
+            JobHelper.SaveLog("建立新檔D:" + fileFullNameD, LogState.Info);
             FileTools.Create(fileFullNameD, sbDetail.ToString());
+            JobHelper.SaveLog("建立新檔H:" + fileFullNameH, LogState.Info);
             FileTools.Create(fileFullNameH, sbHead.ToString());
 
+            JobHelper.SaveLog("複製為新檔D:" + fileFullNameD, LogState.Info);
             FileTools.CopyFile(fileFullNameD, fileFullNameD_new);
+            JobHelper.SaveLog("複製為新檔H:" + fileFullNameH, LogState.Info);
             FileTools.CopyFile(fileFullNameH, fileFullNameH_new);
         }
         catch (Exception ex)
         {
+            JobHelper.SaveLog(string.Format("建檔失敗!({0})", ex.Message), LogState.Info);
             result = string.Format("建檔失敗!({0})", ex.Message);
             return result;
         }
@@ -380,11 +390,13 @@ public class JobApLog2SOC : IJob
                 }
 
                 result += string.Format("FTP上傳失敗！:({0})", string.Join(",", ftpMsgs.ToArray()));
+                JobHelper.SaveLog(string.Format("FTP上傳失敗！:({0})", string.Join(",", ftpMsgs.ToArray())), LogState.Info);
             }
         }
         catch (Exception ex)
         {
             result = ex.Message;
+            JobHelper.SaveLog(ex.Message);
         }
 
         return result;
@@ -403,7 +415,7 @@ public class JobApLog2SOC : IJob
         {
             if (mDt.Rows.Count == 0)
             {
-                JobHelper.Write(strJobId, "未設定通知信箱資料");
+                JobHelper.SaveLog("未設定通知信箱資料。");
                 return false;
             }
             List<string> MailUsers = new List<string>();
@@ -414,7 +426,6 @@ public class JobApLog2SOC : IJob
 
             JobHelper.SendMail("", MailUsers.ToArray(), "SOC AP Log執行結果", logMsg);
         }
-
         return result;
     }
 }
