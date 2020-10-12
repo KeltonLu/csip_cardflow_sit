@@ -509,6 +509,10 @@ public partial class P060202000001 : PageBase
                 }
 
             }
+
+            if (!culBtn.Enabled) {
+                culBtn.ForeColor = System.Drawing.Color.Gray;
+            }
         }
     }
 

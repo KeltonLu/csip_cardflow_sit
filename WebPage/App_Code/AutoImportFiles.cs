@@ -614,7 +614,7 @@ public class AutoImportFiles : Quartz.IJob
         string strFunctionKey = "06";
         string strUploadID = string.Empty;
         DateTime dtmThisDate = DateTime.Now;
-        UploadTime = DateTime.Parse(dtmThisDate.ToString());
+        UploadTime = DateTime.Parse(dtmThisDate.ToString("MM/dd/yyy HH:mm:ss.fff"));
 
         int intMax = int.MaxValue;
         string strMsgID = string.Empty;
@@ -1339,6 +1339,8 @@ public class AutoImportFiles : Quartz.IJob
                     }
                 }
             }
+
+
             BRL_UPLOAD.Add(eLUpload, ref strMessage);
             #endregion
         }
