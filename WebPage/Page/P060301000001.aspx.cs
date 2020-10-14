@@ -16,7 +16,9 @@ using Framework.Common.Utility;
 using Framework.WebControls;
 using BusinessRules;
 using System.IO;
+using System.Net;
 using System.Text;
+using System.Windows.Forms;
 
 public partial class P060301000001 : PageBase
 {
@@ -123,7 +125,7 @@ public partial class P060301000001 : PageBase
     /// 功能說明:編輯邏輯
     /// 作    者:zhen chen
     /// 創建時間:2010/06/25
-    /// 修改記錄:
+    /// 修改記錄:2020/10/15 Area Luke 因AP分離(WEB與BATCH)需求，調整業務功能
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -135,28 +137,30 @@ public partial class P060301000001 : PageBase
             CustLinkButton link = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("lkbDetail") as CustLinkButton;
             HiddenField hid = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("hidValue") as HiddenField;
             string fileName = link.Text.Trim();
-            string strPath = hid.Value;
-            if (!File.Exists(strPath))
-            {
-                //MessageHelper.ShowMessage(UpdatePanel1, "06_06030100_006");
-                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030100_006") + "');");
-                return;
-            }
-            else
-            {
-                FileStream fsr = new FileStream(strPath, FileMode.Open);
-                if (fsr.Length > 0)
-                {
-                    StreamReader sr = new StreamReader(fsr, Encoding.Default);
-                    this.txtInfo.Text = sr.ReadToEnd();
-                    fsr.Close();
-                    sr.Close();
-                }
-                this.ModalPopupExtenderN.Show();
+            string strDBfilePath = hid.Value;
+            String strLocalFilePath = "";
 
-                //System.Diagnostics.Process.Start(strPath);
+            if (!File.Exists(strDBfilePath))
+            {
+                bool checkState = false;
+
+                CheckExistAndDownload(strDBfilePath, ref strLocalFilePath);
+                if (!File.Exists(strLocalFilePath))
+                {
+                    jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030100_006") + "');");
+                    Logging.Log("06_06030100_006", LogLayer.UI);
+                }
             }
-           
+
+            FileStream fsr = new FileStream(strLocalFilePath, FileMode.Open);
+            if (fsr.Length > 0)
+            {
+                StreamReader sr = new StreamReader(fsr, Encoding.Default);
+                this.txtInfo.Text = sr.ReadToEnd();
+                fsr.Close();
+                sr.Close();
+                this.ModalPopupExtenderN.Show();
+            }
         }
         catch (Exception exp)
         {
@@ -253,13 +257,13 @@ public partial class P060301000001 : PageBase
         }
     }
 
-    
+
 
     /// <summary>
     /// 功能說明:上傳壓縮后的zip檔到FTP
     /// 作    者:zhen chen
     /// 創建時間:2010/06/25
-    /// 修改記錄:
+    /// 修改記錄:2020/10/15 Area Luke 因AP分離(WEB與BATCH)需求，調整業務功能
     /// </summary>
     protected void UploadZipFile()
     {
@@ -292,11 +296,24 @@ public partial class P060301000001 : PageBase
                         CustLinkButton custlk = grvUserView.Rows[icount].Cells[1].FindControl("lkbDetail") as CustLinkButton;
                         HiddenField hid = grvUserView.Rows[icount].Cells[1].FindControl("hidValue") as HiddenField;
 
-                        if (!File.Exists(hid.Value))
+                        string strDBfilePath = hid.Value;
+                        String strLocalFilePath = "";
+
+                        if (!File.Exists(strDBfilePath))
                         {
-                            //MessageHelper.ShowMessageWithParms(this.UpdatePanel1, "06_06030100_009", custlk.Text);
-                            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030100_006", custlk.Text) + "');");
-                            return;
+                            CheckExistAndDownload(strDBfilePath, ref strLocalFilePath);
+
+                            if (!File.Exists(strLocalFilePath))
+                            {
+                                //MessageHelper.ShowMessageWithParms(this.UpdatePanel1, "06_06030100_009", custlk.Text);
+                                jsBuilder.RegScript(this.Page,
+                                    "alert('" + MessageHelper.GetMessage("06_06030100_006", custlk.Text) + "');");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            strLocalFilePath = strDBfilePath;
                         }
 
                         strFtpPath = string.Empty;
@@ -305,7 +322,7 @@ public partial class P060301000001 : PageBase
                         strFtpPwd = string.Empty;
 
                         //把需要壓縮的文件的路徑添加到數組中
-                        strUploadFile[0] = hid.Value;
+                        strUploadFile[0] = strLocalFilePath;
                         //把txt檔的路徑轉為zip檔的路徑
                         strZipFile = strUploadFile[0].Replace(strUploadFile[0].Substring(strUploadFile[0].Length - 3, 3), "ZIP");
 
@@ -322,7 +339,7 @@ public partial class P060301000001 : PageBase
                             strFtpUserName = drFileInfo[0]["FtpUserName"].ToString();
                             strFtpPwd = drFileInfo[0]["FtpPwd"].ToString();
                             strFtpPath = drFileInfo[0]["FtpPath"].ToString();
-                       }
+                        }
                         //壓縮需要上傳到FTP的文件
                        JobHelper.Zip(strZipFile, strUploadFile, "", RedirectHelper.GetDecryptString(dtFileInfo.Rows[0]["ZipPwd"].ToString()), CompressToZip.CompressLevel.Level6);
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
@@ -365,4 +382,78 @@ public partial class P060301000001 : PageBase
     }
 
     #endregion
+
+
+    /// <summary>
+    /// 功能說明:檢查本地與BATCH是否有檔案，若本地無資料則去batchAP取得至本地。
+    /// </summary>
+    /// 作    者:Area Luke
+    /// 創建時間:2020/10/15
+    /// 修改記錄:
+    /// <param name="strDBfilePath"></param>
+    /// <param name="strLocalFilePath"></param>
+
+    public void CheckExistAndDownload(String strDBfilePath, ref String strLocalFilePath)
+    {
+        //去檢查BATCH AP是否有檔案
+        String[] strBatchFilePathArr = new string[] { };
+        String basePath = "";
+
+        try
+        {
+            if (strDBfilePath.Contains("\\" + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\"))
+            {
+                basePath = "UpLoadFilePath";
+                strBatchFilePathArr =
+                    strDBfilePath.Split(
+                        new string[] {"\\" + UtilHelper.GetAppSettings("UpLoadFilePath") + "\\"},
+                        StringSplitOptions.None);
+            }
+
+            if (strBatchFilePathArr.Length == 2 && !string.IsNullOrWhiteSpace(basePath))
+            {
+                //結尾路徑
+                String commonPath = strBatchFilePathArr[1].ToString();
+                //本機儲存位子
+                strLocalFilePath = AppDomain.CurrentDomain.BaseDirectory +
+                                          UtilHelper.GetAppSettings(basePath) + "\\" + commonPath;
+                //Batch Api url
+                String batchUrl = UtilHelper.GetAppSettings("BatchUrl") + UtilHelper.GetAppSettings(basePath) +
+                                  "/" + commonPath.Replace("\\", "/");
+
+                HttpWebRequest request = null;
+                HttpWebResponse response = null;
+                request = (System.Net.HttpWebRequest) System.Net.WebRequest.Create(batchUrl);
+                request.Timeout = 300000;
+
+                response = (System.Net.HttpWebResponse) request.GetResponse();
+
+                using (Stream stream = response.GetResponseStream())
+                {
+                    if (stream == null)
+                    {
+                        jsBuilder.RegScript(this.Page,
+                            "alert('" + MessageHelper.GetMessage("06_06030100_006") + "');");
+                        Logging.Log("06_06030100_006", LogLayer.UI);
+                    }
+                    else
+                    {
+                        if (!File.Exists(strLocalFilePath))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(strLocalFilePath) ?? string.Empty);
+                        }
+
+                        using (var file = File.OpenWrite(strLocalFilePath))
+                            stream.CopyTo(file);
+
+                    }
+                }
+            }
+        }
+        catch (Exception exp)
+        {
+            string strExp = exp.Message;
+            Logging.Log(strExp, LogLayer.UI);
+        }
+    }
 }
