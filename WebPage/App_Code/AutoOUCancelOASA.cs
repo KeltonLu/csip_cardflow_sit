@@ -325,7 +325,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                 }
             }
         }
-        MainFrameInfoOASA.ClearHtgSessionJob(ref strSessionId);
+        MainFrameInfoOASA.ClearHtgSessionJob(ref strSessionId, strJobId);
 
         JobHelper.SaveLog(DateTime.Now.ToString() + strJobLogMsg, LogState.Info);
     }
@@ -898,7 +898,7 @@ public class AutoOUCancelOASA : Quartz.IJob
 
         //*提交OASA_P4_Submit主機資料
 
-        Hashtable htResultA = MainFrameInfoOASA.GetMainFrameInfo(MainFrameInfoOASA.HtgType.P4_JCAX, htInput, false, "100", GetAgentInfo(context));
+        Hashtable htResultA = MainFrameInfoOASA.GetMainFrameInfo(MainFrameInfoOASA.HtgType.P4_JCAX, htInput, false, "100", GetAgentInfo(context), strJobId);
         if (!htResultA.Contains("HtgMsg"))
         {
             strErrorMsg = "";//*主機返回成功訊息

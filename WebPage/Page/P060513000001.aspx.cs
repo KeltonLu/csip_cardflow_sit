@@ -48,6 +48,7 @@ public partial class P060513000001 : PageBase
                 cgvList[i].Visible = false;
             for (int i = 0; i < lbList.Count; i++)
                 lbList[i].Visible = false;
+            Label9.Visible = false;
         }
     }
 
@@ -112,6 +113,7 @@ public partial class P060513000001 : PageBase
                     }
                     for (int i = 0; i < lbList.Count; i++)
                         lbList[i].Visible = false;
+                    Label9.Visible = false;
 
                     DataTable dt = new DataTable();
                     Int32 count = 0;
@@ -154,13 +156,16 @@ public partial class P060513000001 : PageBase
                         }
                         for (int i = 0; i < lbList.Count; i++)
                             lbList[i].Visible = false;
+                        Label9.Visible = false;
 
                         List<DataTable> list = new List<DataTable>();
                         List<String> name = new List<String>();
-                        Boolean result = BR_Excel_File.GetDataTable05130(param, ref list, ref name);
+                        String strMsgId = "";
+                        Boolean result = BR_Excel_File.GetDataTable05130(param, ref list, ref name, ref strMsgId);
                         //* 查詢成功
                         if (result)
                         {
+                            Int32 count = 0;
                             for(int i = 0; i < list.Count && i < name.Count; i++)
                             {
                                 switch(name[i])
@@ -170,8 +175,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView1.Visible = true;
                                             CustGridView1.DataSource = list[i];
                                             CustGridView1.DataBind();
-                                            Label1.Text = name[i];
+                                            Label1.Text = name[i] + " 成功 卡數：" + list[i].Rows.Count;
                                             Label1.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "管制(R)":
@@ -179,8 +185,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView2.Visible = true;
                                             CustGridView2.DataSource = list[i];
                                             CustGridView2.DataBind();
-                                            Label2.Text = name[i];
+                                            Label2.Text = name[i] + " 成功 卡數：" + list[i].Rows.Count;
                                             Label2.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "管制(S)":
@@ -188,8 +195,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView3.Visible = true;
                                             CustGridView3.DataSource = list[i];
                                             CustGridView3.DataBind();
-                                            Label3.Text = name[i];
+                                            Label3.Text = name[i] + " 成功 卡數：" + list[i].Rows.Count;
                                             Label3.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "解管(R)":
@@ -197,18 +205,21 @@ public partial class P060513000001 : PageBase
                                             CustGridView4.Visible = true;
                                             CustGridView4.DataSource = list[i];
                                             CustGridView4.DataBind();
-                                            Label4.Text = name[i];
+                                            Label4.Text = name[i] + " 成功 卡數：" + list[i].Rows.Count;
                                             Label4.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                 }
                             }
+                            Label9.Text = "成功 總卡數：" + count;
+                            Label9.Visible = true;
                             jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05130000_001"));
                         }
                         //* 查詢不成功
                         else
                         {
-                            jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05130000_002"));
+                            jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow(strMsgId));
                         }
                     }
                     else if (ddlStatus.SelectedValue.Equals("2"))
@@ -226,13 +237,16 @@ public partial class P060513000001 : PageBase
                         }
                         for (int i = 0; i < lbList.Count; i++)
                             lbList[i].Visible = false;
+                        Label9.Visible = false;
 
                         List<DataTable> list = new List<DataTable>();
                         List<String> name = new List<String>();
-                        Boolean result = BR_Excel_File.GetDataTable05132(param, ref list, ref name);
+                        String strMsgId = "";
+                        Boolean result = BR_Excel_File.GetDataTable05132(param, ref list, ref name, ref strMsgId);
                         //* 查詢成功
                         if (result)
                         {
+                            Int32 count = 0;
                             for (int i = 0; i < list.Count && i < name.Count; i++)
                             {
                                 switch (name[i])
@@ -242,8 +256,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView5.Visible = true;
                                             CustGridView5.DataSource = list[i];
                                             CustGridView5.DataBind();
-                                            Label5.Text = name[i];
+                                            Label5.Text = name[i] + " 失敗 卡數：" + list[i].Rows.Count;
                                             Label5.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "管制(R)":
@@ -251,8 +266,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView6.Visible = true;
                                             CustGridView6.DataSource = list[i];
                                             CustGridView6.DataBind();
-                                            Label6.Text = name[i];
+                                            Label6.Text = name[i] + " 失敗 卡數：" + list[i].Rows.Count;
                                             Label6.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "管制(S)":
@@ -260,8 +276,9 @@ public partial class P060513000001 : PageBase
                                             CustGridView7.Visible = true;
                                             CustGridView7.DataSource = list[i];
                                             CustGridView7.DataBind();
-                                            Label7.Text = name[i];
+                                            Label7.Text = name[i] + " 失敗 卡數：" + list[i].Rows.Count;
                                             Label7.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                     case "解管(R)":
@@ -269,18 +286,21 @@ public partial class P060513000001 : PageBase
                                             CustGridView8.Visible = true;
                                             CustGridView8.DataSource = list[i];
                                             CustGridView8.DataBind();
-                                            Label8.Text = name[i];
+                                            Label8.Text = name[i] + " 失敗 卡數：" + list[i].Rows.Count;
                                             Label8.Visible = true;
+                                            count += list[i].Rows.Count;
                                         }
                                         break;
                                 }
                             }
+                            Label9.Text = "失敗 總卡數：" + count;
+                            Label9.Visible = true;
                             jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05130000_001"));
                         }
                         //* 查詢不成功
                         else
                         {
-                            jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05130000_002"));
+                            jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow(strMsgId));
                         }
                     }
                 }

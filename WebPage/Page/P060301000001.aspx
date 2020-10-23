@@ -104,7 +104,7 @@
                         <td colspan="20">
                             <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
                                 PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
-                                BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing">
+                                BorderStyle="Solid" OnRowCommand="grvUserView_RowCommand">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
                                 <SelectedRowStyle CssClass="Grid_SelectedItem" />
                                 <HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -118,7 +118,7 @@
                                     <asp:TemplateField>
                                         <itemstyle horizontalalign="Center" width="35%" />
                                         <itemtemplate>
-                                        <cc1:CustLinkButton id="lkbDetail" runat="server" Text='<%# Bind("OutputFileName") %>' CommandName="Edit" __designer:wfdid="w4">
+                                        <cc1:CustLinkButton id="lkbDetail" runat="server" Text='<%# Bind("OutputFileName") %>' CommandName="Select" __designer:wfdid="w4">
                                         </cc1:CustLinkButton> 
                                         <asp:HiddenField id="hidValue" runat="server" __designer:wfdid="w5" Value='<%# Bind("FilePath") %>'></asp:HiddenField> 
                                         </itemtemplate>
@@ -126,7 +126,7 @@
                                     <asp:TemplateField>
                                         <itemstyle horizontalalign="Center" width="35%" />
                                         <itemtemplate>
-                                        <cc1:CustCheckBox id="chkFile" runat="server" CommandName="Edit" __designer:wfdid="w3">
+                                        <cc1:CustCheckBox id="chkFile" runat="server" CommandName="Select" __designer:wfdid="w3">
                                         </cc1:CustCheckBox>   
                                         </itemtemplate>
                                     </asp:TemplateField>

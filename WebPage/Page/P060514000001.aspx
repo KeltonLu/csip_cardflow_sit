@@ -136,6 +136,7 @@
 									</asp:BoundField>
 								</Columns>
 							</cc1:CustGridView>
+							<asp:Label ID="Label1" runat="server" Text="" />
 							<asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true"></asp:UpdatePanel>
 							<asp:UpdatePanel ID="UpdatePanel3" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true"></asp:UpdatePanel>
 						</td>

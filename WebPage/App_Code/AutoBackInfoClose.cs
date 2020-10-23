@@ -256,7 +256,7 @@ public class AutoBackInfoClose : Quartz.IJob
             {
                 JobHelper.SaveLog("從DB抓取檔案資料失敗！");
             }
-            MainFrameInfoOASA.ClearHtgSessionJob(ref strSessionId);
+            MainFrameInfoOASA.ClearHtgSessionJob(ref strSessionId, strJobId);
             //}
             #endregion
 
@@ -396,7 +396,7 @@ public class AutoBackInfoClose : Quartz.IJob
 
         //*提交OASA_P4_Submit主機資料
 
-        Hashtable htResultA = MainFrameInfoOASA.GetMainFrameInfo(MainFrameInfoOASA.HtgType.P4_JCAX, htInput, false, "100", GetAgentInfo(context));
+        Hashtable htResultA = MainFrameInfoOASA.GetMainFrameInfo(MainFrameInfoOASA.HtgType.P4_JCAX, htInput, false, "100", GetAgentInfo(context), strJobId);
         if (!htResultA.Contains("HtgMsg"))
         {
             strErrorMsg = "";//*主機返回成功訊息

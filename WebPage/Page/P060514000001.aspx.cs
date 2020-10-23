@@ -27,6 +27,7 @@ public partial class P060514000001 : PageBase
             this.gpList.Visible = false;
             this.gpList.RecordCount = 0;
             this.grvUserView.Visible = false;
+            Label1.Visible = false;
             for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
                 UpdatePanel2.ContentTemplateContainer.Controls[i].Visible = false;
             for (int i = 0; i < UpdatePanel3.ContentTemplateContainer.Controls.Count; i++)
@@ -71,6 +72,7 @@ public partial class P060514000001 : PageBase
             {
                 if (rbCount.Checked)
                 {
+                    Label1.Visible = false;
                     for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
                     {
                         if(i % 2 != 0)
@@ -123,6 +125,7 @@ public partial class P060514000001 : PageBase
                         this.grvUserView.DataBind();
                         this.gpList.Visible = false;
                         this.grvUserView.Visible = false;
+                        Label1.Visible = false;
                         for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
                         {
                             if (i % 2 != 0)
@@ -151,20 +154,24 @@ public partial class P060514000001 : PageBase
                             //* 查詢成功
                             if (result)
                             {
+                                Int32 count = 0;
                                 for (int i = 0; i < list.Count && i < name.Count && i * 2 < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
                                 {
                                     for(int j = 0; j < ddlStatus.Items.Count; j++)
                                     {
                                         if(name[i] == ddlStatus.Items[j].Value)
                                         {
-                                            ((Label)UpdatePanel2.ContentTemplateContainer.Controls[i * 2]).Text = name[i];
+                                            ((Label)UpdatePanel2.ContentTemplateContainer.Controls[i * 2]).Text = name[i] + " 成功 卡數：" + list[i].Rows.Count;
                                             UpdatePanel2.ContentTemplateContainer.Controls[i * 2].Visible = true;
                                             UpdatePanel2.ContentTemplateContainer.Controls[i * 2 + 1].Visible = true;
                                             ((CustGridView)UpdatePanel2.ContentTemplateContainer.Controls[i * 2 + 1]).DataSource = list[i];
                                             UpdatePanel2.ContentTemplateContainer.Controls[i * 2 + 1].DataBind();
+                                            count += list[i].Rows.Count;
                                         }
                                     }
                                 }
+                                Label1.Text = "成功 總卡數：" + count;
+                                Label1.Visible = true;
                                 jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_001"));
                             }
                             //* 查詢不成功
@@ -181,7 +188,7 @@ public partial class P060514000001 : PageBase
                             //* 查詢成功
                             if (result)
                             {
-                                ((Label)UpdatePanel2.ContentTemplateContainer.Controls[0]).Text = ddlStatus.SelectedValue;
+                                ((Label)UpdatePanel2.ContentTemplateContainer.Controls[0]).Text = ddlStatus.SelectedValue + " 成功 卡數：" + dt.Rows.Count;
                                 UpdatePanel2.ContentTemplateContainer.Controls[0].Visible = true;
                                 UpdatePanel2.ContentTemplateContainer.Controls[1].Visible = true;
                                 ((CustGridView)UpdatePanel2.ContentTemplateContainer.Controls[1]).DataSource = dt;
@@ -202,6 +209,7 @@ public partial class P060514000001 : PageBase
                         this.grvUserView.DataBind();
                         this.gpList.Visible = false;
                         this.grvUserView.Visible = false;
+                        Label1.Visible = false;
                         for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
                         {
                             if (i % 2 != 0)
@@ -230,20 +238,24 @@ public partial class P060514000001 : PageBase
                             //* 查詢成功
                             if (result)
                             {
+                                Int32 count = 0;
                                 for (int i = 0; i < list.Count && i < name.Count && i * 2 < UpdatePanel3.ContentTemplateContainer.Controls.Count; i++)
                                 {
                                     for (int j = 0; j < ddlStatus.Items.Count; j++)
                                     {
                                         if (name[i] == ddlStatus.Items[j].Value)
                                         {
-                                            ((Label)UpdatePanel3.ContentTemplateContainer.Controls[i * 2]).Text = name[i];
+                                            ((Label)UpdatePanel3.ContentTemplateContainer.Controls[i * 2]).Text = name[i] + " 失敗 卡數：" + list[i].Rows.Count;
                                             UpdatePanel3.ContentTemplateContainer.Controls[i * 2].Visible = true;
                                             UpdatePanel3.ContentTemplateContainer.Controls[i * 2 + 1].Visible = true;
                                             ((CustGridView)UpdatePanel3.ContentTemplateContainer.Controls[i * 2 + 1]).DataSource = list[i];
                                             UpdatePanel3.ContentTemplateContainer.Controls[i * 2 + 1].DataBind();
+                                            count += list[i].Rows.Count;
                                         }
                                     }
                                 }
+                                Label1.Text = "失敗 總卡數：" + count;
+                                Label1.Visible = true;
                                 jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_001"));
                             }
                             //* 查詢不成功
@@ -260,7 +272,7 @@ public partial class P060514000001 : PageBase
                             //* 查詢成功
                             if (result)
                             {
-                                ((Label)UpdatePanel3.ContentTemplateContainer.Controls[0]).Text = ddlStatus.SelectedValue;
+                                ((Label)UpdatePanel3.ContentTemplateContainer.Controls[0]).Text = ddlStatus.SelectedValue + " 失敗 卡數：" + dt.Rows.Count;
                                 UpdatePanel3.ContentTemplateContainer.Controls[0].Visible = true;
                                 UpdatePanel3.ContentTemplateContainer.Controls[1].Visible = true;
                                 ((CustGridView)UpdatePanel3.ContentTemplateContainer.Controls[1]).DataSource = dt;

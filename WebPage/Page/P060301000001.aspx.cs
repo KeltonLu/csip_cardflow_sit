@@ -129,27 +129,32 @@ public partial class P060301000001 : PageBase
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
+    protected void grvUserView_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         try
         {
             ViewState["FlgEdit"] = "TRUE";
-            CustLinkButton link = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("lkbDetail") as CustLinkButton;
-            HiddenField hid = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("hidValue") as HiddenField;
+            LinkButton lb = e.CommandSource as LinkButton;
+            GridViewRow row = lb.NamingContainer as GridViewRow;
+            CustLinkButton link = row.Cells[1].FindControl("lkbDetail") as CustLinkButton;
+            HiddenField hid = row.Cells[1].FindControl("hidValue") as HiddenField;
             string fileName = link.Text.Trim();
             string strDBfilePath = hid.Value;
             String strLocalFilePath = "";
 
             if (!File.Exists(strDBfilePath))
             {
-                bool checkState = false;
-
                 CheckExistAndDownload(strDBfilePath, ref strLocalFilePath);
-                if (!File.Exists(strLocalFilePath))
-                {
-                    jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030100_006") + "');");
-                    Logging.Log("06_06030100_006", LogLayer.UI);
-                }
+            }
+            else
+            {
+                strLocalFilePath = strDBfilePath;
+            }
+
+            if (!File.Exists(strLocalFilePath))
+            {
+                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06030100_006") + "');");
+                Logging.Log("06_06030100_006", LogLayer.UI);
             }
 
             FileStream fsr = new FileStream(strLocalFilePath, FileMode.Open);
@@ -302,18 +307,18 @@ public partial class P060301000001 : PageBase
                         if (!File.Exists(strDBfilePath))
                         {
                             CheckExistAndDownload(strDBfilePath, ref strLocalFilePath);
-
-                            if (!File.Exists(strLocalFilePath))
-                            {
-                                //MessageHelper.ShowMessageWithParms(this.UpdatePanel1, "06_06030100_009", custlk.Text);
-                                jsBuilder.RegScript(this.Page,
-                                    "alert('" + MessageHelper.GetMessage("06_06030100_006", custlk.Text) + "');");
-                                return;
-                            }
                         }
                         else
                         {
                             strLocalFilePath = strDBfilePath;
+                        }
+
+                        if (!File.Exists(strLocalFilePath))
+                        {
+                            //MessageHelper.ShowMessageWithParms(this.UpdatePanel1, "06_06030100_009", custlk.Text);
+                            jsBuilder.RegScript(this.Page,
+                                "alert('" + MessageHelper.GetMessage("06_06030100_006", custlk.Text) + "');");
+                            return;
                         }
 
                         strFtpPath = string.Empty;

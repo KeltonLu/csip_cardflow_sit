@@ -127,6 +127,8 @@
 									</asp:BoundField>
 								</Columns>
 							</cc1:CustGridView>
+							<asp:Label ID="Label9" runat="server" Text="" />
+							<br />
 							<asp:Label ID="Label1" runat="server" Text="" />
 							<cc1:CustGridView ID="CustGridView1" runat="server" AllowSorting="True" AllowPaging="False"
 								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"

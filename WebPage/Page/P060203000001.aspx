@@ -136,7 +136,7 @@
                         <td >
                             <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
                                 PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
-                                BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing" DataKeyNames="cardno">
+                                BorderStyle="Solid" OnRowCommand="grvUserView_RowCommand" DataKeyNames="cardno">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
                                 <SelectedRowStyle CssClass="Grid_SelectedItem" />
                                 <HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -146,7 +146,7 @@
                                 <Columns>
                                     <asp:TemplateField>
                                         <itemtemplate>
-                                        <cc1:CustLinkButton id="lbtnCardNo" runat="server" CommandName="Edit" Text='<%# Bind("CardNo") %>'>
+                                        <cc1:CustLinkButton id="lbtnCardNo" runat="server" CommandName="Select" Text='<%# Bind("CardNo") %>'>
                                         </cc1:CustLinkButton>
                                         </itemtemplate>
                                         <itemstyle horizontalalign="left" width="20%" />
@@ -199,7 +199,7 @@
                         </tr>
                         <tr class="trOdd">
                             <td align="center" style="height: 25px">
-                                <cc1:CustGridView ID="CustGridView1" runat="server" Width="300" OnRowEditing="grvUserView_RowEditing"
+                                <cc1:CustGridView ID="CustGridView1" runat="server" Width="300" OnRowCommand="grvUserView_RowCommand"
                                     DataKeyNames="id" BorderStyle="Solid" CellSpacing="1" CellPadding="0" BorderWidth="0px"
                                     PagerID="gpList" AllowPaging="False" AllowSorting="True" Height="7px">
                                     <RowStyle CssClass="Grid_Item" Wrap="True" />
@@ -215,8 +215,7 @@
                                         <asp:TemplateField>
                                             <itemtemplate>
                                             <asp:TextBox id="txtcNote" runat="server" Text='<%# Bind("CNote") %>' Width="250px" TextMode="MultiLine" Height="51px"  MaxLength="200"></asp:TextBox>
-                                            
-</itemtemplate>
+                                            </itemtemplate>
                                             <itemstyle width="60%" horizontalalign="Left"></itemstyle>
                                         </asp:TemplateField>
                                     </Columns>

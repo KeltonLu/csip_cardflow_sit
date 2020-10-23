@@ -5280,11 +5280,10 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/17
     /// </summary>
-    public static Boolean GetDataTable05130(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    public static Boolean GetDataTable05130(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name, ref String strMsgId)
     {
         try
         {
-            String strMsgId = "";
             DataTable dt = new DataTable();
             if (!getPageType05130(ref param, ref strMsgId, ref dt))
                 return false;
@@ -5303,11 +5302,15 @@ WHERE CANCELOASAFILE = @STRFILE
                     name.Add(blkCode);
                 }
                 else
+                {
+                    strMsgId = "06_05130000_005";
                     return false;
+                }
             }
         }
         catch (Exception ex)
         {
+            strMsgId = "06_05130000_002";
             Logging.Log(ex);
             return false;
         }
@@ -5540,11 +5543,10 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/17
     /// </summary>
-    public static Boolean GetDataTable05132(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name)
+    public static Boolean GetDataTable05132(Dictionary<String, String> param, ref List<DataTable> list, ref List<String> name, ref String strMsgId)
     {
         try
         {
-            String strMsgId = "";
             DataTable dt = new DataTable();
             if (!getPageType05132(ref param, ref strMsgId, ref dt))
                 return false;
@@ -5563,11 +5565,15 @@ WHERE CANCELOASAFILE = @STRFILE
                     name.Add(blkCode);
                 }
                 else
+                {
+                    strMsgId = "06_05130000_005";
                     return false;
+                }
             }
         }
         catch (Exception ex)
         {
+            strMsgId = "06_05130000_002";
             Logging.Log(ex);
             return false;
         }

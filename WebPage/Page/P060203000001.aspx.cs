@@ -399,20 +399,22 @@ public partial class Page_P060203000001 : PageBase
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
+    protected void grvUserView_RowCommand(object sender, GridViewCommandEventArgs e)
     {
-
+        LinkButton lb = e.CommandSource as LinkButton;
+        GridViewRow row = lb.NamingContainer as GridViewRow;
+        Int32 idx = row.RowIndex;
         ViewState["FlgEdit"] = "TRUE";
-        HiddenField hidvalue = grvUserView.Rows[e.NewEditIndex].FindControl("hidType") as HiddenField;
-        string strAction = m_dtCardBaseInfo.Rows[e.NewEditIndex]["action"].ToString();
+        HiddenField hidvalue = row.FindControl("hidType") as HiddenField;
+        string strAction = m_dtCardBaseInfo.Rows[idx]["action"].ToString();
         string strId = string.Empty;
-        if (null != m_dtCardBaseInfo.Rows[e.NewEditIndex]["id"] && !string.IsNullOrEmpty(m_dtCardBaseInfo.Rows[e.NewEditIndex]["id"].ToString()))
+        if (null != m_dtCardBaseInfo.Rows[idx]["id"] && !string.IsNullOrEmpty(m_dtCardBaseInfo.Rows[idx]["id"].ToString()))
         {
-            strId = m_dtCardBaseInfo.Rows[e.NewEditIndex]["id"].ToString();
+            strId = m_dtCardBaseInfo.Rows[idx]["id"].ToString();
         }
 
-        string strCardNo = m_dtCardBaseInfo.Rows[e.NewEditIndex]["CardNo"].ToString();
-        string strTrandate = m_dtCardBaseInfo.Rows[e.NewEditIndex]["Trandate"].ToString();
+        string strCardNo = m_dtCardBaseInfo.Rows[idx]["CardNo"].ToString();
+        string strTrandate = m_dtCardBaseInfo.Rows[idx]["Trandate"].ToString();
 
         DataTable dtCardDataChanges = new DataTable();
         string strMsgID = string.Empty;
