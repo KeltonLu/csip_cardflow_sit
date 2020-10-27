@@ -95,8 +95,7 @@
 					<tr>
 						<td colspan="20">
 							<cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
-								PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
-								BorderStyle="Solid">
+								Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1" BorderStyle="Solid">
 								<RowStyle CssClass="Grid_Item" Wrap="True" />
 								<SelectedRowStyle CssClass="Grid_SelectedItem" />
 								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -497,13 +496,6 @@
 									</asp:BoundField>
 								</Columns>
 							</cc1:CustGridView>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<cc1:GridPager ID="gpList" runat="server" AlwaysShow="True" CustomInfoTextAlign="Right"
-								InputBoxStyle="height:15px" OnPageChanged="gpList_PageChanged">
-							</cc1:GridPager>
 						</td>
 					</tr>
 				</table>

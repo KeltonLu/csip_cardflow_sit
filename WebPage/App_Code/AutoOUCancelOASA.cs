@@ -6,6 +6,7 @@
 //*<author>            <time>            <TaskID>            <desc>
 //  Nash (U)          20190503          就算OU檔案是空檔，也會寫入系統中讓User可以知道資料筆數為0
 //  Nash (U)          20190503          新增LOG
+//  Area Luke         20201023          新增(當日最後排程啟動時)寄信需求。
 //*******************************************************************
 using System;
 using System.Data;
@@ -20,6 +21,8 @@ using Framework.Common.Utility;
 using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using CSIPCommonModel.BusinessRules;
 
 /// <summary>
 /// AutoOUCancelOASA 的摘要描述
@@ -58,6 +61,7 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
     {
+
         try
         {
             #region 获取jobID
@@ -133,6 +137,78 @@ public class AutoOUCancelOASA : Quartz.IJob
             #endregion
             #region OASA注銷   找出今日註銷，發送電文
             ProcRegOASA(context);
+            #endregion
+
+            #region 當日最後一次排程後寄送OU MAIL
+            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 開始判斷是否為當日最後排程！", LogState.Info);
+
+            DataTable dtProperty = new DataTable();
+
+            bool isLastTime = false;
+            if (BRM_PROPERTY_KEY.GetProperty("06", "0109Time", ref dtProperty))
+            {
+                DataRow[] drHh = dtProperty.Select("PROPERTY_CODE='" + "hh" + "'");
+                DataRow[] drMm = dtProperty.Select("PROPERTY_CODE='" + "mm" + "'");
+                DataRow[] drSs = dtProperty.Select("PROPERTY_CODE='" + "ss" + "'");
+                if (drHh.Length > 0 && drMm.Length > 0 && drSs.Length > 0)
+                {
+                    DateTime d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,
+                        int.Parse(drHh[0]["PROPERTY_NAME"].ToString()),
+                        int.Parse(drMm[0]["PROPERTY_NAME"].ToString()),
+                        int.Parse(drSs[0]["PROPERTY_NAME"].ToString()));
+
+                    isLastTime = DateTime.Compare(StartTime, d) >= 0;
+                }
+            }
+
+            if (isLastTime)
+            {
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 判斷結果: 是！", LogState.Info);
+                //* 聲明SQL Command變量
+                SqlCommand sqlCommand = new SqlCommand
+                {
+                    CommandType = CommandType.Text,
+                    CommandText =
+                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CardNo, BlockCode, ChangeNote, MemoLog " +
+                        "FROM TBL_CANCELOASA A " +
+                        "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE " +
+                        "WHERE B.SFFLG = '2' " +
+                        "AND(A.CANCELOASAFILE LIKE 'OU15%' OR A.CANCELOASAFILE LIKE 'OU16%') " +
+                        "AND B.CARDNO LIKE('0377%') " +
+                        "AND A.CANCELOASADATE = CONVERT(VARCHAR, GETDATE(), 111)"
+                };
+
+                DataSet ds = BRM_CancelOASA.SearchOnDataSet(sqlCommand);
+
+                if (ds != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    DataTable dt = ds.Tables[0];
+                    if (dt.Rows.Count > 0)
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 查詢結果共" + dt.Rows.Count + "筆！", LogState.Info);
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 開始寄信！", LogState.Info);
+                        //發送Mail
+                        SendMail("5", new ArrayList(), Resources.JobResource.Job0000036, dt);
+                    }
+                    else
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 查詢無資料！", LogState.Info);
+                        //發送Mail
+                        SendMail("5", new ArrayList(), Resources.JobResource.Job0000036, null);
+                    }
+                }
+                else
+                {
+                    JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 查詢無資料！", LogState.Info);
+                    //發送Mail
+                    SendMail("5", new ArrayList(), Resources.JobResource.Job0000036, null);
+                }
+            }
+            else
+            {
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 判斷結果: 否！", LogState.Info);
+            }
+
             #endregion
 
             #region 記錄job結束時間
@@ -997,20 +1073,14 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// <summary>
     /// 功能說明:mail警訊通知
     /// 作    者:Linda
-
     /// 創建時間:2010/06/11
-
     /// 修改記錄:
-
     /// </summary>
-
     /// <param name="strCallType">Mail警訊種類</param>
-
     /// <param name="strCallType">Mail警訊內文</param>
-
     /// <param name="strCallType">錯誤狀況</param>
-
-    public void SendMail(string strCallType, ArrayList alMailInfo, string strErrorName)
+    /// <param name="lastTimeDt">最後一次的查詢結果</param>
+    public void SendMail(string strCallType, ArrayList alMailInfo, string strErrorName,DataTable lastTimeDt = null)
     {
         try
         {
@@ -1089,13 +1159,74 @@ public class AutoOUCancelOASA : Quartz.IJob
                         JobHelper.SendMail(strTo, strCc, strFrom, strSubject, strBody);
 
                         break;
+                    case "5":
+                        strTo = dtCallMail.Rows[0]["ToUsers"].ToString().Split(';');
+                        strCc = dtCallMail.Rows[0]["CcUsers"].ToString().Split(';');
+
+                        //格式化Mail Tittle
+                        strSubject = dtCallMail.Rows[0]["MailTittle"].ToString();
+
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 ToUsers: " + dtCallMail.Rows[0]["ToUsers"].ToString() + "！", LogState.Info);
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 CcUsers: " + dtCallMail.Rows[0]["CcUsers"].ToString() + "！", LogState.Info);
+
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】 開始執行寄信..." + "！", LogState.Info);
+                        if (lastTimeDt != null)
+                        {
+                            //格式化Mail Body
+                            for (int i = 0; i < lastTimeDt.Rows.Count; i++)
+                            {
+                                if (i == 0)
+                                {
+                                    strBody += "<table><tbody>";
+                                    strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
+                                }
+                                else
+                                {
+                                    strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), 
+                                        lastTimeDt.Rows[i]["no"],
+                                        lastTimeDt.Rows[i]["CancelOASAFile"],
+                                        lastTimeDt.Rows[i]["CardNo"], 
+                                        lastTimeDt.Rows[i]["BlockCode"], 
+                                        lastTimeDt.Rows[i]["ChangeNote"], 
+                                        lastTimeDt.Rows[i]["MemoLog"]);
+                                }
+
+                                if (i == lastTimeDt.Rows.Count - 1)
+                                {
+                                    strBody += "</table></tbody>";
+                                }
+                            }
+
+                            //寄送
+                            bool mailStatus = JobHelper.SendMail(strTo, strCc, strFrom, strSubject, strBody);
+                            if (mailStatus)
+                            {
+                                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】寄信成功！", LogState.Info);
+                            }
+                            else
+                            {
+                                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】寄信失敗！", LogState.Info);
+                            }
+                        }
+                        else
+                        {
+                            //寄送
+                            bool mailStatus = JobHelper.SendMail(strTo, strCc, strFrom, strSubject, "今日查無資料。");
+                            if (mailStatus)
+                            {
+                                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】寄信成功！", LogState.Info);
+                            }
+                            else
+                            {
+                                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】寄信失敗！", LogState.Info);
+                            }
+                        }
+
+                        break;
 
                     default:
-
                         //發送Mail
-
                         JobHelper.SendMail(strTo, strCc, strFrom, strSubject, strBody);
-
                         break;
 
                 }

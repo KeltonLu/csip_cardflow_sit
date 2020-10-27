@@ -4933,7 +4933,7 @@ WHERE CANCELOASAFILE = @STRFILE
             object start = sheet.Cells[indexInSheetStart, 1];
             object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
-            ExportExcel(dt, ref sheet, start, end);
+            ExportExcel(dt, ref sheet, start, end, true);
 
             #region 頁尾
 
@@ -4997,15 +4997,32 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/17
     /// </summary>
-    public static Boolean GetDataTable0513(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    public static Boolean GetDataTable0513(Dictionary<String, String> param, ref DataTable dt)
     {
         try
         {
             //* 查詢數據
-            DataSet ds = searchData0513(param, ref count, idx, size);
+            Int32 count = 0;
+            DataSet ds = searchData0513(param, ref count);
             if (null != ds)
             {
                 dt = ds.Tables[0];
+                count = dt.Rows.Count;
+                DataRow row = dt.NewRow();
+                row["OTYPE"] = "合計";
+                String[] col = { "XC", "CS", "XC+CS", "CG+SB", "CG", "SB" };
+                for(int i = 0; i < col.Length; i++)
+                {
+                    Int32 total = 0;
+                    for (int j = 0; j < count; j++)
+                    {
+                        Int32 num;
+                        if (Int32.TryParse(dt.Rows[j][col[i]].ToString(), out num))
+                            total += num;
+                    }
+                    row[col[i]] = total;
+                }
+                dt.Rows.Add(row);
                 return true;
             }
             else
@@ -5649,7 +5666,7 @@ WHERE CANCELOASAFILE = @STRFILE
             object start = sheet.Cells[indexInSheetStart, 1];
             object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
 
-            ExportExcel(dt, ref sheet, start, end);
+            ExportExcel(dt, ref sheet, start, end, true);
 
             #region 頁尾
 
@@ -5712,15 +5729,32 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/18
     /// </summary>
-    public static Boolean GetDataTable0514(Dictionary<String, String> param, Int32 idx, Int32 size, ref Int32 count, ref DataTable dt)
+    public static Boolean GetDataTable0514(Dictionary<String, String> param, ref DataTable dt)
     {
         try
         {
             //* 查詢數據
-            DataSet ds = searchData0514(param, ref count, idx, size);
+            Int32 count = 0;
+            DataSet ds = searchData0514(param, ref count);
             if (null != ds)
             {
                 dt = ds.Tables[0];
+                count = dt.Rows.Count;
+                DataRow row = dt.NewRow();
+                row["OTYPE"] = "合計";
+                String[] col = { "XC", "CS", "XC+CS", "CG+SB", "CG", "SB" };
+                for (int i = 0; i < col.Length; i++)
+                {
+                    Int32 total = 0;
+                    for (int j = 0; j < count; j++)
+                    {
+                        Int32 num;
+                        if (Int32.TryParse(dt.Rows[j][col[i]].ToString(), out num))
+                            total += num;
+                    }
+                    row[col[i]] = total;
+                }
+                dt.Rows.Add(row);
                 return true;
             }
             else
@@ -7623,18 +7657,27 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 創建時間:2020/08/06
     /// </summary>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    public static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end)
+    public static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end, Boolean allNumber = false)
     {
 
         try
         {
-            string[,] data = new string[dt.Rows.Count, dt.Columns.Count];
+            object[,] data = new object[dt.Rows.Count, dt.Columns.Count];
             int i = 0;
             foreach (DataRow row in dt.Rows)
             {
                 int j = 0;
                 foreach (DataColumn col in dt.Columns)
                 {
+                    if(allNumber)
+                    {
+                        Int32 num;
+                        if (Int32.TryParse(row[col].ToString(), out num))
+                            data[i, j++] = num;
+                        else
+                            data[i, j++] = row[col].ToString();
+                    }
+                    else
                     data[i, j++] = row[col].ToString();
                 }
                 i++;

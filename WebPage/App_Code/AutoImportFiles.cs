@@ -54,7 +54,12 @@ public class AutoImportFiles : Quartz.IJob
     protected FTPFactory objFtp;
 
     protected DateTime jobDate = DateTime.Now;
-#endregion
+
+
+    protected Boolean isReRun = false;
+    protected DateTime inDate = new DateTime();
+    protected DateTime tranDate = new DateTime();
+    #endregion
 
     #region 程式入口
     /// <summary>
@@ -84,12 +89,13 @@ public class AutoImportFiles : Quartz.IJob
                 {
                     string strParam = context.JobDetail.JobDataMap["param"].ToString();
                     string[] arrStrParam = strParam.Split(',');
-                    if (arrStrParam.Length == 2)
+                    if (arrStrParam.Length == 3)
                     {
                         DateTime tempDt;
                         if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
                         {
-                            jobDate = DateTime.Parse(arrStrParam[0]);
+                            //轉檔日
+                            inDate = DateTime.Parse(arrStrParam[0]);
                             JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
                         }
                         else
@@ -97,6 +103,20 @@ public class AutoImportFiles : Quartz.IJob
                             JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
                             return;
                         }
+
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[1]) && DateTime.TryParse(arrStrParam[1], out tempDt))
+                        {
+                            //製卡日
+                            tranDate = DateTime.Parse(arrStrParam[1]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                        }
+                        else
+                        {
+                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                            return;
+                        }
+
+                        isReRun = true;
                     }
                     else
                     {
@@ -106,6 +126,36 @@ public class AutoImportFiles : Quartz.IJob
                 }
             }
             #endregion
+
+            //#region 判斷是否手動啟動排程
+            //if (context.JobDetail.JobDataMap["param"] != null)
+            //{
+            //    if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
+            //    {
+            //        string strParam = context.JobDetail.JobDataMap["param"].ToString();
+            //        string[] arrStrParam = strParam.Split(',');
+            //        if (arrStrParam.Length == 2)
+            //        {
+            //            DateTime tempDt;
+            //            if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
+            //            {
+            //                jobDate = DateTime.Parse(arrStrParam[0]);
+            //                JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+            //            }
+            //            else
+            //            {
+            //                JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+            //                return;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+            //            return;
+            //        }
+            //    }
+            //}
+            //#endregion
 
             #region 計數器歸零
             SCount = 0;
@@ -214,7 +264,7 @@ public class AutoImportFiles : Quartz.IJob
                         //*檔案不存在
                         else
                         {
-                            JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101001, rowFileInfo["FtpFileName"].ToString()));
+                            JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101001, rowFileInfo["FtpFileName"].ToString()), LogState.Warn); //單獨變更大宗檔不存在的Log層級
                         }
                     }
                 }
@@ -373,7 +423,6 @@ public class AutoImportFiles : Quartz.IJob
                         {
                             //*匯入檢核正確的資料至卡片基本檔
                             JobHelper.SaveLog("開始匯入檢核正確的資料至卡片基本資料檔！", LogState.Info);
-
                             if (ImportToDB(dtDetail, strFileName, eCardBaseInfo, strCardType))
                             {
                                 Row[rowcount]["ImportStates"] = "S";
@@ -614,7 +663,7 @@ public class AutoImportFiles : Quartz.IJob
         string strFunctionKey = "06";
         string strUploadID = string.Empty;
         DateTime dtmThisDate = DateTime.Now;
-        UploadTime = DateTime.Parse(dtmThisDate.ToString("MM/dd/yyy HH:mm:ss.fff"));
+        UploadTime = DateTime.Parse(dtmThisDate.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
         int intMax = int.MaxValue;
         string strMsgID = string.Empty;
@@ -1366,7 +1415,13 @@ public class AutoImportFiles : Quartz.IJob
     #region 匯入資料至DB
     public bool ImportToDB(DataTable dtDetail, string strFileName, Entity_CardBaseInfo TCardBaseInfo, string strCardType)
     {
-        return ImportToDB(dtDetail, strFileName, TCardBaseInfo, strCardType, false, "", "");
+        if (isReRun)
+        {
+            return ImportToDB(dtDetail, strFileName, TCardBaseInfo, strCardType, false, inDate.ToString("yyyy/MM/dd"), tranDate.ToString("yyyy/MM/dd"));
+        }
+        else {
+            return ImportToDB(dtDetail, strFileName, TCardBaseInfo, strCardType, false, "", "");
+        }
     }
     /// <summary>
     /// 功能說明:匯入資料至DB
@@ -1560,7 +1615,7 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.OutStore_Status = "0";
                     TCardBaseInfo.IntoStore_Status = "0";
                     TCardBaseInfo.Urgency_Flg = "0";
-                    if (bForWeb)
+                    if (bForWeb || isReRun)
                     {
                         TCardBaseInfo.indate1 = strIndate;
                         TCardBaseInfo.trandate = strTranDate;

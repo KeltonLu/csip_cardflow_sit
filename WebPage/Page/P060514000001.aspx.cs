@@ -24,8 +24,6 @@ public partial class P060514000001 : PageBase
         {
             BindControl();
             ShowControlsText();
-            this.gpList.Visible = false;
-            this.gpList.RecordCount = 0;
             this.grvUserView.Visible = false;
             Label1.Visible = false;
             for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
@@ -53,7 +51,6 @@ public partial class P060514000001 : PageBase
         this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06051400_016");
 
         //* 設置一頁顯示最大筆數
-        this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
         this.grvUserView.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
     }
     /// <summary>
@@ -94,12 +91,10 @@ public partial class P060514000001 : PageBase
 
                     DataTable dt = new DataTable();
                     Int32 count = 0;
-                    Boolean result = BR_Excel_File.GetDataTable0514(param, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref count, ref dt);
+                    Boolean result = BR_Excel_File.GetDataTable0514(param, ref dt);
                     //* 查詢成功
                     if (result)
                     {
-                        this.gpList.Visible = true;
-                        this.gpList.RecordCount = count;
                         this.grvUserView.Visible = true;
                         this.grvUserView.DataSource = dt;
                         this.grvUserView.DataBind();
@@ -108,10 +103,8 @@ public partial class P060514000001 : PageBase
                     //* 查詢不成功
                     else
                     {
-                        this.gpList.RecordCount = 0;
                         this.grvUserView.DataSource = null;
                         this.grvUserView.DataBind();
-                        this.gpList.Visible = false;
                         this.grvUserView.Visible = false;
                         jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_002"));
                     }
@@ -120,10 +113,8 @@ public partial class P060514000001 : PageBase
                 {
                     if (ddlType.SelectedValue.Equals("1"))
                     {
-                        this.gpList.RecordCount = 0;
                         this.grvUserView.DataSource = null;
                         this.grvUserView.DataBind();
-                        this.gpList.Visible = false;
                         this.grvUserView.Visible = false;
                         Label1.Visible = false;
                         for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
@@ -204,10 +195,8 @@ public partial class P060514000001 : PageBase
                     }
                     else if (ddlType.SelectedValue.Equals("2"))
                     {
-                        this.gpList.RecordCount = 0;
                         this.grvUserView.DataSource = null;
                         this.grvUserView.DataBind();
-                        this.gpList.Visible = false;
                         this.grvUserView.Visible = false;
                         Label1.Visible = false;
                         for (int i = 0; i < UpdatePanel2.ContentTemplateContainer.Controls.Count; i++)
@@ -294,17 +283,6 @@ public partial class P060514000001 : PageBase
                 jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_05140000_002"));
             }
         }
-    }
-    /// <summary>
-    /// 專案代號:20200031-CSIP EOS
-    /// 功能說明:業務新增查詢切換頁需求功能
-    /// 作    者:Ares JaJa
-    /// 修改時間:2020/09/18
-    /// </summary>
-    protected void gpList_PageChanged(object src, Framework.WebControls.PageChangedEventArgs e)
-    {
-        gpList.CurrentPageIndex = e.NewPageIndex;
-        BindGridView();
     }
     /// <summary>
     /// 專案代號:20200031-CSIP EOS
