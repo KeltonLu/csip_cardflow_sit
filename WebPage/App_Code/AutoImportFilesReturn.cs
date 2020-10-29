@@ -42,6 +42,7 @@ public class AutoImportFilesReturn : Quartz.IJob
     string strFtpUserName = string.Empty;
     string strFtpPwd = string.Empty;
     FTPFactory objFtp;
+    Boolean haveFiles = false;
     
     protected DateTime JobDate = DateTime.Now;
     #endregion
@@ -203,6 +204,7 @@ public class AutoImportFilesReturn : Quartz.IJob
 
                             JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
+                            haveFiles = true;
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileName))
                             {
                                 //*記錄下載的檔案信息
@@ -369,6 +371,14 @@ public class AutoImportFilesReturn : Quartz.IJob
                 }
             }
             #endregion
+
+            #region 檢測是否有資料匯入
+            if (haveFiles == false)
+            {
+                JobHelper.SaveLog("沒有資料可以匯入", LogState.Info);
+            }
+            #endregion
+
 
             #region 成功匯入則刪除ftp上的資料
             DataRow[] RowD = dtLocalFile.Select("ZipStates='S' and FormatStates='S' and ImportStates='S'");

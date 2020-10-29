@@ -41,6 +41,7 @@ public class AutoImportFiles : Quartz.IJob
     protected DateTime StartTime = DateTime.Now;//記錄job啟動時間
     protected DateTime EndTime;
     protected DataRow[] drError;
+    protected DataRow[] other;
     protected StringBuilder sbErrorFiles = new StringBuilder();
     protected string strTemps = string.Empty;
     protected string strPath = string.Empty;
@@ -79,6 +80,7 @@ public class AutoImportFiles : Quartz.IJob
             JobHelper.strJobId = strJobId;
             //strJobId = "0101";
             string strTemp = Resources.JobResource.Job0101001;
+            Boolean haveFiles = false;
 
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
 
@@ -242,8 +244,9 @@ public class AutoImportFiles : Quartz.IJob
                         //*檔案存在
                         if (objFtp.isInFolderList(strFtpFileInfo))
                         {
-                            JobHelper.SaveLog("開始下載檔案！", LogState.Info);
+                            JobHelper.SaveLog("開始下載 "+ strFileInfo+ " ！", LogState.Info);
                             //*下載檔案
+                            haveFiles = true;
                             if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
                             {
                                 //*記錄下載的檔案信息
@@ -281,13 +284,15 @@ public class AutoImportFiles : Quartz.IJob
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 int ZipCount = 0;
+                string strFileInfo = rowLocalFile["ZipFileName"].ToString();
+                JobHelper.SaveLog("嘗試解壓縮檔案：" + strFileInfo);
                 bool blnResult = JobHelper.ZipExeFile(strLocalPath, strLocalPath + rowLocalFile["ZipFileName"].ToString(), rowLocalFile["ZipPwd"].ToString(), ref ZipCount);
+                
                 //*解壓成功
                 if (blnResult)
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".TXT");
-                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
@@ -298,7 +303,7 @@ public class AutoImportFiles : Quartz.IJob
                     //解壓失敗發送Mail通知
                     // SendMail("1", alInfo, Resources.JobResource.Job0000002);
                     rowLocalFile["ZipStates"] = "F";
-                    JobHelper.SaveLog("解壓縮檔案失敗！");
+                    FFileCount++;
                 }
             }
             if (errMsg != "")
@@ -362,7 +367,7 @@ public class AutoImportFiles : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
-                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
+                        JobHelper.SaveLog("本地 " + strFileName + " 存在！", LogState.Info);
                         int No = 0;                                //*匯入之錯誤編號
                         ArrayList arrayErrorMsg = new ArrayList(); //*匯入之錯誤列表信息
                         DataTable dtDetail = null;                 //檢核結果列表
@@ -370,14 +375,15 @@ public class AutoImportFiles : Quartz.IJob
                         JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);
                         if (UploadCheck(strPath, strFunctionName, strCardType, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
-                            JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
+                            JobHelper.SaveLog("檢核 " + strFileName + " 成功！", LogState.Info);
                         }
                         else
                         {
-                            JobHelper.SaveLog("檢核檔案失敗！");
+                            JobHelper.SaveLog("檢核" + strFileName + " 失敗！");
                         }
 
                         drError = dtDetail.Select("action is null");
+                        other = dtDetail.Select("action is not null"); // other.Length = current SCount
                         FCount = drError.Length;
                         if (null != drError && drError.Length > 0)
                         {
@@ -400,8 +406,17 @@ public class AutoImportFiles : Quartz.IJob
                                 JobErrInfo.Reason = Resources.JobResource.Job0000014;           //檢核失敗的原因
                                 BRM_JobErrorInfo.Insert(JobErrInfo, ref strMsgID);
                                 dtDetail.Rows.Remove(drError[iError]);
-                                JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                                if (iError+1 == drError.Length)
+                                {
+                                    JobHelper.SaveLog(string.Format("檔案 {0} 共有 {1} 筆匯入失敗", strFileName, drError.Length));
+                                }
                             }
+                            // 每次檢核完後呼叫 SetJobError 把筆數回寫DB
+                            int testScount = 0;
+                            int testTotal = 0;
+                            testScount = other.Length;
+                            testTotal = testScount + FCount;
+                            SetJobError(testScount, FCount, strCardType);
 
                             if (sbErrorFiles.Length <= 0)
                             {
@@ -416,7 +431,7 @@ public class AutoImportFiles : Quartz.IJob
                             }
 
                             strTemps += Row[rowcount]["TxtFileName"].ToString() + "  ";
-                            JobHelper.SaveLog("錯誤資料匯入完成！", LogState.Info);
+                            JobHelper.SaveLog("檢核錯誤的錯誤資料匯入完成！", LogState.Info);
                         }
 
                         if (null != dtDetail && dtDetail.Rows.Count > 0)
@@ -431,18 +446,28 @@ public class AutoImportFiles : Quartz.IJob
                             else
                             {
                                 Row[rowcount]["ImportStates"] = "F";
-                                JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                                //JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                                strTemps += string.Format(Resources.JobResource.Job0101003, strFileName) + " ";
+                                FFileCount++;
                             }
-                            JobHelper.SaveLog("正確資料匯入完成！", LogState.Info);
+                            JobHelper.SaveLog("檢核正確的正確資料匯入完成！", LogState.Info);
                         }
                     }
                     //*file不存在local
                     else
                     {
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101004, strPath));
+                        FFileCount++;
                     }
                 }
                 JobHelper.SaveLog("結束讀取要匯入的檔案資料！", LogState.Info);
+            }
+            #endregion
+
+            #region 檢測是否有資料匯入
+            if (haveFiles == false)
+            {
+                JobHelper.SaveLog("沒有資料可以匯入", LogState.Info);
             }
             #endregion
 
@@ -452,7 +477,8 @@ public class AutoImportFiles : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());
-                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
+                string deleteFileName = RowD[m]["ZipFileName"].ToString();
+                JobHelper.SaveLog("刪除FTP上的 " + deleteFileName + " 成功！", LogState.Info);
             }
             #endregion
 
@@ -470,6 +496,7 @@ public class AutoImportFiles : Quartz.IJob
             }
 
             //*判斷job完成狀態
+            
             string strJobStatus = JobHelper.GetJobStatus(SCount, FCount);
             string strReturnMsg = string.Empty;
             strReturnMsg += Resources.JobResource.Job0000024 + SCount;
@@ -484,7 +511,7 @@ public class AutoImportFiles : Quartz.IJob
                 //內容格式錯誤
                 SendMail("2", alInfo, Resources.JobResource.Job0000036);
                 JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "F", strReturnMsg);
-                SetJobError(SCount, FCount, strCardType);
+                //SetJobError(SCount, FCount, strCardType);
             }
             else
             {
@@ -715,7 +742,7 @@ public class AutoImportFiles : Quartz.IJob
             EntityUpload.UPLOAD_ID = "06010101";
         }
         EntityUpload.UPLOAD_DATE = UploadTime;
-        if (CSIPCommonModel.BusinessRules.BRL_UPLOAD.IsRepeat(EntityUpload, ref strErrMsg))
+        if (!CSIPCommonModel.BusinessRules.BRL_UPLOAD.IsRepeat(EntityUpload, ref strErrMsg))
         {
             EntityUpload.UPLOAD_STATUS = "N";
             EntityUpload.UPLOAD_TOTAL_COUNT = iSCount + iFCount;
@@ -999,7 +1026,6 @@ public class AutoImportFiles : Quartz.IJob
                             for (int i = 0; i < dtblUploadType.Rows.Count; i++)
                             {
                                 strUpload = strUploads[i].Trim();
-
                                 intFieldLength = int.Parse(dtblUploadType.Rows[i]["FIELD_LENGTH"].ToString());
 
                                 intDecimalDigits = int.Parse(dtblUploadType.Rows[i]["DECIMAL_DIGITS"].ToString());
@@ -1012,9 +1038,10 @@ public class AutoImportFiles : Quartz.IJob
                                         if (BaseHelper.GetByteLength(strUpload) > intFieldLength)
                                         {
                                             BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000019, ref arrListMsg);
-
+                                            
                                             //* 欄位長度錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                            drowUpload[0] = null;
                                         }
                                         break;
 
@@ -1026,6 +1053,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                            drowUpload[0] = null;
                                         }
                                         else
                                         {
@@ -1035,6 +1063,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                                 //* 欄位長度錯誤,記錄進檢核日志
                                                 BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                drowUpload[0] = null;
                                             }
                                         }
                                         break;
@@ -1048,6 +1077,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                            drowUpload[0] = null;
                                         }
                                         break;
 
@@ -1059,6 +1089,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                            drowUpload[0] = null;
                                         }
                                         else
                                         {
@@ -1070,6 +1101,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000021, ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                    drowUpload[0] = null;
                                                 }
                                                 else
                                                 {
@@ -1080,6 +1112,7 @@ public class AutoImportFiles : Quartz.IJob
                                                         BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000022, ref arrListMsg);
                                                         //* 欄位小數位數錯誤,記錄進檢核日志
                                                         BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                        drowUpload[0] = null;
                                                     }
                                                 }
                                             }
@@ -1090,6 +1123,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000021, ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                    drowUpload[0] = null;
                                                 }
                                             }
                                         }
@@ -1107,6 +1141,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                            drowUpload[0] = null;
                                         }
                                         else
                                         {
@@ -1118,6 +1153,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000021, ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                    drowUpload[0] = null;
                                                 }
                                                 else
                                                 {
@@ -1128,6 +1164,7 @@ public class AutoImportFiles : Quartz.IJob
                                                         BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000022, ref arrListMsg);
                                                         //* 欄位小數位數錯誤,記錄進檢核日志
                                                         BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                        drowUpload[0] = null;
                                                     }
                                                 }
                                             }
@@ -1138,6 +1175,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, Resources.JobResource.Job0000021, ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, arrListMsg[arrListMsg.Count - 1].ToString());
+                                                    drowUpload[0] = null;
                                                 }
                                             }
                                         }
@@ -1254,6 +1292,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000020");
+                                            drowUpload[0] = null;
                                         }
                                         break;
 
@@ -1265,6 +1304,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000020");
+                                            drowUpload[0] = null;
                                         }
                                         break;
 
@@ -1277,6 +1317,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000020");
+                                            drowUpload[0] = null;
                                         }
                                         else
                                         {
@@ -1288,6 +1329,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, "Job0000021", ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000021");
+                                                    drowUpload[0] = null;
                                                 }
                                                 else
                                                 {
@@ -1298,6 +1340,7 @@ public class AutoImportFiles : Quartz.IJob
                                                         BaseHelper.AddErrorMsg(intTemp, i, "Job0000022", ref arrListMsg);
                                                         //* 欄位小數位數錯誤,記錄進檢核日志
                                                         BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000022");
+                                                        drowUpload[0] = null;
                                                     }
                                                 }
                                             }
@@ -1308,6 +1351,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, "Job0000021", ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000021");
+                                                    drowUpload[0] = null;
                                                 }
                                             }
                                         }
@@ -1324,6 +1368,7 @@ public class AutoImportFiles : Quartz.IJob
 
                                             //* 欄位類型錯誤,記錄進檢核日志
                                             BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000020");
+                                            drowUpload[0] = null;
                                         }
                                         else
                                         {
@@ -1335,6 +1380,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, "Job0000021", ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000021");
+                                                    drowUpload[0] = null;
                                                 }
                                                 else
                                                 {
@@ -1345,6 +1391,7 @@ public class AutoImportFiles : Quartz.IJob
                                                         BaseHelper.AddErrorMsg(intTemp, i, "Job0000022", ref arrListMsg);
                                                         //* 欄位小數位數錯誤,記錄進檢核日志
                                                         BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000022");
+                                                        drowUpload[0] = null;
                                                     }
                                                 }
                                             }
@@ -1355,6 +1402,7 @@ public class AutoImportFiles : Quartz.IJob
                                                     BaseHelper.AddErrorMsg(intTemp, i, "Job0000021", ref arrListMsg);
                                                     //* 欄位整數位數錯誤,記錄進檢核日志
                                                     BaseHelper.LogUpload(eLUploadDetail, intTemp, "Job0000021");
+                                                    drowUpload[0] = null;
                                                 }
                                             }
                                         }
@@ -1407,7 +1455,7 @@ public class AutoImportFiles : Quartz.IJob
         }
 
         #endregion
-
+        
         return dtblUpload;
     }
     #endregion
@@ -1638,6 +1686,7 @@ public class AutoImportFiles : Quartz.IJob
                         JobErrInfo.Reason = Resources.JobResource.Job0000014;           //檢核失敗的原因
                         BRM_JobErrorInfo.Insert(JobErrInfo, ref strMsgIDs);
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                        JobHelper.SaveLog("上述檔案有重複的資料！", LogState.Info);
                     }
                 }
                 BRM_CardDataChange.UpdateIndate(TCardBaseInfo);
