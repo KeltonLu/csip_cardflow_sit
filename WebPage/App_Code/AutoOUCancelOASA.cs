@@ -109,11 +109,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                 //*job停止
             }
             #endregion
-
+            
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
-
+            
                 JobHelper.SaveLog(DateTime.Now.ToString() + "JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
@@ -169,7 +169,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText =
-                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CardNo, BlockCode, ChangeNote, MemoLog " +
+                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 8 THEN '卡號長度異常' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '注銷失敗' AS SFFLG " +
                         "FROM TBL_CANCELOASA A " +
                         "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE " +
                         "WHERE B.SFFLG = '2' " +
@@ -1177,19 +1177,25 @@ public class AutoOUCancelOASA : Quartz.IJob
                             {
                                 if (i == 0)
                                 {
-                                    strBody += "<table><tbody>";
-                                    strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
+                                    strBody += "<table style=\"border: 1px solid #000000; border-collapse: collapse;\"><tbody>";
+                                    // strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
+                                    strBody += string.Format(("<tr>" +
+                                                              "<td style =\"width: 40px;  text-align: center;border: 1px solid #000000;\">{0}</td>" +
+                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{1}</td>" +
+                                                              "<td style =\"width: 170px; text-align: center;border: 1px solid #000000;\">{2}</td>" +
+                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{3}</td>" +
+                                                              "<td style =\"width: 400px; text-align: center;border: 1px solid #000000;\">{4}</td>" +
+                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{5}</td>" +
+                                                              "</tr>"), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
                                 }
-                                else
-                                {
-                                    strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), 
+
+                                strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), 
                                         lastTimeDt.Rows[i]["no"],
                                         lastTimeDt.Rows[i]["CancelOASAFile"],
                                         lastTimeDt.Rows[i]["CardNo"], 
                                         lastTimeDt.Rows[i]["BlockCode"], 
-                                        lastTimeDt.Rows[i]["ChangeNote"], 
-                                        lastTimeDt.Rows[i]["MemoLog"]);
-                                }
+                                        lastTimeDt.Rows[i]["MemoLog"], 
+                                        lastTimeDt.Rows[i]["SFFLG"]);
 
                                 if (i == lastTimeDt.Rows.Count - 1)
                                 {
