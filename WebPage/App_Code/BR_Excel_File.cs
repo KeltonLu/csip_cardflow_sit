@@ -7684,8 +7684,9 @@ WHERE CANCELOASAFILE = @STRFILE
             }
 
             Range range = sheet.Range[start, end];
+            range.NumberFormatLocal = "@";
             range.Value2 = data;
-			range.NumberFormatLocal = "@";
+
 
             #region Excel Style 樣式
 

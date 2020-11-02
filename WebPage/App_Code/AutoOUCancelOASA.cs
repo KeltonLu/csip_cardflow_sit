@@ -169,7 +169,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText =
-                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 8 THEN '卡號長度異常' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '注銷失敗' AS SFFLG " +
+                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 8 THEN '卡號長度異常' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '註銷失敗' AS SFFLG " +
                         "FROM TBL_CANCELOASA A " +
                         "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE " +
                         "WHERE B.SFFLG = '2' " +
