@@ -389,7 +389,7 @@ public partial class P060513000001 : PageBase
     /// 功能說明:查詢事件
     /// 作    者:JUN HU
     /// 創建時間:2010/07/13
-    /// 修改記錄:2020/07/10 area Luke Report to Excel 
+    /// 修改記錄:2020/07/10 Ares Luke Report to Excel 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

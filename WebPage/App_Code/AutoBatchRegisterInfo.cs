@@ -15,7 +15,7 @@ using System.Collections;
 using System.IO;
 using Framework.Data.OM;
 using Framework.Common.Utility;
-
+using log4net.Filter;
 
 public class AutoBatchRegisterInfo : Quartz.IJob
 {
@@ -46,7 +46,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:2020/10/05 Area Luke 調整strLocalPath參數
+    /// 修改記錄:2020/10/05 Area Luke 調整strLocalPath參數; 2020/11/09_Ares_Stanley-調整Log內容
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -221,6 +221,8 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 int ZipCount = 0;
+                string strFileInfo = rowLocalFile["ZipFileName"].ToString();
+                JobHelper.SaveLog("開始嘗試解壓縮" + strFileInfo, LogState.Info);
                 bool blnResult = JobHelper.ZipExeFile(strLocalPath, strLocalPath + rowLocalFile["ZipFileName"].ToString(), rowLocalFile["ZipPwd"].ToString(), ref ZipCount);
                 ////*解壓成功
                 if (blnResult)
@@ -228,7 +230,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FormatStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".TXT");
-                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
+                    //JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
@@ -236,7 +238,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     errMsg += (errMsg == "" ? "" : "、") + rowLocalFile["ZipFileName"].ToString();
                     rowLocalFile["ZipStates"] = "F";
                     rowLocalFile["FormatStates"] = "F";
-                    JobHelper.SaveLog("解壓縮檔案失敗！", LogState.Info);
+                    //JobHelper.SaveLog("解壓縮檔案失敗！", LogState.Info);
                     // SendMail(rowLocalFile["ZipFileName"].ToString());
                 }
             }
@@ -290,7 +292,7 @@ public class AutoBatchRegisterInfo : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
-                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
+                        JobHelper.SaveLog("本地" + strFileName + "存在！", LogState.Info);
                         //*正式匯入
                         if (CheckAndImport(strPath, strFileName))
                         {
@@ -331,7 +333,8 @@ public class AutoBatchRegisterInfo : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());
-                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
+                string deleteFileName = RowD[m]["ZipFileName"].ToString();
+                JobHelper.SaveLog("刪除FTP上的" + deleteFileName + "成功！", LogState.Info);
             }
             #endregion
 

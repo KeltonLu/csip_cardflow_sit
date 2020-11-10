@@ -17,7 +17,7 @@ using System.IO;
 using System.Collections;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.Checksums;
+using ICSharpCode.SharpZipLib.Checksum;
 using System.Data.SqlClient;
 using CSIPCommonModel.BusinessRules;
 using CSIPCommonModel.EntityLayer;

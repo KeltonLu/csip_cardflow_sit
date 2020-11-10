@@ -576,7 +576,7 @@ public partial class P06020101 : PageBase
     /// 功能說明:最後一次退件資料
     /// 作    者:Simba Liu
     /// 創建時間:2010/04/09
-    /// 修改記錄:2020/10/06 Area Luke 應業務需求新增顯示重寄掛號號碼
+    /// 修改記錄:2020/10/06 Ares Luke 應業務需求新增顯示重寄掛號號碼
     /// 
     /// </summary>
     private void SearchBack()

@@ -266,7 +266,7 @@ public partial class P060302000001 : PageBase
     ///          執行下載和刪除文件操作
     /// 作    者:zhen chen
     /// 創建時間:2010/07/01
-    /// 修改記錄: 2020/10/08 Area Luke 應SERVER與BATCH需求，調整檔案下載
+    /// 修改記錄: 2020/10/08 Ares Luke 應SERVER與BATCH需求，調整檔案下載
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

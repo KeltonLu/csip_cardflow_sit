@@ -48,7 +48,7 @@ public class AutoImportNoCardFiles : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:
+    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -212,20 +212,22 @@ public class AutoImportNoCardFiles : Quartz.IJob
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 int ZipCount = 0;
+                string strFileInfo = rowLocalFile["ZipFileName"].ToString();
+                JobHelper.SaveLog("嘗試解壓縮檔案：" + strFileInfo, LogState.Info);
                 bool blnResult = JobHelper.ZipExeFile(strLocalPath, strLocalPath + rowLocalFile["ZipFileName"].ToString(), rowLocalFile["ZipPwd"].ToString(), ref ZipCount);
                 ////*解壓成功
                 if (blnResult)
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Replace(".ZIP", ".txt");
-                    JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
+                    //JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
                 //*解壓失敗
                 else
                 {
                     errMsg += (errMsg == "" ? "" : "、") + rowLocalFile["ZipFileName"];
                     rowLocalFile["ZipStates"] = "F";
-                    JobHelper.SaveLog("解壓縮檔案失敗！", LogState.Info);
+                    //JobHelper.SaveLog("解壓縮檔案失敗！", LogState.Info);
                     // ArrayList alInfo = new ArrayList();
                     // alInfo.Add(rowLocalFile["ZipFileName"]);
                     //解壓失敗發送Mail通知
@@ -286,14 +288,16 @@ public class AutoImportNoCardFiles : Quartz.IJob
                     //*file存在local
                     if (File.Exists(strPath))
                     {
-                        JobHelper.SaveLog("本地檔案存在！", LogState.Info);
+                        JobHelper.SaveLog("本地" + strFileName + "存在！", LogState.Info);
                         
                         int No = 0;                                //*匯入之錯誤編號
                         DataTable dtDetail = null;                 //檢核結果列表
                         //*檢核成功
+                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);
                         if (UploadCheck(strPath, strFunctionName, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
                             Row[rowcount]["CheckStates"] = "S";
+                            JobHelper.SaveLog("檢核" + strFileName + "成功", LogState.Info);
                             //*正式匯入
                             if (ImportToDB(dtDetail, strFileName))
                             {
@@ -311,6 +315,7 @@ public class AutoImportNoCardFiles : Quartz.IJob
                         else
                         {
                             Row[rowcount]["CheckStates"] = "F";
+                            JobHelper.SaveLog("檢核" + strFileName + "失敗", LogState.Info);
                         }
                     }
                     //*file不存在local
@@ -328,7 +333,8 @@ public class AutoImportNoCardFiles : Quartz.IJob
             for (int m = 0; m < RowD.Length; m++)
             {
                 objFtp.Delete(RowD[m]["FtpFilePath"].ToString());//*路徑未設置
-                JobHelper.SaveLog("刪除FTP上的檔案成功！", LogState.Info);
+                string deleteFileName = RowD[m]["ZipFileName"].ToString();
+                JobHelper.SaveLog("刪除FTP上的 " + deleteFileName + " 成功！", LogState.Info);
             }
             #endregion
 

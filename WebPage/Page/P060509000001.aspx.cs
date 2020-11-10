@@ -113,7 +113,7 @@ public partial class P060509000001 : PageBase
     /// 作    者:Ares JaJa
     /// 修改時間:2020/09/03
     /// 修改歷程:2020/09/29
-    /// Area Luke 查詢限制業務需求調整
+    /// Ares Luke 查詢限制業務需求調整
     /// </summary>
     protected Boolean chkCond(ref Dictionary<String, String> param)
     {

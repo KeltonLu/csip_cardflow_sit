@@ -1,1 +1,14 @@
+\bin\Framework.Common.dll
+\bin\ICSharpCode.SharpZipLib.dll
+\bin\NPOI.OOXML.dll
+\bin\NPOI.OpenXml4Net.dll
+\bin\NPOI.OpenXmlFormats.dll
+\bin\NPOI.dll
+\Web.Config
 \bin\CardFlow.dll
+\Common\RptTemplet\0203Report.xlsx
+\Common\RptTemplet\020501Report.xlsx
+\Common\RptTemplet\020502Report.xlsx
+\Common\RptTemplet\0511Report.xlsx
+
+

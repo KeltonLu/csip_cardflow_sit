@@ -51,7 +51,7 @@ public class AutoOutputDataChange : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/19
-    /// 修改記錄:
+    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -367,7 +367,7 @@ public class AutoOutputDataChange : Quartz.IJob
             JobHelper.SaveLog("開始壓縮檔案", LogState.Info);
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
-                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
+                JobHelper.SaveLog("從DB中讀取檔案壓縮資料成功！", LogState.Info);
                 for (int z = 0; z < dtLocalFile.Rows.Count; z++)
                 {
                     string strFile = strLocalPath + dtLocalFile.Rows[z]["TxtFileName"].ToString();
@@ -405,7 +405,7 @@ public class AutoOutputDataChange : Quartz.IJob
             JobHelper.SaveLog("開始上傳文件", LogState.Info);
             if (JobHelper.SearchFileInfo(ref dtFileInfo, strJobId))
             {
-                JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
+                JobHelper.SaveLog("從DB中讀取檔案上傳資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
                     //FTP 檔名

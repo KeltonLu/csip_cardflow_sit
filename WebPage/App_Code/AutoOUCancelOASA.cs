@@ -6,7 +6,7 @@
 //*<author>            <time>            <TaskID>            <desc>
 //  Nash (U)          20190503          就算OU檔案是空檔，也會寫入系統中讓User可以知道資料筆數為0
 //  Nash (U)          20190503          新增LOG
-//  Area Luke         20201023          新增(當日最後排程啟動時)寄信需求。
+//  Ares Luke         20201023          新增(當日最後排程啟動時)寄信需求。
 //*******************************************************************
 using System;
 using System.Data;
@@ -169,11 +169,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText =
-                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 8 THEN '卡號長度異常' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '註銷失敗' AS SFFLG " +
+                        "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 15 THEN CardNo + ' - 卡號長度不全' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '註銷失敗' AS SFFLG " +
                         "FROM TBL_CANCELOASA A " +
-                        "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE " +
+                        "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE AND A.CANCELOASADATE = B.CANCELOASADATE" +
                         "WHERE B.SFFLG = '2' " +
-                        "AND(A.CANCELOASAFILE LIKE 'OU15%' OR A.CANCELOASAFILE LIKE 'OU16%') " +
+                        "AND (A.CANCELOASAFILE LIKE 'OU15%' OR A.CANCELOASAFILE LIKE 'OU16%') " +
                         "AND B.CARDNO LIKE('0377%') " +
                         "AND A.CANCELOASADATE = CONVERT(VARCHAR, GETDATE(), 111)"
                 };
@@ -1178,15 +1178,8 @@ public class AutoOUCancelOASA : Quartz.IJob
                                 if (i == 0)
                                 {
                                     strBody += "<table style=\"border: 1px solid #000000; border-collapse: collapse;\"><tbody>";
-                                    // strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
-                                    strBody += string.Format(("<tr>" +
-                                                              "<td style =\"width: 40px;  text-align: center;border: 1px solid #000000;\">{0}</td>" +
-                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{1}</td>" +
-                                                              "<td style =\"width: 170px; text-align: center;border: 1px solid #000000;\">{2}</td>" +
-                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{3}</td>" +
-                                                              "<td style =\"width: 400px; text-align: center;border: 1px solid #000000;\">{4}</td>" +
-                                                              "<td style =\"width: 100px; text-align: center;border: 1px solid #000000;\">{5}</td>" +
-                                                              "</tr>"), "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
+                                    strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(),
+                                        "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
                                 }
 
                                 strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), 

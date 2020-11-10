@@ -125,7 +125,7 @@ public partial class P060301000001 : PageBase
     /// 功能說明:編輯邏輯
     /// 作    者:zhen chen
     /// 創建時間:2010/06/25
-    /// 修改記錄:2020/10/15 Area Luke 因AP分離(WEB與BATCH)需求，調整業務功能
+    /// 修改記錄:2020/10/15 Ares Luke 因AP分離(WEB與BATCH)需求，調整業務功能
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -268,7 +268,7 @@ public partial class P060301000001 : PageBase
     /// 功能說明:上傳壓縮后的zip檔到FTP
     /// 作    者:zhen chen
     /// 創建時間:2010/06/25
-    /// 修改記錄:2020/10/15 Area Luke 因AP分離(WEB與BATCH)需求，調整業務功能
+    /// 修改記錄:2020/10/15 Ares Luke 因AP分離(WEB與BATCH)需求，調整業務功能
     /// </summary>
     protected void UploadZipFile()
     {
@@ -392,7 +392,7 @@ public partial class P060301000001 : PageBase
     /// <summary>
     /// 功能說明:檢查本地與BATCH是否有檔案，若本地無資料則去batchAP取得至本地。
     /// </summary>
-    /// 作    者:Area Luke
+    /// 作    者:Ares Luke
     /// 創建時間:2020/10/15
     /// 修改記錄:
     /// <param name="strDBfilePath"></param>

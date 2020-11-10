@@ -2,7 +2,7 @@
 //*  功能說明：異動作業單查詢
 //*  作    者：HAO CHEN
 //*  創建日期：2010/06/25
-//*  修改記錄：2020/10/05 AREA LUKE 新增匯出列印
+//*  修改記錄：2020/10/05 ARES LUKE 新增匯出列印 2020/11/04_Ares_Stanley-變更報表產出方式為NPOI
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -19,9 +19,15 @@ using CSIPCommonModel.EntityLayer;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Microsoft.Office.Interop.Excel;
 using DataTable = System.Data.DataTable;
-using ExcelApplication = Microsoft.Office.Interop.Excel.ApplicationClass;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.Formula.Functions;
+using NPOI.HSSF.EventUserModel.DummyRecord;
+using NPOI.XSSF.UserModel.Charts;
+
 
 public partial class Page_P060203000001 : PageBase
 {
@@ -549,6 +555,7 @@ public partial class Page_P060203000001 : PageBase
     /// 功能說明:業務新增列印需求功能
     /// 作    者:Ares Luke
     /// 修改時間:2020/10/05
+    /// 修改紀錄:2020/11/04_Stanley_變更報表產出方式為NPOI
     /// </summary>
     protected void btnPrint_Click(object sender, EventArgs e)
     {
@@ -583,9 +590,6 @@ public partial class Page_P060203000001 : PageBase
 
         #endregion
 
-
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
         string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
         try
         {
@@ -594,44 +598,38 @@ public partial class Page_P060203000001 : PageBase
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0203Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
             DataTable selectDataTable = dt.DefaultView.ToTable(false, new String[]
                 {"CardNo", "UpdDate", "Datachange", "UpdUser", "OutputFlg", "OutputFileName", "CNote" });
 
-            int totalNum = selectDataTable.Rows.Count;
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(selectDataTable, ref wb, 2, "工作表1"); //NPOI起始ROW=2
 
-            // 初始ROW位置
-            int indexInSheetStart = 3;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + selectDataTable.Rows.Count - 1, selectDataTable.Columns.Count];
-
-
-            // 轉入結果資料
-            BR_Excel_File.ExportExcel(selectDataTable, ref sheet, start, end);
-
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.AutoSizeColumn(0);
+            sheet1.AutoSizeColumn(1);
+            sheet1.AutoSizeColumn(6);
+            for(int row = 2; row < sheet1.LastRowNum; row++)
+            {
+                sheet1.GetRow(row).GetCell(0).SetCellValue(sheet1.GetRow(row).GetCell(0).StringCellValue.ToString());
+                sheet1.GetRow(row).GetCell(0).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+            }
             // 保存文件到程序運行目錄下
             strServerPathFile = strServerPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0203Report" + ".xlsx";
-            sheet.SaveAs(strServerPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strServerPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             #endregion
 
             if (File.Exists(strServerPathFile))
             {
-                FileInfo fs = new FileInfo(strServerPathFile);
+                FileInfo fs2 = new FileInfo(strServerPathFile);
                 Session["ServerFile"] = strServerPathFile;
-                Session["ClientFile"] = fs.Name;
+                Session["ClientFile"] = fs2.Name;
                 string urlString = @"location.href='DownLoadFile.aspx';";
                 jsBuilder.RegScript(this.Page, urlString);
             }
@@ -643,11 +641,65 @@ public partial class Page_P060203000001 : PageBase
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
 
     }
+
+    #region 使用NPOI匯出Excel
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:共用匯入EXCEL資料 - NPOI
+    /// 作    者:Ares Stanley
+    /// 創建時間:2020/11/04
+    /// </summary>
+    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
+
+    private static void ExportExcelForNPOI(DataTable dt, ref XSSFWorkbook wb, Int32 start, String sheetName)
+    {
+        try
+        {
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+            cs.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+            cs.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+            cs.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+
+            if (dt != null && dt.Rows.Count != 0)
+            {
+                int count = start;
+                ISheet sheet = wb.GetSheet(sheetName);
+                int cols = dt.Columns.Count;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    int cell = 0;
+                    IRow row = (IRow)sheet.CreateRow(count);
+                    row.CreateCell(0).SetCellValue(count.ToString());
+                    for (int i = 0; i < cols; i++)
+                    {
+                        row.CreateCell(cell).SetCellValue(dr[i].ToString());
+                        row.GetCell(cell).CellStyle = cs;
+                        cell++;
+                    }
+                    count++;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            throw;
+        }
+    }
+
+    #endregion
 }

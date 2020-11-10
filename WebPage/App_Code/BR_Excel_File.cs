@@ -1,18 +1,27 @@
-﻿using CSIPCommonModel.BusinessRules;
+﻿/// <summary>
+/// 修改時間:2020/11/04_Ares_Stanley-移除Micriosoft Excel, 新增NPOI
+/// </summary>
+using CSIPCommonModel.BusinessRules;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.Utility;
-using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using DataTable = System.Data.DataTable;
-using ExcelApplication = Microsoft.Office.Interop.Excel.ApplicationClass;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.Formula.Functions;
+using NPOI.HSSF.EventUserModel.DummyRecord;
+using NPOI.XSSF.UserModel.Charts;
 
 /// <summary>
 /// BR_Excel_File 的摘要描述
+/// 修改日期: 2020/11/06_Ares_Stanley-變更0510資料順序
 /// </summary>
 public class BR_Excel_File : BRBase<Entity_UnableCard>
 {
@@ -276,7 +285,7 @@ ORDER BY maildate DESC
     #region SearchExport0510
 
     private const string SearchExport0510 = @"
-select id,custname,cardno,indate1,UpdDate,CNote, kktime 
+select id,custname,cardno,kktime, indate1,UpdDate,CNote 
 from tbl_HoldCard 
 order by convert(int,kktime) DESC
 ";
@@ -2033,6 +2042,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:無法製卡檔查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/28_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2041,8 +2051,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0502Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -2072,31 +2082,19 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0502Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            //初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1");  //NPOI起始ROW=1
+            
+            
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0502Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -2108,10 +2106,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -2181,7 +2175,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 換卡異動檔查詢 - Excel
 
     /// <summary>
@@ -2189,6 +2183,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:換卡異動檔查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/28_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2197,8 +2192,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0503Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -2228,33 +2223,18 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0503Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            //初始ROW位置
-            int indexInSheetStart = 2;
-
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1"); //NPOI起始ROW=1
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0503Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -2266,10 +2246,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -2339,7 +2315,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 郵局退件資料查詢 - Excel
 
     /// <summary>
@@ -2347,6 +2323,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:郵局退件資料查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/28_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2355,8 +2332,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0504Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -2386,66 +2363,23 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0504Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dtblSearchResult, ref wb, 1, "工作表1"); //NPOI 起始ROW=1
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            //初始ROW位置
-            int intRowIndexInSheet = 1;
-
-            string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 11];
-            for (int intLoop = 0; intLoop < dtblSearchResult.Rows.Count; intLoop++)
-            {
-                intRowIndexInSheet++;
-
-                // 退件流水號
-                arrExportData[intLoop, 0] = dtblSearchResult.Rows[intLoop]["serial_no"].ToString();
-                // 類別
-                arrExportData[intLoop, 1] = dtblSearchResult.Rows[intLoop]["Kind"].ToString();
-                // 卡別
-                arrExportData[intLoop, 2] = dtblSearchResult.Rows[intLoop]["Action"].ToString();
-                // 退件日期
-                arrExportData[intLoop, 3] = dtblSearchResult.Rows[intLoop]["BackDate"].ToString();
-                // 退件原因
-                arrExportData[intLoop, 4] = dtblSearchResult.Rows[intLoop]["Reason"].ToString();
-                // 卡號
-                arrExportData[intLoop, 5] = dtblSearchResult.Rows[intLoop]["CardNo"].ToString();
-                // 結案日期
-                arrExportData[intLoop, 6] = dtblSearchResult.Rows[intLoop]["CloseDate"].ToString();
-                // 處理方式
-                arrExportData[intLoop, 7] = dtblSearchResult.Rows[intLoop]["EndItem"].ToString();
-                // 郵寄日期
-                arrExportData[intLoop, 8] = dtblSearchResult.Rows[intLoop]["MailDate"].ToString();
-                // 掛號號碼
-                arrExportData[intLoop, 9] = dtblSearchResult.Rows[intLoop]["MailNo"].ToString();
-                // 經辦
-                arrExportData[intLoop, 10] = dtblSearchResult.Rows[intLoop]["EnduId"].ToString();
-            }
-
-            // 賦予查詢結果
-            var range = sheet.Range["A2", "K" + intRowIndexInSheet];
-            range.Value2 = arrExportData;
-
-            // 設置樣式
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-
-
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            //設定自動欄寬
+            sheet1.AutoSizeColumn(1);
+            sheet1.AutoSizeColumn(9);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0504Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
 
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -2457,10 +2391,7 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
+          
         }
     }
     /// <summary>
@@ -2530,7 +2461,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 註銷作業報表 - Excel
 
     /// <summary>
@@ -2538,6 +2469,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:註銷作業報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2546,8 +2478,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0506Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -2577,22 +2509,18 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0506Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI_filter(dtblSearchResult, ref wb, 1,1, "工作表1"); //NPOI起始ROW=1, Filter=1
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
-            //初始ROW位置
+            ////初始ROW位置
             int indexInSheetStart = 2;
             int indexInSheetEnd = indexInSheetStart;
 
-            //統計
+            ////統計
             int successNum = 0;
             int failNum = 0;
             int totalNum = dtblSearchResult.Rows.Count;
@@ -2621,52 +2549,52 @@ WHERE CANCELOASAFILE = @STRFILE
                     failNum++;
                 }
             }
+            string successNum_str = successNum.ToString();
+            string failNum_str = failNum.ToString();
+            string totalNum_str = totalNum.ToString();
 
-            #region 導入數據查詢結果
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            ISheet sheet2 = wb.GetSheet("頁尾");
 
-            var range = sheet.Range["A" + indexInSheetStart, "D" + (indexInSheetEnd - 1)];
-            range.Value2 = arrExportData;
+            XSSFRow row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum+1);
+            var cell = row.CreateCell(0);
+            var data = sheet2.GetRow(0).GetCell(0).StringCellValue.ToString();
+            var data_style = sheet2.GetRow(0).GetCell(0).CellStyle;
 
-            #endregion
-
-            #region Excel Style 樣式
-
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-
-            #endregion
-
-            #region 移轉範本頁尾至資料結果下方
-
-            //sheet1 內容
-            int pageFooterNum = indexInSheetEnd;
-            Range range1 = sheet.Range["A" + pageFooterNum, "D" + pageFooterNum];
-            //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
-            Range range2 = sheet2.Range["A1", "D3"];
-            //合併
-            range2.Copy();
-            sheet.Paste(range1, false);
-            //刪除 頁尾暫存
-            sheet2.Delete();
-
-            //計算成功筆數、失敗筆數、失敗筆數
-
-            sheet.Cells.Replace("$SuccessNum$", successNum);
-            sheet.Cells.Replace("$FailNum$", failNum);
-            sheet.Cells.Replace("$TotalNum$", totalNum);
-
-            #endregion
-
-
+            //取代字串
+            for (int rc =0; rc< 3; rc++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum+rc);
+                for(int cc = 0; cc < 3; cc++)
+                {
+                    cell = row.CreateCell(cc);
+                    data = sheet2.GetRow(rc).GetCell(cc).StringCellValue.ToString();
+                    if (data.Contains("$SuccessNum$"))
+                    {
+                        data = data.Replace("$SuccessNum$", successNum_str);
+                    }else if (data.Contains("$FailNum$")){
+                        data = data.Replace("$FailNum$", failNum_str);
+                    }else if (data.Contains("$TotalNum$"))
+                    {
+                        data = data.Replace("$TotalNum$", totalNum_str);
+                    }
+                    data_style = sheet2.GetRow(rc).GetCell(cc).CellStyle;
+                    cell.SetCellValue(data);
+                    cell.CellStyle = data_style;
+                    
+                }
+            }
+            //刪除頁尾sheet
+            wb.RemoveSheetAt(wb.GetSheetIndex("頁尾"));
+            //設定自動欄寬
+            sheet1.AutoSizeColumn(3);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0506Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
 
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -2678,10 +2606,7 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
+            
         }
     }
     /// <summary>
@@ -2751,7 +2676,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 簡訊發送查詢報表 - Excel
 
     /// <summary>
@@ -2759,6 +2684,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:簡訊發送查詢報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2767,8 +2693,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0507Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -2798,74 +2724,19 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0507Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            //初始ROW位置
-            int indexInSheetStart = 2;
-            int indexInSheetEnd = indexInSheetStart;
-
-            //統計
-            int totalNum = dtblSearchResult.Rows.Count;
-
-            string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 6];
-            for (int intLoop = 0; intLoop < totalNum; intLoop++)
-            {
-                indexInSheetEnd++;
-
-                // 身分證字號
-                arrExportData[intLoop, 0] = dtblSearchResult.Rows[intLoop]["ID"].ToString();
-                // 卡號
-                arrExportData[intLoop, 1] = dtblSearchResult.Rows[intLoop]["CardNo"].ToString();
-                // 匯入日期
-                arrExportData[intLoop, 2] = dtblSearchResult.Rows[intLoop]["Imp_Date"].ToString();
-                // 交寄日
-                arrExportData[intLoop, 3] = dtblSearchResult.Rows[intLoop]["Maildate"].ToString();
-                // 掛號號碼
-                arrExportData[intLoop, 4] = dtblSearchResult.Rows[intLoop]["Mailno"].ToString();
-                // 狀態
-                arrExportData[intLoop, 5] = dtblSearchResult.Rows[intLoop]["Ams"].ToString();
-            }
-
-            #region 導入數據查詢結果
-
-            var range = sheet.Range["A" + indexInSheetStart, "F" + (indexInSheetEnd - 1)];
-            range.Value2 = arrExportData;
-
-            #endregion
-
-            #region Excel Style 樣式
-
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-
-            #endregion
-
-            #region 移轉範本頁尾至資料結果下方
-
-            //sheet1 內容
-            int pageFooterNum = indexInSheetEnd;
-            Range range1 = sheet.Range["A" + pageFooterNum, "F" + pageFooterNum];
-
-            #endregion
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dtblSearchResult, ref wb, 1, "工作表1"); //NPOI 起始ROW=1
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0507Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
 
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -2873,15 +2744,10 @@ WHERE CANCELOASAFILE = @STRFILE
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
             throw;
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -2959,6 +2825,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:郵局寄送資料查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2967,8 +2834,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0508Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3000,74 +2867,21 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0508Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            //初始ROW位置
-            int indexInSheetStart = 2;
-            int indexInSheetEnd = indexInSheetStart;
-
-            //統計
-            int totalNum = dtblSearchResult.Rows.Count;
-
-            string[,] arrExportData = new string[dtblSearchResult.Rows.Count, 6];
-            for (int intLoop = 0; intLoop < totalNum; intLoop++)
-            {
-                indexInSheetEnd++;
-
-                // 身分證字號
-                arrExportData[intLoop, 0] = dtblSearchResult.Rows[intLoop]["ID"].ToString();
-                // 卡號
-                arrExportData[intLoop, 1] = dtblSearchResult.Rows[intLoop]["CardNo"].ToString();
-                // 匯入日期
-                arrExportData[intLoop, 2] = dtblSearchResult.Rows[intLoop]["Imp_Date"].ToString();
-                // 交寄日
-                arrExportData[intLoop, 3] = dtblSearchResult.Rows[intLoop]["Maildate"].ToString();
-                // 掛號號碼
-                arrExportData[intLoop, 4] = dtblSearchResult.Rows[intLoop]["Mailno"].ToString();
-                // 狀態
-                arrExportData[intLoop, 5] = dtblSearchResult.Rows[intLoop]["Info1Name"].ToString();
-            }
-
-            #region 導入數據查詢結果
-
-            var range = sheet.Range["A" + indexInSheetStart, "F" + (indexInSheetEnd - 1)];
-            range.Value2 = arrExportData;
-
-            #endregion
-
-            #region Excel Style 樣式
-
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-
-            #endregion
-
-            #region 移轉範本頁尾至資料結果下方
-
-            //sheet1 內容
-            int pageFooterNum = indexInSheetEnd;
-            Range range1 = sheet.Range["A" + pageFooterNum, "F" + pageFooterNum];
-
-            #endregion
-
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dtblSearchResult, ref wb, 1, "工作表1"); //NPOI 起始ROW=1
+            //設定自動欄寬
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.AutoSizeColumn(4);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0508Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
 
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion 匯入文檔結束
@@ -3075,15 +2889,10 @@ WHERE CANCELOASAFILE = @STRFILE
         catch (Exception ex)
         {
             Logging.Log(ex);
-            //Logging.Log(ex, LogLayer.BusinessRule);
             throw;
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -3152,7 +2961,7 @@ WHERE CANCELOASAFILE = @STRFILE
         }
     }
     #endregion
-
+    
     #region 製卡相關資料查詢 - Excel
 
     /// <summary>
@@ -3160,6 +2969,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:製卡相關資料查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3168,8 +2978,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0519Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3199,32 +3009,26 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0519Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "製卡相關資料"); // NPOI 起始ROW=1
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            // 初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            //設定自動欄寬
+            ISheet sheet1 = wb.GetSheet("製卡相關資料");
+            for(int i=0; i < 23; i++)
+            {
+                sheet1.AutoSizeColumn(i);
+            }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
 
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
             return true;
 
             #endregion
@@ -3236,10 +3040,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -3317,6 +3117,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:退件日報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3325,8 +3126,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0516Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3356,40 +3157,25 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0516Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 4, "工作表1"); //NPOI 起始ROW=4
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            // 初始ROW位置
-
-            // 報表列印日
-            sheet.Range["L2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            // 處理日期
-            sheet.Range["A2"].Value = "處理日期：" + param["Operaction"];
-
-            // 初始ROW位置
-            int indexInSheetStart = 5;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            //設定欄位資料
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            string accessDate_str = string.Format("處理日期：{0}", param["Operaction"]);
+            string printDate_str = string.Format("列印日期：{0}", DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(0).SetCellValue(accessDate_str);
+            sheet1.GetRow(1).GetCell(11).SetCellValue(printDate_str);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0516Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -3401,10 +3187,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -3474,7 +3256,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 退件原因統計表 - Excel
 
     /// <summary>
@@ -3482,6 +3264,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:退件原因統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3490,8 +3273,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0517Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3521,64 +3304,74 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0517Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 3, "工作表1"); // NPOI 起始ROW=3
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            //添加日期至報表
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            string accessDate_str = string.Format("統計日期：{0}~{1}", param["MstatrDate"], param["MendDate"]);
+            string printDate_str = string.Format("列印日期：{0}", DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(0).SetCellValue(accessDate_str);
+            sheet1.GetRow(1).GetCell(6).SetCellValue(printDate_str);
 
-            // 初始ROW位置
-            int indexInSheetStart = 4;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            #region 文字格式
+            XSSFCellStyle bf = (XSSFCellStyle)wb.CreateCellStyle();
+            bf.BorderBottom = BorderStyle.Thin;
+            bf.BorderLeft = BorderStyle.Thin;
+            bf.BorderTop = BorderStyle.Thin;
+            bf.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            bf.WrapText = true;
+            //文字置中
+            bf.VerticalAlignment = VerticalAlignment.Center;
 
-            // 報表列印日
-            sheet.Range["G2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
+            XSSFFont bff = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            bff.FontHeightInPoints = 12;
+            bff.FontName = "新細明體";
+            bff.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+            bf.SetFont(bff);
+            #endregion 文字格式
 
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["MstatrDate"] + "~" + param["MendDate"];
+            //新增總row
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            sheet1.GetRow(sheet1.LastRowNum).CreateCell(0).SetCellValue("總計");
+            sheet1.GetRow(sheet1.LastRowNum).GetCell(0).CellStyle = bf;
+            string formu = ""; //公式字串
 
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
-
-
-            // 總計
-            sheet.Range["A" + (dt.Rows.Count + indexInSheetStart)].Value = "總計";
-            string[] group = { "B", "C", "D", "E", "F", "G" };
-
-            // 總計公式
-            foreach (string g in group)
+            // 轉換資料格式 "通用" to "數字"
+            for(int row =3; row < sheet1.LastRowNum ; row++)
             {
-                sheet.Range[g + (dt.Rows.Count + indexInSheetStart)].Formula =
-                    "=SUM(" + g + indexInSheetStart + ":" + g + (indexInSheetStart + dt.Rows.Count - 1) + ")";
+                for(int col = 1; col < 7; col++)
+                {
+                    sheet1.GetRow(row).GetCell(col).SetCellValue(Int32.Parse(sheet1.GetRow(row).GetCell(col).StringCellValue.ToString()));
+                }
             }
-
-            #region Excel Style 樣式
-
-            var range = sheet.Range["A" + (dt.Rows.Count + indexInSheetStart),
-                "G" + (dt.Rows.Count + indexInSheetStart)];
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Font.Bold = true;
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-            range.EntireRow.AutoFit();
-
-            #endregion
-
-
+            // 設定公式，設定儲存格類型，設定儲存格樣式
+            for(int col = 1; col < 7; col++)
+            {
+                switch (col)
+                {
+                    case 1: formu = string.Format("SUM(B4:B{0})", sheet1.LastRowNum); break;
+                    case 2: formu = string.Format("SUM(C4:C{0})", sheet1.LastRowNum); break;
+                    case 3: formu = string.Format("SUM(D4:D{0})", sheet1.LastRowNum); break;
+                    case 4: formu = string.Format("SUM(E4:E{0})", sheet1.LastRowNum); break;
+                    case 5: formu = string.Format("SUM(F4:F{0})", sheet1.LastRowNum); break;
+                    case 6: formu = string.Format("SUM(G4:G{0})", sheet1.LastRowNum); break;
+                }
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(col).SetCellType(CellType.Formula);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(col).SetCellFormula(formu);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(col).CellStyle = bf;
+            }
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0517Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -3590,10 +3383,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -3663,7 +3452,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 退件連絡報表 - Excel
 
     /// <summary>
@@ -3671,6 +3460,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:退件連絡報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3679,8 +3469,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0518Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3710,37 +3500,27 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0518Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 3, "工作表1"); //NPOI起始ROW=3
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            // 初始ROW位置
-            int indexInSheetStart = 4;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 報表列印日
-            sheet.Range["J2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["datefrom"] + "~" + param["dateto"];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
+            //添加日期至報表
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            string accessDate_str = string.Format("統計日期：{0}~{1}", param["datefrom"], param["dateto"]);
+            string printDate_str = string.Format("列印日期：{0}", DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(0).SetCellValue(accessDate_str);
+            sheet1.GetRow(1).GetCell(9).SetCellValue(printDate_str);
+            //設定自動欄寬
+            sheet1.AutoSizeColumn(5);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0518Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -3752,10 +3532,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -3834,7 +3610,7 @@ WHERE CANCELOASAFILE = @STRFILE
         }
     }
     #endregion
-
+    
     #region 址更重寄異動記錄查詢 - Excel
 
     /// <summary>
@@ -3842,6 +3618,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:址更重寄異動記錄查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3850,8 +3627,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0520Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -3881,37 +3658,31 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0520Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 3, "工作表1"); //NPOI 起始ROW=3
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            //添加日期至報表
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            string accessDate_str = string.Format("統計日期：{0}~{1}", param["strUpdFrom"], param["strUpdTo"]);
+            string printDate_str = string.Format("列印日期：{0}", DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(0).SetCellValue(accessDate_str);
+            sheet1.GetRow(1).GetCell(11).SetCellValue(printDate_str);
 
-            // 初始ROW位置
-            int indexInSheetStart = 4;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 報表列印日
-            sheet.Range["L2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["strUpdFrom"] + "~" + param["strUpdTo"];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
+            //設定自動欄寬
+            for(int col=1; col<12; col ++)
+            {
+                sheet1.AutoSizeColumn(col);
+            }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0520Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -3923,10 +3694,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -4004,6 +3771,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:分行郵寄資料查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4012,8 +3780,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0509Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4043,33 +3811,18 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0509Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            // 初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1"); //NPOI 起始ROW=1
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0509Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -4081,10 +3834,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -4162,13 +3911,14 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:扣卡明細查詢 - Excel  
     /// 作    者:Ares Luke
     /// 創建時間:2020/06/23
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/06_Ares_Stanley-新增自動欄寬
     /// </summary>
     /// 
     public static bool CreateExcelFile_0510Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4214,31 +3964,22 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0510Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
-
-            // 初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1"); //NPOI起始ROW=1
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            for(int col = 0; col < 7; col++)
+            {
+                sheet1.AutoSizeColumn(col);
+            }
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0510Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -4250,10 +3991,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -4265,13 +4002,14 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 專案代號:20200031-CSIP EOS
     /// 功能說明:自取庫存日結 - Excel  
     /// 作    者:Ares Luke
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// 創建時間:2020/06/29
     /// </summary>
     public static bool CreateExcelFile_0207Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4301,29 +4039,17 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0207Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI_filter(dt, ref wb, 4, 6,"test1"); //NPOI 起始ROW=4, filter=6
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
 
-            // 初始ROW位置
-            int indexInSheetStart = 5;
-
-            // 轉入結果資料
-            //ExportExcel(dt, ref sheet, indexInSheetStart - 1);
-
-            #region Excel 依序塞資料
-
-            // 總筆數
+            //// 總筆數
             int totalRowsNum = dt.Rows.Count;
             // 報表欄位筆數
-            int totalColumnsNum = 4;
+            //int totalColumnsNum = 4;
 
             int sumIntoStoreCount = 0;
             int sumOutStoreFCount = 0;
@@ -4335,12 +4061,6 @@ WHERE CANCELOASAFILE = @STRFILE
 
             for (int intRowsLoop = 1; intRowsLoop <= totalRowsNum; intRowsLoop++)
             {
-                for (int intColumnsLoop = 1; intColumnsLoop <= totalColumnsNum; intColumnsLoop++)
-                {
-                    sheet.Cells[intRowsLoop + (indexInSheetStart - 1), intColumnsLoop] =
-                        dt.Rows[intRowsLoop - 1][intColumnsLoop - 1];
-                }
-
                 if (intRowsLoop == 1)
                 {
                     sumIntoStoreCount += (int)dt.Rows[intRowsLoop - 1][dt.Columns["IntoStoreCount"]];
@@ -4355,44 +4075,71 @@ WHERE CANCELOASAFILE = @STRFILE
             //當日庫存
             int preDailyCount = sumDailyCloseCount + sumOutStoreFCount + sumOutStoreMCount + sumOutStoreDCount -
                                 sumIntoStoreCount;
+            //設定欄位資料
+            ISheet sheet1 = wb.GetSheet("test1");
+            sheet1.GetRow(1).GetCell(3).SetCellValue(DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(3).SetCellValue(dailyCloseDate);
+            sheet1.GetRow(2).GetCell(4).SetCellValue(preDailyCount);
+            sheet1.GetRow(2).GetCell(6).SetCellValue(sumIntoStoreCount);
+            sheet1.GetRow(2).GetCell(8).SetCellValue(sumOutStoreFCount);
+            sheet1.GetRow(2).GetCell(10).SetCellValue(sumOutStoreMCount);
+            sheet1.GetRow(2).GetCell(12).SetCellValue(sumOutStoreDCount);
+            sheet1.GetRow(2).GetCell(14).SetCellValue(sumDailyCloseCount);
+            //設定自動欄寬
+            for (int i = 0; i < 4; i++) { sheet1.AutoSizeColumn(i); }
+            #region 文字格式cs
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
-            // 報表列印日
-            sheet.Cells.Replace("$PrintDate$", DateTime.Now.ToString("yyyy/MM/dd"));
-            // 打印日期
-            sheet.Cells.Replace("$DailyClose_Date$", dailyCloseDate);
-            // 前日庫存
-            sheet.Cells.Replace("$PreDailyCount$", preDailyCount);
-            // 今日入庫
-            sheet.Cells.Replace("$IntoStoreCount$", sumIntoStoreCount);
-            // 今日領卡
-            sheet.Cells.Replace("$OutStoreFCount$", sumOutStoreFCount);
-            // 今日郵寄
-            sheet.Cells.Replace("$OutStoreMCount$", sumOutStoreMCount);
-            // 今日註銷
-            sheet.Cells.Replace("$OutStoreDCount$", sumOutStoreDCount);
-            // 今日庫存
-            sheet.Cells.Replace("$DailyCloseCount$", sumDailyCloseCount);
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式cs
 
-            #endregion
-
-            #region Excel Style 樣式
-
-            var range = sheet.Range[sheet.Cells[1, 1],
-                sheet.Cells[totalRowsNum + (indexInSheetStart - 1), totalColumnsNum]];
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-            range.EntireRow.AutoFit();
-
-            #endregion
-
+            #region 文字格式bold
+            XSSFCellStyle bold = (XSSFCellStyle)wb.CreateCellStyle();
+            bold.BorderBottom = BorderStyle.Thin;
+            bold.BorderLeft = BorderStyle.Thin;
+            bold.BorderTop = BorderStyle.Thin;
+            bold.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            bold.WrapText = true;
+            //文字置中
+            bold.VerticalAlignment = VerticalAlignment.Center;
+            bold.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+            XSSFFont boldf = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            boldf.FontHeightInPoints = 12;
+            boldf.FontName = "新細明體";
+            boldf.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+            bold.SetFont(boldf);
+            #endregion 文字格式bold
+            //設定文字格式
+            for (int row = 0; row < 3; row++)
+            {
+                for(int col = 0; col < 4; col++)
+                {
+                    sheet1.GetRow(row).GetCell(col).CellStyle = cs;
+                }
+            }
+            for(int i = 0; i < 4; i++) { sheet1.GetRow(0).GetCell(i).CellStyle = bold; }
+            sheet1.GetRow(1).GetCell(0).CellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Right;
+            sheet1.GetRow(2).GetCell(0).CellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Right;
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0207Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -4405,10 +4152,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -4478,7 +4221,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-
+    
     #region 郵局查單申請處理 - Excel
 
     /// <summary>
@@ -4486,12 +4229,13 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:郵局查單申請處理 - Excel  
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/06
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     public static bool CreateExcelFile_0401Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4537,38 +4281,72 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0401Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 0, "0401Report"); //NPOI 起始ROW=0
+            #region 建立文字格式
+            XSSFCellStyle a0 = (XSSFCellStyle)wb.CreateCellStyle();
+            a0.BorderTop = BorderStyle.Medium;
+            a0.BorderLeft = BorderStyle.Medium;
+            a0.BorderRight = BorderStyle.None;
 
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            XSSFCellStyle tb = (XSSFCellStyle)wb.CreateCellStyle();
+            tb.BorderTop = BorderStyle.Medium;
+            tb.BorderLeft = BorderStyle.None;
+            tb.BorderRight = BorderStyle.None;
 
-            // 交寄日期年月日
-            sheet.Cells.Replace("$year$", Convert.ToString(int.Parse(DateTime.Now.ToString("yyyy")) - 1911));
-            sheet.Cells.Replace("$month$", DateTime.Now.ToString("MM"));
-            sheet.Cells.Replace("$day$", DateTime.Now.ToString("dd"));
-            // 住址
-            sheet.Cells.Replace("$add1$", dt.Rows[0][dt.Columns["add1"]]);
-            sheet.Cells.Replace("$add2$", dt.Rows[0][dt.Columns["add2"]]);
-            sheet.Cells.Replace("$add3$", dt.Rows[0][dt.Columns["add3"]]);
-            // 收件人姓名
-            sheet.Cells.Replace("$custname$", dt.Rows[0][dt.Columns["custname"]]);
+            XSSFCellStyle ds = (XSSFCellStyle)wb.CreateCellStyle();
+            ds.BorderTop = BorderStyle.Medium;
+            ds.BorderRight = BorderStyle.Medium;
+            ds.BorderLeft = BorderStyle.None;
+            #endregion 建立文字格式
+
+            //新增、套用文字格式
+            ISheet sheet1 = wb.GetSheet("0401Report");
+            var row = sheet1.GetRow(0);
+            sheet1.RemoveRow(row);
+            sheet1.CreateRow(0);
+            for (int i = 0; i < 123; i++)
+            {
+                sheet1.GetRow(0).CreateCell(i);
+                sheet1.GetRow(0).GetCell(i).CellStyle = tb;
+            }
+            sheet1.GetRow(0).GetCell(21).CellStyle = a0;
+            sheet1.GetRow(0).GetCell(122).CellStyle = ds;
+            for (int irow = 0; irow < 5; irow++)
+            {
+                for (int icol = 0; icol < 3; icol++)
+                {
+                    sheet1.GetRow(irow).GetCell(icol).CellStyle = a0;
+                }
+            }
+            sheet1.GetRow(0).HeightInPoints = 7;
+
+            //日期
+            sheet1.GetRow(24).GetCell(87).SetCellValue(Convert.ToString(int.Parse(DateTime.Now.ToString("yyyy")) - 1911));//交件年
+            sheet1.GetRow(35).GetCell(88).SetCellValue(DateTime.Now.ToString("MM"));//交件月
+            sheet1.GetRow(43).GetCell(88).SetCellValue(DateTime.Now.ToString("dd"));//交件日
+            //收件人
+            sheet1.GetRow(24).GetCell(53).SetCellValue(dt.Rows[0][dt.Columns["custname"]].ToString());
+            //地址
+            string addr = sheet1.GetRow(24).GetCell(50).StringCellValue.ToString();
+            addr = addr.Replace("$add1$", dt.Rows[0][dt.Columns["add1"]].ToString());
+            addr = addr.Replace("$add2$", dt.Rows[0][dt.Columns["add2"]].ToString());
+            addr = addr.Replace("$add3$", dt.Rows[0][dt.Columns["add3"]].ToString());
+            sheet1.GetRow(24).GetCell(50).SetCellValue(addr);//addr1,addr2,addr3
+
             //郵號件碼種類
-            sheet.Cells.Replace("$mailno$", "'" + dt.Rows[0][dt.Columns["mailno"]]);
-
+            sheet1.GetRow(53).GetCell(115).SetCellValue(dt.Rows[0][dt.Columns["mailno"]].ToString());
+            
             #endregion
-
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0401Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
         }
         catch (Exception ex)
@@ -4579,15 +4357,11 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
     #endregion
-
+    
     #region 卡片自取逾期明細表_1 - Excel
 
     /// <summary>
@@ -4595,6 +4369,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:卡片自取逾期明細表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/08
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4603,8 +4378,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_020501Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4652,61 +4427,58 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "020501Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 4, "工作表1"); // NPOI 起始ROW=4
 
             //統計
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 5;
-            int indexInSheetEnd = indexInSheetStart + totalNum;
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            ISheet sheet2 = wb.GetSheet("頁尾");
+            // 新增row
+            XSSFRow row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum + 1);
+            var cell = row.CreateCell(0);
 
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            var late_data = sheet2.GetRow(0).GetCell(0).StringCellValue.ToString();
+            var late_data_style = sheet2.GetRow(0).GetCell(0).CellStyle;
+            //變更儲存格資料
+            for (int rc = 0; rc < 3; rc++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum + rc);
+                for (int cc = 0; cc < 11; cc++)
+                {
+                    cell = row.CreateCell(cc);
+                    late_data = sheet2.GetRow(rc).GetCell(cc).StringCellValue.ToString();
+                    if (late_data.Contains("$totalCardNo$"))
+                    {
+                        late_data = late_data.Replace("$totalCardNo$", totalNum.ToString());
+                    }
+                    late_data_style = sheet2.GetRow(rc).GetCell(cc).CellStyle;
+                    cell.SetCellValue(late_data);
+                    cell.CellStyle = late_data_style;
 
-            ExportExcel(dt, ref sheet, start, end);
-
-            #region 移轉範本頁尾至資料結果下方
-
-            //sheet1 內容
-            int pageFooterNum = indexInSheetEnd;
-            Range range1 = sheet.Range["A" + pageFooterNum, "K" + pageFooterNum];
-            //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
-            Range range2 = sheet2.Range["A1", "K3"];
-            //合併
-            range2.Copy();
-            sheet.Paste(range1, false);
-            //刪除 頁尾暫存
-            sheet2.Delete();
-
-            //合計張數
-            sheet.Cells.Replace("$totalCardNo$", totalNum);
-
-            #endregion
-
-            //自取時間
-            sheet.Range["K2"].Value = "自取時間：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            //列印時間
-            sheet.Range["K3"].Value = "列印日期：" + param["strMerchDate"];
-
+                }
+            }
+            //刪除頁尾sheet
+            wb.RemoveSheetAt(wb.GetSheetIndex("頁尾"));
+            //新增欄位資料
+            sheet1.GetRow(1).GetCell(10).SetCellValue("自取時間：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(10).SetCellValue("列印日期：" + param["strMerchDate"]);
+            //設置儲存格格式為文字
+            for (int i =4; i < sheet1.LastRowNum-3; i++)
+            {
+                sheet1.GetRow(i).GetCell(5).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+            }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "020501Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -4718,10 +4490,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -4734,6 +4502,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:卡片自取逾期明細表_2 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/08
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4742,8 +4511,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_020502Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4792,60 +4561,54 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "020502Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 4, "工作表1");
 
             //統計
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 5;
-            int indexInSheetEnd = indexInSheetStart + totalNum;
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            ISheet sheet2 = wb.GetSheet("頁尾");
 
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-            ExportExcel(dt, ref sheet, start, end);
+            XSSFRow row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum + 1);
+            var cell = row.CreateCell(0);
+            var late_data = sheet2.GetRow(0).GetCell(0).StringCellValue.ToString();
+            var late_data_style = sheet2.GetRow(0).GetCell(0).CellStyle;
+            for (int rc = 0; rc < 3; rc++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(sheet1.LastRowNum + rc);
+                for (int cc = 0; cc < 11; cc++)
+                {
+                    cell = row.CreateCell(cc);
+                    late_data = sheet2.GetRow(rc).GetCell(cc).StringCellValue.ToString();
+                    if (late_data.Contains("$totalCardNo$"))
+                    {
+                        late_data = late_data.Replace("$totalCardNo$", totalNum.ToString());
+                    }
+                    late_data_style = sheet2.GetRow(rc).GetCell(cc).CellStyle;
+                    cell.SetCellValue(late_data);
+                    cell.CellStyle = late_data_style;
 
-            #region 移轉範本頁尾至資料結果下方
+                }
+            }
+            wb.RemoveSheetAt(wb.GetSheetIndex("頁尾"));
+            sheet1.GetRow(1).GetCell(10).SetCellValue("逾期時間："+param["strFetchDate"]);
+            sheet1.GetRow(2).GetCell(10).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
-            //sheet1 內容
-            int pageFooterNum = indexInSheetEnd;
-            Range range1 = sheet.Range["A" + pageFooterNum, "L" + pageFooterNum];
-            //sheet2 頁尾
-            Worksheet sheet2 = (Worksheet)workbook.Sheets[2];
-            Range range2 = sheet2.Range["A1", "K3"];
-            //合併
-            range2.Copy();
-            sheet.Paste(range1, false);
-            //刪除 頁尾暫存
-            sheet2.Delete();
-
-            //合計
-            sheet.Cells.Replace("$totalCardNo$", totalNum);
-
-            #endregion
-
-            //逾期時間
-            sheet.Range["K2"].Value = "逾期時間：" + param["strFetchDate"];
-
-            //列印時間
-            sheet.Range["K3"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
+            for (int i = 4; i < sheet1.LastRowNum - 3; i++)
+            {
+                sheet1.GetRow(i).GetCell(5).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+            }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "020502Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -4857,10 +4620,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -4873,6 +4632,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/10
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4881,8 +4641,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0513Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -4913,67 +4673,79 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0513Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 4, "工作表1");
 
             int totalNum = dt.Rows.Count;
+            #region 建立文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
 
-            //初始ROW位置
-            int indexInSheetStart = 5;
-            int indexInSheetEnd = indexInSheetStart + totalNum;
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 建立文字格式
 
-            ExportExcel(dt, ref sheet, start, end, true);
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            //新增儲存格、套用格式
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            for (int i = 0; i < 7; i++)
+            {
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(i);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).CellStyle = cs;
+            }
+            //新增合計欄
+            sheet1.GetRow(sheet1.LastRowNum).GetCell(0).SetCellValue("合計");
+            string formu = "";
+            
+            for (int i = 1; i < 7; i++)
+            {
+                for (int row = 4; row < sheet1.LastRowNum ; row++)
+                {
+                    sheet1.GetRow(row).GetCell(i).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("0");
+                    sheet1.GetRow(row).GetCell(i).SetCellValue(Int32.Parse(sheet1.GetRow(row).GetCell(i).StringCellValue.ToString()));
 
-            #region 頁尾
-
-            //合計位置
-            int indexFooter = indexInSheetEnd;
-            sheet.Range["A" + indexFooter].Value = "合計";
-            sheet.Range["B" + indexFooter].Formula = "=sum(B" + indexInSheetStart + ":B" + (indexFooter - 1) + ")";
-            sheet.Range["C" + indexFooter].Formula = "=sum(C" + indexInSheetStart + ":C" + (indexFooter - 1) + ")";
-            sheet.Range["D" + indexFooter].Formula = "=sum(D" + indexInSheetStart + ":D" + (indexFooter - 1) + ")";
-            sheet.Range["E" + indexFooter].Formula = "=sum(E" + indexInSheetStart + ":E" + (indexFooter - 1) + ")";
-            sheet.Range["F" + indexFooter].Formula = "=sum(F" + indexInSheetStart + ":F" + (indexFooter - 1) + ")";
-            sheet.Range["G" + indexFooter].Formula = "=sum(G" + indexInSheetStart + ":G" + (indexFooter - 1) + ")";
-
-            var range = sheet.Range["A" + indexFooter, "G" + indexFooter];
-            CommonStyle(range);
-
-            #endregion
-
-            #region 表頭
-
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["OstartDate"] + "~" + param["OendDate"];
-
-            // 批次日
-            sheet.Range["A3"].Value = "批次日：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            // 列印經辦
-            sheet.Range["F2"].Value = "列印經辦：" + param["Ouser"];
-
-            // 列印日期 
-            sheet.Range["F3"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            #endregion
+                }
+            }
+            //設定公式，設定儲存格類型，套用公式
+            for (int i = 1; i < 7; i++)
+            {
+                switch (i)
+                {
+                    case 1: formu = string.Format("SUM(B5:B{0})", sheet1.LastRowNum); break;
+                    case 2: formu = string.Format("SUM(C5:C{0})", sheet1.LastRowNum); break;
+                    case 3: formu = string.Format("SUM(D5:D{0})", sheet1.LastRowNum); break;
+                    case 4: formu = string.Format("SUM(E5:E{0})", sheet1.LastRowNum); break;
+                    case 5: formu = string.Format("SUM(F5:F{0})", sheet1.LastRowNum); break;
+                    case 6: formu = string.Format("SUM(G5:G{0})", sheet1.LastRowNum); break;
+                }
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellType(CellType.Formula);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellFormula(formu);
+            }
+            //設定欄位資料
+            sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期："+ param["OstartDate"] + "~" + param["OendDate"]);
+            sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -4985,10 +4757,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -5083,6 +4851,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/10
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5091,8 +4860,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0513_0Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -5102,21 +4871,62 @@ WHERE CANCELOASAFILE = @STRFILE
             if (!getPageType05130(ref param, ref strMsgId, ref dt))
                 return false;
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0513_0Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1"); // NPOI 起始ROW=8
 
-            Worksheet sheet = new WorksheetClass();
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
 
-            //sheet2 頁尾
-            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
-            Range range2 = tempSheet.Range["A1", "J8"];
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
+
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
+            wb.CloneSheet(0);
+            wb.CloneSheet(0);
+            ISheet sheet2 = wb.GetSheet("強停(B) (2)");//sheet2 更名
+            ISheet sheet3 = wb.GetSheet("強停(B) (3)");//sheet3 更名
+            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
+            wb.SetSheetName(2, sheet1.GetRow(10).GetCell(0).StringCellValue.ToString());
+            //移除sheet 名
+            for(int i =0; i<3; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        sheet1.RemoveRow(sheet1.GetRow(8));
+                        sheet1.RemoveRow(sheet1.GetRow(9));
+                        sheet1.RemoveRow(sheet1.GetRow(10));
+                        break;
+                    case 1:
+                        sheet2.RemoveRow(sheet2.GetRow(8));
+                        sheet2.RemoveRow(sheet2.GetRow(9));
+                        sheet2.RemoveRow(sheet2.GetRow(10));
+                        break;
+                    case 2:
+                        sheet3.RemoveRow(sheet3.GetRow(8));
+                        sheet3.RemoveRow(sheet3.GetRow(9));
+                        sheet3.RemoveRow(sheet3.GetRow(10));
+                        break;
+                }
+            }
+            
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 String blkCode = dt.Rows[i][dt.Columns["BLKCode"]].ToString();
@@ -5124,77 +4934,108 @@ WHERE CANCELOASAFILE = @STRFILE
                 //* 查詢數據
                 DataSet dstSearchData = searchData05130(param, blkCode);
 
-                #region 查無資料
-
+               
+                switch (i) { 
+                    case 0:
+                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                    case 1:
+                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                    case 2:
+                        sheet3.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                }
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-
-                        if (i > 0)
+                        switch (i)
                         {
-                            workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
+                            case 0:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet1.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 10; col++)
+                                        {
+                                            sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet1.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                    
+                                }
+                                break;
+                            case 1:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet2.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 10; col++)
+                                        {
+                                            sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet2.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                    
+                                }
+                                break;
+                            case 2:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet3.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 10; col++)
+                                        {
+                                            sheet3.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet3.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet3.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                    
+                                }
+                                break;
                         }
-
-                        sheet = (Worksheet)workbook.Sheets[i + 1];
-                        sheet.Name = blkCode;
-
-                        #region 製作分頁標題頭
-
-                        if (i > 0)
-                        {
-                            //合併
-                            Range range1 = sheet.Range["A1", "J8"];
-                            range2.Copy();
-                            sheet.Paste(range1, false);
-                        }
-
-                        #endregion
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-
-                        //初始ROW位置
-                        int indexInSheetStart = 9;
-                        object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
-                        ExportExcel(dt2, ref sheet, start, end);
-
-                        #region 表頭
-
-                        // 標題
-                        sheet.Range["A1"].Value =
-                            "OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode;
-                        // 檔案產出日
-                        sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-                        // 類型
-                        sheet.Range["A3"].Value = "類型：" + blkCode;
-                        // 列印經辦
-                        sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-                        // 列印日期 
-                        sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-                        sheet.Range["A6"].Value =
-                            param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-                        sheet.Range["A7"].Value = param["flag"] == "1"
-                            ? "成功" + " 總卡數：" + param["num"]
-                            : "失敗" + " 總卡數：" + param["num"];
-
+                        switch(i)
+                        {
+                            case 0:
+                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 1:
+                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 2:
+                                sheet3.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet3.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet3.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet3.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet3.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                        }
                         #endregion
-                        #endregion
-                    }
                 }
-                #endregion 匯入文檔結束
+                }
+                
             }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513_0Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
         }
         catch (Exception ex)
@@ -5204,10 +5045,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -5343,6 +5180,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/15
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5351,8 +5189,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0513_2Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -5362,20 +5200,62 @@ WHERE CANCELOASAFILE = @STRFILE
             if (!getPageType05132(ref param, ref strMsgId, ref dt))
                 return false;
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0513_2Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1"); //NPOI 起始 ROW=8
 
-            Worksheet sheet = new WorksheetClass();
 
-            //sheet1 表頭
-            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
-            Range range2 = tempSheet.Range["A1", "L8"];
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
+
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
+            wb.CloneSheet(0);
+            wb.CloneSheet(0);
+            ISheet sheet2 = wb.GetSheet("強停(B) (2)");//sheet2 更名
+            ISheet sheet3 = wb.GetSheet("強停(B) (3)");//sheet3 更名
+            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
+            wb.SetSheetName(2, sheet1.GetRow(10).GetCell(0).StringCellValue.ToString());
+            //移除sheet名
+            for (int i = 0; i < 3; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        sheet1.RemoveRow(sheet1.GetRow(8));
+                        sheet1.RemoveRow(sheet1.GetRow(9));
+                        sheet1.RemoveRow(sheet1.GetRow(10));
+                        break;
+                    case 1:
+                        sheet2.RemoveRow(sheet2.GetRow(8));
+                        sheet2.RemoveRow(sheet2.GetRow(9));
+                        sheet2.RemoveRow(sheet2.GetRow(10));
+                        break;
+                    case 2:
+                        sheet3.RemoveRow(sheet3.GetRow(8));
+                        sheet3.RemoveRow(sheet3.GetRow(9));
+                        sheet3.RemoveRow(sheet3.GetRow(10));
+                        break;
+                }
+            }
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -5384,79 +5264,109 @@ WHERE CANCELOASAFILE = @STRFILE
                 //* 查詢數據
                 DataSet dstSearchData = searchData05132(param, blkCode);
 
-                #region 查無資料
+                switch (i)
+                {
+                    case 0:
+                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                    case 1:
+                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                    case 2:
+                        sheet3.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        break;
+                }
 
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-
-                        if (i > 0)
+                        switch (i)
                         {
-                            workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
+                            case 0:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet1.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 12; col++)
+                                        {
+                                            sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet1.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                }
+                                break;
+                            case 1:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet2.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 12; col++)
+                                        {
+                                            sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet2.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                    
+                                }
+                                break;
+                            case 2:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet3.CreateRow(row);
+                                    int dnum = row - 8;
+                                        for (int col = 0; col < 12; col++)
+                                        {
+                                            sheet3.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                            sheet3.GetRow(row).GetCell(col).CellStyle = cs;
+                                            sheet3.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        }
+                                    
+                                }
+                                break;
                         }
-
-                        sheet = (Worksheet)workbook.Sheets[i + 1];
-                        sheet.Name = blkCode;
-
-                        #region 製作分頁標題頭
-
-                        if (i > 0)
-                        {
-                            //合併
-                            Range range1 = sheet.Range["A1", "L8"];
-                            range2.Copy();
-                            sheet.Paste(range1, false);
-                        }
-
-                        #endregion
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
 
-                        //初始ROW位置
-                        int indexInSheetStart = 9;
-                        object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
-
-                        ExportExcel(dt2, ref sheet, start, end);
-
-                        #region 表頭
-
-                        // 標題
-                        sheet.Range["A1"].Value =
-                            "OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode;
-
-                        // 檔案產出日
-                        sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-                        // 類型
-                        sheet.Range["A3"].Value = "類型：" + blkCode;
-                        // 列印經辦
-                        sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-                        // 列印日期 
-                        sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-                        sheet.Range["A6"].Value =
-                            param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-                        sheet.Range["A7"].Value = param["flag"] == "1"
-                            ? "成功" + " 總卡數：" + param["num"]
-                            : "失敗" + " 總卡數：" + param["num"];
-
-                        #endregion
+                        switch (i)
+                        {
+                            case 0:
+                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 1:
+                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 2:
+                                sheet3.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet3.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet3.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                                sheet3.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet3.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                        }
                         #endregion
                     }
                 }
-                #endregion
+                
             }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513_2Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
         }
@@ -5467,10 +5377,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -5606,6 +5512,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5614,8 +5521,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0514Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -5646,66 +5553,78 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 4, "工作表1"); // NPOI 起始 ROW =4
 
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 5;
-            int indexInSheetEnd = indexInSheetStart + totalNum;
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
 
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
-            ExportExcel(dt, ref sheet, start, end, true);
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
 
-            #region 頁尾
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            for (int i = 0; i < 7; i++)
+            {
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(i).CellStyle = cs;
+            }
+            sheet1.GetRow(sheet1.LastRowNum).GetCell(0).SetCellValue("合計");
+            string formu = "";
 
-            //合計位置
-            int indexFooter = indexInSheetEnd;
-            sheet.Range["A" + indexFooter].Value = "合計";
-            sheet.Range["B" + indexFooter].Formula = "=sum(B" + indexInSheetStart + ":B" + (indexFooter - 1) + ")";
-            sheet.Range["C" + indexFooter].Formula = "=sum(C" + indexInSheetStart + ":C" + (indexFooter - 1) + ")";
-            sheet.Range["D" + indexFooter].Formula = "=sum(D" + indexInSheetStart + ":D" + (indexFooter - 1) + ")";
-            sheet.Range["E" + indexFooter].Formula = "=sum(E" + indexInSheetStart + ":E" + (indexFooter - 1) + ")";
-            sheet.Range["F" + indexFooter].Formula = "=sum(F" + indexInSheetStart + ":F" + (indexFooter - 1) + ")";
-            sheet.Range["G" + indexFooter].Formula = "=sum(G" + indexInSheetStart + ":G" + (indexFooter - 1) + ")";
+            for (int i = 1; i < 7; i++)
+            {
+                for (int row = 4; row < sheet1.LastRowNum; row++)
+                {
+                    sheet1.GetRow(row).GetCell(i).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("0");
+                    sheet1.GetRow(row).GetCell(i).SetCellValue(Int32.Parse(sheet1.GetRow(row).GetCell(i).StringCellValue.ToString()));
 
-            var range = sheet.Range["A" + indexFooter, "G" + indexFooter];
-            CommonStyle(range);
-            #endregion
+                }
+            }
 
-            #region 表頭
+            for (int i = 1; i < 7; i++)
+            {
+                switch (i)
+                {
+                    case 1: formu = string.Format("SUM(B5:B{0})", sheet1.LastRowNum); break;
+                    case 2: formu = string.Format("SUM(C5:C{0})", sheet1.LastRowNum); break;
+                    case 3: formu = string.Format("SUM(D5:D{0})", sheet1.LastRowNum); break;
+                    case 4: formu = string.Format("SUM(E5:E{0})", sheet1.LastRowNum); break;
+                    case 5: formu = string.Format("SUM(F5:F{0})", sheet1.LastRowNum); break;
+                    case 6: formu = string.Format("SUM(G5:G{0})", sheet1.LastRowNum); break;
+                }
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellType(CellType.Formula);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellFormula(formu);
+            }
 
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["OstartDate"] + "~" + param["OendDate"];
 
-            // 批次日
-            sheet.Range["A3"].Value = "批次日：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            // 列印經辦
-            sheet.Range["F2"].Value = "列印經辦：" + param["Ouser"];
-
-            // 列印日期 
-            sheet.Range["F3"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            #endregion
+            sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期：" + param["OstartDate"] + "~" + param["OendDate"]);
+            sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -5717,10 +5636,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -5815,6 +5730,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表_0 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5823,8 +5739,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0514_0Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -5834,17 +5750,50 @@ WHERE CANCELOASAFILE = @STRFILE
             if (!getPageType05140(ref param, ref strMsgId, ref dt))
                 return false;
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_0Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1");  //NPOI起始ROW=8
 
-            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
-            Range range2 = tempSheet.Range["A1", "J8"];
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
+
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
+            wb.CloneSheet(0);
+            ISheet sheet2 = wb.GetSheet("B (2)");//sheet2 更名
+            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
+            for (int i = 0; i < 3; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        sheet1.RemoveRow(sheet1.GetRow(8));
+                        sheet1.RemoveRow(sheet1.GetRow(9));
+                        break;
+                    case 1:
+                        sheet2.RemoveRow(sheet2.GetRow(8));
+                        sheet2.RemoveRow(sheet2.GetRow(9));
+                        break;
+                }
+            }
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -5852,77 +5801,86 @@ WHERE CANCELOASAFILE = @STRFILE
 
                 //* 查詢數據
                 DataSet dstSearchData = searchData05140(param, nblkCode);
+                switch (i)
+                {
+                    case 0:
+                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        break;
+                    case 1:
+                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        break;
+                }
 
-                #region 查無資料
+                
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        if (i > 0)
+                        switch (i)
                         {
-                            workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
+                            case 0:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet1.CreateRow(row);
+                                    int dnum = row - 8;
+                                    for (int col = 0; col < 10; col++)
+                                    {
+                                        sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                        sheet1.GetRow(row).GetCell(col).CellStyle = cs;
+                                        sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                    }
+                                }
+                                break;
+                            case 1:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet2.CreateRow(row);
+                                    int dnum = row - 8;
+                                    for (int col = 0; col < 10; col++)
+                                    {
+                                        sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                        sheet2.GetRow(row).GetCell(col).CellStyle = cs;
+                                        sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                    }
+
+                                }
+                                break;
                         }
-
-                        var sheet = (Worksheet)workbook.Sheets[i + 1];
-                        sheet.Name = nblkCode;
-
-                        #region 製作分頁標題頭
-
-                        if (i > 0)
-                        {
-                            //合併
-                            Range range1 = sheet.Range["A1", "J8"];
-                            range2.Copy();
-                            sheet.Paste(range1, false);
-                        }
-
-                        #endregion
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
 
-                        //初始ROW位置
-                        int indexInSheetStart = 9;
-                        object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
-
-                        ExportExcel(dt2, ref sheet, start, end);
-
-                        #region 表頭
-
-                        // 標題
-                        sheet.Range["A1"].Value =
-                            "OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode;
-                        // 檔案產出日
-                        sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-                        // 類型
-                        sheet.Range["A3"].Value = "類型：" + nblkCode;
-                        // 列印經辦
-                        sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-                        // 列印日期 
-                        sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-                        sheet.Range["A6"].Value =
-                            param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-                        sheet.Range["A7"].Value = param["flag"] == "1"
-                            ? "成功" + " 總卡數：" + param["num"]
-                            : "失敗" + " 總卡數：" + param["num"];
-
-                        #endregion
+                        switch (i)
+                        {
+                            case 0:
+                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 1:
+                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                        }
                         #endregion
                     }
                 }
-                #endregion
+                
             }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_0Report" + ".xlsx";
-            workbook.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
         }
         catch (Exception ex)
@@ -5932,10 +5890,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6068,6 +6022,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6076,8 +6031,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0514_1Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -6107,53 +6062,30 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_0Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1"); //NPOI起始ROW=8
 
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 9;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-            ExportExcel(dt, ref sheet, start, end);
-
-            #region 表頭
-
-            // 標題
-            sheet.Range["A1"].Value =
-                "OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + param["BLKCode"];
-            // 檔案產出日
-            sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-            // 類型
-            sheet.Range["A3"].Value = "類型：" + param["BLKCode"];
-            // 列印經辦
-            sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-            // 列印日期 
-            sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            sheet.Range["A6"].Value =
-                param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-            sheet.Range["A7"].Value = param["flag"] == "1"
-                ? "成功" + " 總卡數：" + param["num"]
-                : "失敗" + " 總卡數：" + param["num"];
-
-            #endregion
+            //#endregion
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + param["BLKCode"]);
+            sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+            sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + param["BLKCode"]);
+            sheet1.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+            sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+            sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_1Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -6165,10 +6097,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6207,6 +6135,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表_2 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6215,8 +6144,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0514_2Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -6227,94 +6156,137 @@ WHERE CANCELOASAFILE = @STRFILE
                 return false;
 
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_2Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1"); //NPOI起始ROW=8
 
-            Worksheet tempSheet = (Worksheet)workbook.Sheets[1];
-            Range range2 = tempSheet.Range["A1", "L8"];
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
+
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
+            wb.CloneSheet(0);
+            ISheet sheet2 = wb.GetSheet("B (2)");//sheet2 更名
+            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
+            for (int i = 0; i < 3; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        sheet1.RemoveRow(sheet1.GetRow(8));
+                        sheet1.RemoveRow(sheet1.GetRow(9));
+                        break;
+                    case 1:
+                        sheet2.RemoveRow(sheet2.GetRow(8));
+                        sheet2.RemoveRow(sheet2.GetRow(9));
+                        break;
+                }
+            }
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
-
+                switch (i)
+                {
+                    case 0:
+                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        break;
+                    case 1:
+                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        break;
+                }
                 //* 查詢數據
                 DataSet dstSearchData = searchData05142(param, nblkCode);
 
-                #region 查無資料
+                
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        if (i > 0)
+                        switch (i)
                         {
-                            workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
+                            case 0:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet1.CreateRow(row);
+                                    int dnum = row - 8;
+                                    for (int col = 0; col < 12; col++)
+                                    {
+                                        sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                        sheet1.GetRow(row).GetCell(col).CellStyle = cs;
+                                        sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        sheet1.AutoSizeColumn(col);
+                                    }
+                                }
+                                break;
+                            case 1:
+                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                                {
+                                    sheet2.CreateRow(row);
+                                    int dnum = row - 8;
+                                    for (int col = 0; col < 12; col++)
+                                    {
+                                        sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                        sheet2.GetRow(row).GetCell(col).CellStyle = cs;
+                                        sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                        sheet2.AutoSizeColumn(col);
+                                    }
+
+                                }
+                                break;
                         }
-
-                        var sheet = (Worksheet)workbook.Sheets[i + 1];
-                        sheet.Name = nblkCode;
-
-                        #region 製作分頁標題頭
-
-                        if (i > 0)
-                        {
-                            //合併
-                            Range range1 = sheet.Range["A1", "L8"];
-                            range2.Copy();
-                            sheet.Paste(range1, false);
-                        }
-
-                        #endregion
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-
-                        //初始ROW位置
-                        int indexInSheetStart = 9;
-                        object start = sheet.Cells[indexInSheetStart, 1];
-                        object end = sheet.Cells[indexInSheetStart + dt2.Rows.Count - 1, dt2.Columns.Count];
-                        ExportExcel(dt2, ref sheet, start, end);
-
-                        #region 表頭
-
-                        // 標題
-                        sheet.Range["A1"].Value =
-                            "OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode;
-                        // 檔案產出日
-                        sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-                        // 類型
-                        sheet.Range["A3"].Value = "類型：" + nblkCode;
-                        // 列印經辦
-                        sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-                        // 列印日期 
-                        sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-                        sheet.Range["A6"].Value =
-                            param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-                        sheet.Range["A7"].Value = param["flag"] == "1"
-                            ? "成功" + " 總卡數：" + param["num"]
-                            : "失敗" + " 總卡數：" + param["num"];
-
-                        #endregion
+                        switch (i)
+                        {
+                            case 0:
+                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                            case 1:
+                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                                break;
+                        }
                         #endregion
                     }
                 }
-                #endregion
+                
             }
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_2Report" + ".xlsx";
-            workbook.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
         }
         catch (Exception ex)
@@ -6324,10 +6296,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6460,6 +6428,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6468,8 +6437,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0514_3Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -6499,54 +6468,30 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0514_2Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 8, "工作表1"); //NPOI起始ROW=8
 
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 9;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            ExportExcel(dt, ref sheet, start, end);
-
-            #region 表頭
-
-            // 標題
-            sheet.Range["A1"].Value =
-                "OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + param["BLKCode"];
-            // 檔案產出日
-            sheet.Range["A2"].Value = "檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"];
-            // 類型
-            sheet.Range["A3"].Value = "類型：" + param["BLKCode"];
-            // 列印經辦
-            sheet.Range["A4"].Value = "列印經辦：" + param["Ouser"];
-            // 列印日期 
-            sheet.Range["A5"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            sheet.Range["A6"].Value =
-                param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum;
-            sheet.Range["A7"].Value = param["flag"] == "1"
-                ? "成功" + " 總卡數：" + param["num"]
-                : "失敗" + " 總卡數：" + param["num"];
-
-            #endregion
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + param["BLKCode"]);
+            sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+            sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + param["BLKCode"]);
+            sheet1.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+            sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+            sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
+            sheet1.AutoSizeColumn(4);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_3Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -6558,10 +6503,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6600,6 +6541,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:卡片數量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6608,8 +6550,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0515Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -6640,67 +6582,86 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0515Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 5, "工作表1"); //NPOI起始ROW=5
 
             int totalNum = dt.Rows.Count;
 
-            //初始ROW位置
-            int indexInSheetStart = 6;
-            int indexInSheetEnd = indexInSheetStart + totalNum;
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
 
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-            ExportExcel(dt, ref sheet, start, end);
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+            cs.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
 
-            #region 頁尾
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+            #endregion 文字格式
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            sheet1.GetRow(sheet1.LastRowNum).CreateCell(0).SetCellValue("合計");
+            for(int i=5; i < sheet1.LastRowNum+1; i++)
+            {
+                sheet1.GetRow(i).GetCell(0).CellStyle = cs;
+            }
+            
+            sheet1.AutoSizeColumn(0);
+            string formu = "";
+            for (int i = 1; i < 13; i++)
+            {
+                for (int row = 5; row < sheet1.LastRowNum; row++)
+                {
+                    sheet1.GetRow(row).GetCell(i).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("0");
+                    sheet1.GetRow(row).GetCell(i).SetCellValue(Int32.Parse(sheet1.GetRow(row).GetCell(i).StringCellValue.ToString()));
+                    sheet1.GetRow(row).GetCell(i).CellStyle = cs;
+                }
+            }
+            //設定、套用公式
+            for (int i = 1; i < 13; i++)
+            {
+                switch (i)
+                {
+                    case 1: formu = string.Format("SUM(B5:B{0})", sheet1.LastRowNum); break;
+                    case 2: formu = string.Format("SUM(C5:C{0})", sheet1.LastRowNum); break;
+                    case 3: formu = string.Format("SUM(D5:D{0})", sheet1.LastRowNum); break;
+                    case 4: formu = string.Format("SUM(E5:E{0})", sheet1.LastRowNum); break;
+                    case 5: formu = string.Format("SUM(F5:F{0})", sheet1.LastRowNum); break;
+                    case 6: formu = string.Format("SUM(G5:G{0})", sheet1.LastRowNum); break;
+                    case 7: formu = string.Format("SUM(H5:H{0})", sheet1.LastRowNum); break;
+                    case 8: formu = string.Format("SUM(I5:I{0})", sheet1.LastRowNum); break;
+                    case 9: formu = string.Format("SUM(J5:J{0})", sheet1.LastRowNum); break;
+                    case 10: formu = string.Format("SUM(K5:K{0})", sheet1.LastRowNum); break;
+                    case 11: formu = string.Format("SUM(L5:L{0})", sheet1.LastRowNum); break;
+                    case 12: formu = string.Format("SUM(M5:M{0})", sheet1.LastRowNum); break;
+                }
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(i);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).CellStyle = cs;
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellType(CellType.Formula);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellFormula(formu);
+                sheet1.AutoSizeColumn(i);
+            }
 
-            //合計位置
-            int indexFooter = indexInSheetEnd;
-            sheet.Range["A" + indexFooter].Value = "合計";
-            sheet.Range["B" + indexFooter].Formula = "=sum(B" + indexInSheetStart + ":B" + (indexFooter - 1) + ")";
-            sheet.Range["C" + indexFooter].Formula = "=sum(C" + indexInSheetStart + ":C" + (indexFooter - 1) + ")";
-            sheet.Range["D" + indexFooter].Formula = "=sum(D" + indexInSheetStart + ":D" + (indexFooter - 1) + ")";
-            sheet.Range["E" + indexFooter].Formula = "=sum(E" + indexInSheetStart + ":E" + (indexFooter - 1) + ")";
-            sheet.Range["F" + indexFooter].Formula = "=sum(F" + indexInSheetStart + ":F" + (indexFooter - 1) + ")";
-            sheet.Range["G" + indexFooter].Formula = "=sum(G" + indexInSheetStart + ":G" + (indexFooter - 1) + ")";
-            sheet.Range["H" + indexFooter].Formula = "=sum(H" + indexInSheetStart + ":H" + (indexFooter - 1) + ")";
-            sheet.Range["I" + indexFooter].Formula = "=sum(I" + indexInSheetStart + ":I" + (indexFooter - 1) + ")";
-            sheet.Range["J" + indexFooter].Formula = "=sum(J" + indexInSheetStart + ":J" + (indexFooter - 1) + ")";
-            sheet.Range["K" + indexFooter].Formula = "=sum(K" + indexInSheetStart + ":K" + (indexFooter - 1) + ")";
-            sheet.Range["L" + indexFooter].Formula = "=sum(L" + indexInSheetStart + ":L" + (indexFooter - 1) + ")";
-            sheet.Range["M" + indexFooter].Formula = "=sum(M" + indexInSheetStart + ":M" + (indexFooter - 1) + ")";
-
-            var range = sheet.Range["A" + indexFooter, "M" + indexFooter];
-            CommonStyle(range);
-
-            #endregion
-
-            #region 表頭
-
-            // 標題
-            sheet.Range["A1"].Value = "卡片數量統計表 - " + param["FactoryName"];
-            // 統計日期
-            sheet.Range["A2"].Value = "統計日期：" + param["CountS"] + "~" + param["CountE"];
-            // 列印日期 
-            sheet.Range["M2"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            #endregion
-
+            sheet1.GetRow(0).GetCell(0).SetCellValue("卡片數量統計表 - " + param["FactoryName"]);
+            sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期：" + param["CountS"] + "~" + param["CountE"]);
+            sheet1.GetRow(1).GetCell(12).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0515Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion 匯入文檔結束
@@ -6712,10 +6673,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6793,6 +6750,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:自取改限掛大宗掛號單 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/23
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6801,8 +6759,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0521Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -6832,54 +6790,79 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0521Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 6, "工作表1"); //NPOI起始ROW=6
 
             int totalNum = dt.Rows.Count;
+            #region 文字格式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
-            // 初始ROW位置
-            int indexInSheetStart = 7;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
 
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
-            #region 頁尾
-
-            //合計位置
-            int indexInSheetEnd = indexInSheetStart + totalNum;
-            int indexFooter = indexInSheetEnd;
-            sheet.Range["B" + indexFooter].Value = "上開掛號函件共　" + totalNum + "　件照收無誤";
-            sheet.Range["B" + (indexFooter + 1)].Value = "郵資共計           元";
-            sheet.Range["E" + indexFooter].Value = "共 " + totalNum + " 卡";
-
-            var range = sheet.Range["A" + indexFooter, "E" + (indexFooter + 1)];
-            CommonStyle(range);
+            XSSFCellStyle ra = (XSSFCellStyle)wb.CreateCellStyle();
+            ra.BorderBottom = BorderStyle.Thin;
+            ra.BorderLeft = BorderStyle.Thin;
+            ra.BorderTop = BorderStyle.Thin;
+            ra.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            ra.WrapText = true;
+            //文字置中
+            ra.VerticalAlignment = VerticalAlignment.Center;
+            ra.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Right;
             #endregion
 
-            #region 表頭
-
-            // 標題
-            sheet.Range["A3"].Value = "日期:" + param["SelfPickDate"] + "　空號 : ";
-
-            #endregion
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            for (int i = 0; i < 5; i++) 
+            {
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(i);
+                sheet1.GetRow(sheet1.LastRowNum).GetCell(i).CellStyle = cs;
+                switch (i)
+                {
+                    case 1:
+                        sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellValue("上開掛號函件共　" + totalNum + "　件照收無誤");
+                        sheet1.GetRow(sheet1.LastRowNum).GetCell(i).CellStyle = ra;
+                        break;
+                    case 4:
+                        sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellValue("共 " + totalNum + " 卡");
+                        break;
+                }
+            }
+            sheet1.CreateRow(sheet1.LastRowNum + 1);
+            for (int i = 0; i < 5; i++)
+            {
+                sheet1.GetRow(sheet1.LastRowNum).CreateCell(i).CellStyle = cs;
+                if (i == 1) 
+                { 
+                    sheet1.GetRow(sheet1.LastRowNum).GetCell(i).SetCellValue("郵資共計           元");
+                    sheet1.GetRow(sheet1.LastRowNum).GetCell(i).CellStyle = ra;
+                }
+            }
+            sheet1.GetRow(2).GetCell(0).SetCellValue("日期:" + param["SelfPickDate"] + "　空號 : ");
+            sheet1.SetColumnWidth(1, (int)((37 + 0.72) * 256));
 
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0521Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -6891,10 +6874,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -6972,6 +6951,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:操作LOG紀錄 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/23
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6980,8 +6960,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0604Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -7027,33 +7007,24 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0604Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 2, "工作表1");
 
             int totalNum = dt.Rows.Count;
 
-            // 初始ROW位置
-            int indexInSheetStart = 3;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.SetColumnWidth(0, (int)(21.5 + 0.72) * 256);
+            sheet1.AutoSizeColumn(2);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0604Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -7065,10 +7036,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -7081,6 +7048,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:更改寄送方式記錄查詢 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/24
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/09_Ares_Stanley-修正欄寬
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -7089,8 +7057,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0511Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -7120,33 +7088,25 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0511Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1"); //NPOI起始ROW=1
 
             int totalNum = dt.Rows.Count;
 
-            // 初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
+            ISheet sheet1 = wb.GetSheet("工作表1");
 
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
+            for (int col = 0; col < 9; col++) { sheet1.AutoSizeColumn(col); }
+
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0511Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -7158,10 +7118,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
     /// <summary>
@@ -7239,6 +7195,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:郵件交寄狀況檢核-2 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/24
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -7247,8 +7204,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0512_2Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -7294,33 +7251,30 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0512_2Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 2, "工作表1"); //NPOI起始ROW=2
 
             int totalNum = dt.Rows.Count;
 
-            // 初始ROW位置
-            int indexInSheetStart = 3;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            //設定欄寬
+            sheet1.SetColumnWidth(1, (int)((25.5 + 0.72) * 256));
+            for(int row = 2; row < sheet1.LastRowNum + 1; row++)
+            {
+                for(int col = 0; col < 5; col++)
+                {
+                    sheet1.GetRow(row).GetCell(col).CellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Right;
+                }
+            }
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0512_2Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -7332,10 +7286,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -7348,6 +7298,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:郵件交寄狀況檢核-1 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/24
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -7356,8 +7307,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0512_1Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -7403,33 +7354,23 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0512_1Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 1, "工作表1"); //NPOI起始ROW=1
 
             int totalNum = dt.Rows.Count;
 
-            // 初始ROW位置
-            int indexInSheetStart = 2;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.SetColumnWidth(0,(int)((25+0.72)*256));
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0512_1Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -7441,10 +7382,6 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
 
@@ -7457,6 +7394,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:註銷記錄處理>記錄確認 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/24
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -7465,8 +7403,8 @@ WHERE CANCELOASAFILE = @STRFILE
     public static bool CreateExcelFile_0209Report(Dictionary<string, string> param, ref string strPathFile,
         ref string strMsgId)
     {
-        // 創建一個Excel實例
-        ExcelApplication excel = new ExcelApplication();
+        
+        
         try
         {
             // 檢查目錄，並刪除以前的文檔資料
@@ -7512,62 +7450,38 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            // 不顯示Excel文件，如果為true則顯示Excel文件
-            excel.Visible = false;
-            // 停用警告訊息
-            excel.Application.DisplayAlerts = false;
-
             string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
                                       UtilHelper.GetAppSettings("ReportTemplate") + "0209Report.xlsx";
-            Workbook workbook = excel.Workbooks.Open(strExcelPathFile);
-
-            Worksheet sheet = (Worksheet)workbook.Sheets[1];
+            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            XSSFWorkbook wb = new XSSFWorkbook(fs);
+            ExportExcelForNPOI(dt, ref wb, 5, "工作表1"); //NPOI起始ROW=5
 
             int totalNum = dt.Rows.Count;
 
-            // 初始ROW位置
-            int indexInSheetStart = 6;
-            object start = sheet.Cells[indexInSheetStart, 1];
-            object end = sheet.Cells[indexInSheetStart + dt.Rows.Count - 1, dt.Columns.Count];
-
-            // 轉入結果資料
-            ExportExcel(dt, ref sheet, start, end);
-
-
-            #region 表頭
-
-            // 註銷時間
-            sheet.Range["A2"].Value = "註銷時間：" + param["strDate"];
-
+            ISheet sheet1 = wb.GetSheet("工作表1");
+            sheet1.GetRow(1).GetCell(0).SetCellValue("註銷時間：" + param["strDate"]);
             // 來源
             if (param["strSource"] == "0")
             {
-                sheet.Range["A3"].Value = "來源：OU檔註銷";
+                sheet1.GetRow(2).GetCell(0).SetCellValue("來源：OU檔註銷");
             }
             else if (param["strSource"] == "1")
             {
-                sheet.Range["A3"].Value = "來源：人工注銷";
+                sheet1.GetRow(2).GetCell(0).SetCellValue("來源：人工註銷");
             }
             else
             {
-                sheet.Range["A3"].Value = "來源：退件注銷";
+                sheet1.GetRow(2).GetCell(0).SetCellValue("來源：退件註銷");
             }
-
-            // 檔名
-            sheet.Range["A4"].Value = "檔名：" + param["strFile"];
-
-            // 列印日期 
-            sheet.Range["D4"].Value = "列印日期：" + DateTime.Now.ToString("yyyy/MM/dd");
-
-            #endregion
-
+            sheet1.GetRow(3).GetCell(0).SetCellValue("檔名：" + param["strFile"]);
+            sheet1.GetRow(3).GetCell(3).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0209Report" + ".xlsx";
-            sheet.SaveAs(strPathFile);
-
-            // 關閉Excel文件且不保存
-            excel.ActiveWorkbook.Close(false);
+            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            wb.Write(fs1);
+            fs1.Close();
+            fs.Close();
             return true;
 
             #endregion
@@ -7579,72 +7493,8 @@ WHERE CANCELOASAFILE = @STRFILE
         }
         finally
         {
-            // 退出 Excel
-            excel.Quit();
-            // 將 Excel 實例設置為空
-            excel = null;
         }
     }
-
-    #endregion
-
-
-    #region 匯入EXCEL資料(舊版)
-
-    /// <summary>
-    /// 專案代號:20200031-CSIP EOS
-    /// 功能說明:共用匯入EXCEL資料 - Excel
-    /// 作    者:Ares Luke
-    /// 創建時間:2020/06/29
-    /// </summary>
-    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    //private static void ExportExcel(DataTable dt, ref Worksheet sheet, int intRows)
-    //{
-
-
-    //    // 總筆數
-    //    int totalRowsNum = dt.Rows.Count;
-
-    //    // 報表欄位筆數
-    //    int totalColumnsNum = dt.Columns.Count;
-    //    try
-
-    //    {
-    //        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();//引用stopwatch物件
-    //        sw.Reset();//碼表歸零
-    //        sw.Start();//碼表開始計時
-
-    //        #region Excel 依序塞資料
-
-    //        for (int intRowsLoop = 1; intRowsLoop <= totalRowsNum; intRowsLoop++)
-    //        {
-    //            for (int intColumnsLoop = 1; intColumnsLoop <= totalColumnsNum; intColumnsLoop++)
-    //            {
-    //                sheet.Cells[intRowsLoop + intRows, intColumnsLoop] = dt.Rows[intRowsLoop - 1][intColumnsLoop - 1];
-    //            }
-    //        }
-
-    //        #endregion
-
-    //        #region Excel Style 樣式
-
-    //        var range = sheet.Range[sheet.Cells[intRows, 1], sheet.Cells[totalRowsNum + intRows, totalColumnsNum]];
-    //        CommonStyle(range);
-
-    //        #endregion
-
-
-    //        sw.Stop();//碼錶停止
-    //                  //印出所花費的總豪秒數
-    //        string result1 = sw.Elapsed.TotalMilliseconds.ToString();
-    //        test("舊版:" + result1);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logging.Log(ex);
-    //        throw;
-    //    }
-    //}
 
     #endregion
 
@@ -7655,80 +7505,97 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:共用匯入EXCEL資料 - Excel
     /// 作    者:Ares Luke
     /// 創建時間:2020/08/06
+    /// 修改時間：2020/11/04_Ares_Stanley-新增NPOI、移除原有ExcelExport function
     /// </summary>
     /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    public static void ExportExcel(DataTable dt, ref Worksheet sheet, object start, object end, Boolean allNumber = false)
-    {
 
+    private static void ExportExcelForNPOI(DataTable dt, ref XSSFWorkbook wb, Int32 start, String sheetName)
+    {
         try
         {
-            object[,] data = new object[dt.Rows.Count, dt.Columns.Count];
-            int i = 0;
-            foreach (DataRow row in dt.Rows)
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
+
+            if(dt != null && dt.Rows.Count != 0)
             {
-                int j = 0;
-                foreach (DataColumn col in dt.Columns)
+                int count = start;
+                ISheet sheet = wb.GetSheet(sheetName);
+                int cols = dt.Columns.Count;
+                foreach(DataRow dr in dt.Rows)
                 {
-                    if(allNumber)
+                    int cell = 0;
+                    IRow row = (IRow)sheet.CreateRow(count);
+                    row.CreateCell(0).SetCellValue(count.ToString());
+                    for(int i = 0; i < cols; i++)
                     {
-                        Int32 num;
-                        if (Int32.TryParse(row[col].ToString(), out num))
-                            data[i, j++] = num;
-                        else
-                            data[i, j++] = row[col].ToString();
+                        row.CreateCell(cell).SetCellValue(dr[i].ToString());
+                        row.GetCell(cell).CellStyle = cs;
+                        cell++;
                     }
-                    else
-                    data[i, j++] = row[col].ToString();
+                    count++;
                 }
-                i++;
             }
-
-            Range range = sheet.Range[start, end];
-            range.NumberFormatLocal = "@";
-            range.Value2 = data;
-
-
-            #region Excel Style 樣式
-
-            CommonStyle(range);
-
-            #endregion
         }
         catch (Exception ex)
         {
             Logging.Log(ex);
             throw;
         }
-
     }
 
-    #endregion
-
-
-
-
-    #region CommonStyle
-
-    /// <summary>
-    /// 專案代號:20200031-CSIP EOS
-    /// 功能說明:共用CommonStyle - Excel
-    /// 作    者:Ares Luke
-    /// 創建時間:2020/07/16
-    /// </summary>
-    /// <returns>Excel生成成功標示：True--成功；False--失敗</returns>
-    private static void CommonStyle(Range range)
+    private static void ExportExcelForNPOI_filter(DataTable dt, ref XSSFWorkbook wb, Int32 start, Int32 delColumn, String sheetName)
     {
         try
         {
-            #region Excel Style 樣式
+            XSSFCellStyle cs = (XSSFCellStyle)wb.CreateCellStyle();
+            cs.BorderBottom = BorderStyle.Thin;
+            cs.BorderLeft = BorderStyle.Thin;
+            cs.BorderTop = BorderStyle.Thin;
+            cs.BorderRight = BorderStyle.Thin;
+           
+            //啟動多行文字
+            cs.WrapText = true;
+            //文字置中
+            cs.VerticalAlignment = VerticalAlignment.Center;
 
-            range.Font.Size = 12;
-            range.Font.Name = "新細明體";
-            range.Borders.LineStyle = 1;
-            range.EntireColumn.AutoFit();
-            range.EntireRow.AutoFit();
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+            font1.FontName = "新細明體";
+            cs.SetFont(font1);
 
-            #endregion
+            if (dt != null && dt.Rows.Count != 0)
+            {
+                int count = start;
+                ISheet sheet = wb.GetSheet(sheetName);
+                int cols = dt.Columns.Count-delColumn;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    int cell = 0;
+                    IRow row = (IRow)sheet.CreateRow(count);
+                    row.CreateCell(0).SetCellValue(count.ToString());
+                    for (int i = 0; i < cols; i++)
+                    {
+                        row.CreateCell(cell).SetCellValue(dr[i].ToString());
+                        row.GetCell(cell).CellStyle = cs;
+                        cell++;
+                    }
+                    count++;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -7738,4 +7605,5 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
+
 }

@@ -67,7 +67,7 @@ public class AutoImportFiles : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:
+    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -285,7 +285,7 @@ public class AutoImportFiles : Quartz.IJob
             {
                 int ZipCount = 0;
                 string strFileInfo = rowLocalFile["ZipFileName"].ToString();
-                JobHelper.SaveLog("嘗試解壓縮檔案：" + strFileInfo);
+                JobHelper.SaveLog("嘗試解壓縮檔案：" + strFileInfo, LogState.Info);
                 bool blnResult = JobHelper.ZipExeFile(strLocalPath, strLocalPath + rowLocalFile["ZipFileName"].ToString(), rowLocalFile["ZipPwd"].ToString(), ref ZipCount);
                 
                 //*解壓成功
@@ -317,25 +317,29 @@ public class AutoImportFiles : Quartz.IJob
 
             #region txt格式判斷
             //*讀取folder中的txt檔案并判斷格式
+            //修改時間:2020/11/05_Ares_Stanley-新增檔名判斷，避免錯誤的FormatStates回寫到正確的資料內
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 string[] FileArray = FileTools.GetFileList(rowLocalFile["FolderName"].ToString());
                 int iCount = 0;
                 foreach (string strTmps in FileArray)
                 {
-                    //*txt檔名格式正確
-                    if (JobHelper.ValidateTxt(FileArray[iCount]))
+                    if(strTmps.ToString() == rowLocalFile["FolderName"].ToString() + rowLocalFile["TxtFileName"].ToString())
                     {
-                        rowLocalFile["FormatStates"] = "S";
+                        //*txt檔名格式正確
+                        if (JobHelper.ValidateTxt(FileArray[iCount]))
+                        {
+                            rowLocalFile["FormatStates"] = "S";
+                        }
+                        //*txt檔名格式錯誤
+                        else
+                        {
+                            rowLocalFile["FormatStates"] = "F";
+                            JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101001, rowLocalFile["ZipFileName"].ToString()));
+                            continue;
+                        }
+                        iCount++;
                     }
-                    //*txt檔名格式錯誤
-                    else
-                    {
-                        rowLocalFile["FormatStates"] = "F";
-                        JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101001, rowLocalFile["ZipFileName"].ToString()));
-                        continue;
-                    }
-                    iCount++;
                 }
                 if (FileArray.Length < 0)
                 {

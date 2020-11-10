@@ -120,7 +120,7 @@ public partial class P060519000001 : PageBase
     /// 作    者:Ares JaJa
     /// 修改時間:2020/08/17
     /// 修改歷程:
-    /// 2020/10/05 Area Luke 新增需求:查詢欄位【郵寄日】、【掛號號碼】，與製卡日期條件至少擇一輸入
+    /// 2020/10/05 Ares Luke 新增需求:查詢欄位【郵寄日】、【掛號號碼】，與製卡日期條件至少擇一輸入
     /// </summary>
     protected Boolean chkCond(ref Dictionary<String, String> param)
     {
