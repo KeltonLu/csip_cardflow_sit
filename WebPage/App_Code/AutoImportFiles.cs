@@ -60,6 +60,7 @@ public class AutoImportFiles : Quartz.IJob
     protected Boolean isReRun = false;
     protected DateTime inDate = new DateTime();
     protected DateTime tranDate = new DateTime();
+    protected DateTime fileDate = new DateTime();
     #endregion
 
     #region 程式入口
@@ -91,73 +92,56 @@ public class AutoImportFiles : Quartz.IJob
                 {
                     string strParam = context.JobDetail.JobDataMap["param"].ToString();
                     string[] arrStrParam = strParam.Split(',');
-                    if (arrStrParam.Length == 3)
+
+                    Boolean reRunErr = false;
+                    if (arrStrParam.Length == 4)
                     {
                         DateTime tempDt;
                         if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
                         {
-                            //轉檔日
-                            inDate = DateTime.Parse(arrStrParam[0]);
-                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                            //檔案日
+                            fileDate = DateTime.Parse(arrStrParam[0]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定檔案日參數:" + arrStrParam[0], LogState.Info);
                         }
                         else
-                        {
-                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
-                            return;
-                        }
+                            reRunErr = true;
 
                         if (!string.IsNullOrWhiteSpace(arrStrParam[1]) && DateTime.TryParse(arrStrParam[1], out tempDt))
                         {
-                            //製卡日
-                            tranDate = DateTime.Parse(arrStrParam[1]);
-                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
+                            //轉檔日
+                            inDate = DateTime.Parse(arrStrParam[1]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定轉檔日參數:" + arrStrParam[1], LogState.Info);
                         }
                         else
-                        {
-                            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
-                            return;
-                        }
+                            reRunErr = true;
 
-                        isReRun = true;
+                        if (!string.IsNullOrWhiteSpace(arrStrParam[2]) && DateTime.TryParse(arrStrParam[2], out tempDt))
+                        {
+                            //製卡日
+                            tranDate = DateTime.Parse(arrStrParam[2]);
+                            JobHelper.SaveLog(strJobId + ",檢核參數成功,設定製卡日參數:" + arrStrParam[2], LogState.Info);
+                        }
+                        else
+                            reRunErr = true;
                     }
                     else
                     {
+                        reRunErr = true;
+                    }
+
+                    if (reRunErr)
+                    {
                         JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
+                        BRM_LBatchLog.Insert(strFunctionKey, strJobId, StartTime, DateTime.Now, "F", "ReRun參數異常");
                         return;
+                    }
+                    else
+                    {
+                        isReRun = true;
                     }
                 }
             }
             #endregion
-
-            //#region 判斷是否手動啟動排程
-            //if (context.JobDetail.JobDataMap["param"] != null)
-            //{
-            //    if (!string.IsNullOrWhiteSpace(context.JobDetail.JobDataMap["param"].ToString()))
-            //    {
-            //        string strParam = context.JobDetail.JobDataMap["param"].ToString();
-            //        string[] arrStrParam = strParam.Split(',');
-            //        if (arrStrParam.Length == 2)
-            //        {
-            //            DateTime tempDt;
-            //            if (!string.IsNullOrWhiteSpace(arrStrParam[0]) && DateTime.TryParse(arrStrParam[0], out tempDt))
-            //            {
-            //                jobDate = DateTime.Parse(arrStrParam[0]);
-            //                JobHelper.SaveLog(strJobId + ",檢核參數成功,設定參數:" + strParam, LogState.Info);
-            //            }
-            //            else
-            //            {
-            //                JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
-            //                return;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            JobHelper.SaveLog(strJobId + ",檢核參數異常,設定參數:" + strParam, LogState.Info);
-            //            return;
-            //        }
-            //    }
-            //}
-            //#endregion
 
             #region 計數器歸零
             SCount = 0;
@@ -233,6 +217,10 @@ public class AutoImportFiles : Quartz.IJob
                         strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         //FTP 檔名
                         string strFileInfo = jobDate.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
+                        if (isReRun)
+                        {
+                            strFileInfo = fileDate.ToString("yyyyMMdd") + rowFileInfo["FtpFileName"].ToString() + ".ZIP";
+                        }
                         //FTP 路徑+檔名
                         string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileInfo;
 
@@ -1479,7 +1467,7 @@ public class AutoImportFiles : Quartz.IJob
     /// 功能說明:匯入資料至DB
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/04
-    /// 修改記錄:
+    /// 修改記錄: 2020/11/12_Ares_Stanley-修改匯入失敗錯誤
     /// </summary>
     /// <param name="dtDetail"></param>
     /// <param name="strFileName"></param>
@@ -1546,7 +1534,7 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.OutStore_Status = "0";
                     TCardBaseInfo.IntoStore_Status = "0";
                     TCardBaseInfo.Urgency_Flg = "0";
-                    if (bForWeb)
+                    if (bForWeb || isReRun)
                     {
                         TCardBaseInfo.indate1 = strIndate;
                         TCardBaseInfo.trandate = strTranDate;
@@ -1583,10 +1571,25 @@ public class AutoImportFiles : Quartz.IJob
                         JobErrInfo.ImportTime = DateTime.Now.ToString("yyyy/MM/dd");    //匯入時間
                         JobErrInfo.LocalFilePath = strPath;                             //檔案路徑
                         JobErrInfo.LoadFlag = "0";                                      //
-                        JobErrInfo.Reason = Resources.JobResource.Job0101003;           //檢核失敗的原因
+                        JobErrInfo.Reason = Resources.JobResource.Job0000014;           //檢核失敗的原因
                         BRM_JobErrorInfo.Insert(JobErrInfo, ref strMsgIDs);
-
-                        JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                        #region 重複卡號隱碼
+                        string star = "";
+                        string cardNoHead ="";
+                        string cardNoFoot = "";
+                        string cardNoLog = "";
+                        if (TCardBaseInfo.cardno.Length > 10)
+                        {
+                            for (int starN = 0; starN< TCardBaseInfo.cardno.Length - 10; starN++)
+                            {
+                                star += "*";
+                            }
+                            cardNoHead = TCardBaseInfo.cardno.Substring(0, 6);
+                            cardNoFoot = TCardBaseInfo.cardno.Substring(TCardBaseInfo.cardno.Length - 4);
+                            cardNoLog = cardNoHead +  star + cardNoFoot; 
+                        }
+                        #endregion
+                        JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003 + " " + "錯誤卡號：" + cardNoLog + " " + "錯誤原因：" + JobErrInfo.Reason, strFileName));
                     }
 
                     BRM_CardDataChange.UpdateIndate(TCardBaseInfo);
@@ -1689,7 +1692,23 @@ public class AutoImportFiles : Quartz.IJob
                         JobErrInfo.LoadFlag = "0";                                      //
                         JobErrInfo.Reason = Resources.JobResource.Job0000014;           //檢核失敗的原因
                         BRM_JobErrorInfo.Insert(JobErrInfo, ref strMsgIDs);
-                        JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003, strFileName));
+                        #region 重複卡號隱碼
+                        string star = "";
+                        string cardNoHead = "";
+                        string cardNoFoot = "";
+                        string cardNoLog = "";
+                        if (TCardBaseInfo.cardno.Length > 10)
+                        {
+                            for (int starN = 0; starN < TCardBaseInfo.cardno.Length - 10; starN++)
+                            {
+                                star += "*";
+                            }
+                            cardNoHead = TCardBaseInfo.cardno.Substring(0, 6);
+                            cardNoFoot = TCardBaseInfo.cardno.Substring(TCardBaseInfo.cardno.Length - 4);
+                            cardNoLog = cardNoHead + star + cardNoFoot;
+                        }
+                        #endregion
+                        JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101003 + " " + "錯誤卡號：" + cardNoLog + " " + "錯誤原因：" + JobErrInfo.Reason, strFileName));
                         JobHelper.SaveLog("上述檔案有重複的資料！", LogState.Info);
                     }
                 }
@@ -1699,4 +1718,18 @@ public class AutoImportFiles : Quartz.IJob
         return blnResult;
     }
     #endregion
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明: 解決手動上傳匯入，重複資料Insert BRM_JobErrorInfo無JobID與路徑問題
+    /// 作    者: Ares Luke
+    /// 創建時間: 2020/11/12
+    /// 修改記錄:
+    /// </summary>
+    /// <param name="webFilePath"></param>
+    public void BForWebErrInfo(string webFilePath)
+    {
+        this.strJobId = "0101";
+        this.strPath = webFilePath;
+    }
 }

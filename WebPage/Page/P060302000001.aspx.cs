@@ -48,6 +48,8 @@ public partial class P060302000001 : PageBase
             this.gpList.RecordCount = 0;
             this.grvUserView.Visible = false;
             ShowControlsText();
+
+            radError_CheckedChanged();
         }
     }
 
@@ -465,6 +467,7 @@ public partial class P060302000001 : PageBase
         this.ddlFile.Enabled = true;
         this.dprInDate.Enable = true;
         this.dprTranDate.Enable = true;
+        this.ddlFactory.Enabled = true;
     }
 
     /// <summary>
@@ -477,6 +480,17 @@ public partial class P060302000001 : PageBase
     /// <param name="e"></param>
     protected void radError_CheckedChanged(object sender, EventArgs e)
     {
+        radError_CheckedChanged();
+    }
+
+    /// <summary>
+    /// 功能說明:選擇大宗檔錯誤資料查詢-Init與Change
+    /// 作    者:Area Luke
+    /// 創建時間:2020/11/12
+    /// 修改記錄: 
+    /// </summary>
+    protected void radError_CheckedChanged()
+    {
         this.fupFile.Enabled = false;
         this.btnUpload.Enabled = false;
         this.btnSearch.Enabled = true;
@@ -484,6 +498,7 @@ public partial class P060302000001 : PageBase
         this.ddlFile.Enabled = false;
         this.dprInDate.Enable = false;
         this.dprTranDate.Enable = false;
+        this.ddlFactory.Enabled = false;
     }
     #endregion
 
@@ -685,6 +700,10 @@ public partial class P060302000001 : PageBase
                 else
                 {
                     jobHelper.SaveLog(DateTime.Now.ToString() + "06_06030200_009");
+
+                    // 修改JOB 0101全域變數
+                    autoImport.BForWebErrInfo(strSavePath);
+
                     //*匯入檢核正確的資料至卡片基本檔
                     if (autoImport.ImportToDB(dtDetail, strFileName, eCardBaseInfo, strCardType,true,this.dprInDate.Text.Trim(),this.dprTranDate.Text.Trim()))
                     {

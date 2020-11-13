@@ -364,8 +364,8 @@ select a.id,
        (add1 + add2 + add3) as address,
        branch_id,
        seq
-from tbl_Card_BaseInfo a
-         left join tbl_Card_BackInfo b on
+from tbl_Card_BaseInfo a WITH (nolock)
+         left join tbl_Card_BackInfo b WITH (nolock) on
         a.action = b.action and a.id = b.id and a.cardno = b.cardno and a.trandate = b.trandate
 where (@backdate = 'NULL' or b.backdate in (select max(b.Backdate)
                                             from tbl_Card_BaseInfo a
@@ -4632,7 +4632,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/10
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4737,6 +4737,7 @@ WHERE CANCELOASAFILE = @STRFILE
             }
             //設定欄位資料
             sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期："+ param["OstartDate"] + "~" + param["OendDate"]);
+            sheet1.GetRow(1).GetCell(5).SetCellValue("列印經辦：" + param["Ouser"]);
             sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
             sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
@@ -4851,7 +4852,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/10
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-修正報表錯誤
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4897,33 +4898,12 @@ WHERE CANCELOASAFILE = @STRFILE
             #endregion 文字格式
 
             ISheet sheet1 = wb.GetSheet("工作表1");
-            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
-            wb.CloneSheet(0);
-            wb.CloneSheet(0);
-            ISheet sheet2 = wb.GetSheet("強停(B) (2)");//sheet2 更名
-            ISheet sheet3 = wb.GetSheet("強停(B) (3)");//sheet3 更名
-            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
-            wb.SetSheetName(2, sheet1.GetRow(10).GetCell(0).StringCellValue.ToString());
-            //移除sheet 名
-            for(int i =0; i<3; i++)
+            for (int row = 8; row < sheet1.LastRowNum + 1; row++)
             {
-                switch (i)
+                if (sheet1.GetRow(row) != null)
                 {
-                    case 0:
-                        sheet1.RemoveRow(sheet1.GetRow(8));
-                        sheet1.RemoveRow(sheet1.GetRow(9));
-                        sheet1.RemoveRow(sheet1.GetRow(10));
-                        break;
-                    case 1:
-                        sheet2.RemoveRow(sheet2.GetRow(8));
-                        sheet2.RemoveRow(sheet2.GetRow(9));
-                        sheet2.RemoveRow(sheet2.GetRow(10));
-                        break;
-                    case 2:
-                        sheet3.RemoveRow(sheet3.GetRow(8));
-                        sheet3.RemoveRow(sheet3.GetRow(9));
-                        sheet3.RemoveRow(sheet3.GetRow(10));
-                        break;
+                    sheet1.RemoveRow(sheet1.GetRow(row));
+
                 }
             }
             
@@ -4934,101 +4914,52 @@ WHERE CANCELOASAFILE = @STRFILE
                 //* 查詢數據
                 DataSet dstSearchData = searchData05130(param, blkCode);
 
-               
-                switch (i) { 
-                    case 0:
-                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                    case 1:
-                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                    case 2:
-                        sheet3.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                }
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        switch (i)
+                        if (i == 0)
                         {
-                            case 0:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet1.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 10; col++)
-                                        {
-                                            sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet1.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                    
-                                }
-                                break;
-                            case 1:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet2.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 10; col++)
-                                        {
-                                            sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet2.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                    
-                                }
-                                break;
-                            case 2:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet3.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 10; col++)
-                                        {
-                                            sheet3.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet3.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet3.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                    
-                                }
-                                break;
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, blkCode);
+                        }
+                        if (i > 0)
+                        {
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, blkCode);
+                        }
+                        ISheet sheetN = wb.GetSheet(blkCode);
+                        for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                        {
+                            sheetN.CreateRow(row);
+                            int dnum = row - 8;
+                            for (int col = 0; col < 10; col++)
+                            {
+                                sheetN.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                sheetN.GetRow(row).GetCell(col).CellStyle = cs;
+                                sheetN.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                            }
+
                         }
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-                        switch(i)
-                        {
-                            case 0:
-                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 1:
-                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 2:
-                                sheet3.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet3.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet3.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet3.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet3.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                        }
+                        sheetN.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        sheetN.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                        sheetN.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                        sheetN.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+                        sheetN.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                        sheetN.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                        sheetN.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
                         #endregion
-                }
+                    }
                 }
                 
             }
+
+            wb.RemoveSheetAt(0);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513_0Report" + ".xlsx";
@@ -5180,7 +5111,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/15
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-修正報表錯誤
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5227,33 +5158,12 @@ WHERE CANCELOASAFILE = @STRFILE
             #endregion 文字格式
 
             ISheet sheet1 = wb.GetSheet("工作表1");
-            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
-            wb.CloneSheet(0);
-            wb.CloneSheet(0);
-            ISheet sheet2 = wb.GetSheet("強停(B) (2)");//sheet2 更名
-            ISheet sheet3 = wb.GetSheet("強停(B) (3)");//sheet3 更名
-            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
-            wb.SetSheetName(2, sheet1.GetRow(10).GetCell(0).StringCellValue.ToString());
-            //移除sheet名
-            for (int i = 0; i < 3; i++)
+            for (int row = 8; row < sheet1.LastRowNum+1 ; row++)
             {
-                switch (i)
+                if (sheet1.GetRow(row) != null)
                 {
-                    case 0:
-                        sheet1.RemoveRow(sheet1.GetRow(8));
-                        sheet1.RemoveRow(sheet1.GetRow(9));
-                        sheet1.RemoveRow(sheet1.GetRow(10));
-                        break;
-                    case 1:
-                        sheet2.RemoveRow(sheet2.GetRow(8));
-                        sheet2.RemoveRow(sheet2.GetRow(9));
-                        sheet2.RemoveRow(sheet2.GetRow(10));
-                        break;
-                    case 2:
-                        sheet3.RemoveRow(sheet3.GetRow(8));
-                        sheet3.RemoveRow(sheet3.GetRow(9));
-                        sheet3.RemoveRow(sheet3.GetRow(10));
-                        break;
+                    sheet1.RemoveRow(sheet1.GetRow(row));
+
                 }
             }
 
@@ -5264,102 +5174,51 @@ WHERE CANCELOASAFILE = @STRFILE
                 //* 查詢數據
                 DataSet dstSearchData = searchData05132(param, blkCode);
 
-                switch (i)
-                {
-                    case 0:
-                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                    case 1:
-                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                    case 2:
-                        sheet3.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
-                        break;
-                }
-
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        switch (i)
+                        if (i == 0)
                         {
-                            case 0:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet1.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 12; col++)
-                                        {
-                                            sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet1.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                }
-                                break;
-                            case 1:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet2.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 12; col++)
-                                        {
-                                            sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet2.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                    
-                                }
-                                break;
-                            case 2:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet3.CreateRow(row);
-                                    int dnum = row - 8;
-                                        for (int col = 0; col < 12; col++)
-                                        {
-                                            sheet3.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                            sheet3.GetRow(row).GetCell(col).CellStyle = cs;
-                                            sheet3.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        }
-                                    
-                                }
-                                break;
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, blkCode);
+                        }
+                        if (i > 0)
+                        {
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, blkCode);
+                        }
+                        ISheet sheetN = wb.GetSheet(blkCode);
+                        for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                        {
+                            sheetN.CreateRow(row);
+                            int dnum = row - 8;
+                            for (int col = 0; col < 12; col++)
+                            {
+                                sheetN.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                sheetN.GetRow(row).GetCell(col).CellStyle = cs;
+                                sheetN.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                            }
+
                         }
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-
-                        switch (i)
-                        {
-                            case 0:
-                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 1:
-                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 2:
-                                sheet3.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet3.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet3.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
-                                sheet3.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet3.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                        }
+                        sheetN.GetRow(0).GetCell(0).SetCellValue("OASA管制解管批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + blkCode);
+                        sheetN.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                        sheetN.GetRow(2).GetCell(0).SetCellValue("類型：" + blkCode);
+                        sheetN.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+                        sheetN.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                        sheetN.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                        sheetN.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
                         #endregion
                     }
                 }
                 
             }
+            wb.RemoveSheetAt(0);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513_2Report" + ".xlsx";
@@ -5512,7 +5371,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5618,6 +5477,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期：" + param["OstartDate"] + "~" + param["OendDate"]);
             sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
             sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(5).SetCellValue("列印經辦：" + param["Ouser"]);
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514Report" + ".xlsx";
@@ -5730,7 +5590,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表_0 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-修正報表錯誤
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5776,22 +5636,12 @@ WHERE CANCELOASAFILE = @STRFILE
             #endregion 文字格式
 
             ISheet sheet1 = wb.GetSheet("工作表1");
-            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
-            wb.CloneSheet(0);
-            ISheet sheet2 = wb.GetSheet("B (2)");//sheet2 更名
-            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
-            for (int i = 0; i < 3; i++)
+            for (int row = 8; row < sheet1.LastRowNum; row++)
             {
-                switch (i)
+                if (sheet1.GetRow(row) != null)
                 {
-                    case 0:
-                        sheet1.RemoveRow(sheet1.GetRow(8));
-                        sheet1.RemoveRow(sheet1.GetRow(9));
-                        break;
-                    case 1:
-                        sheet2.RemoveRow(sheet2.GetRow(8));
-                        sheet2.RemoveRow(sheet2.GetRow(9));
-                        break;
+                    sheet1.RemoveRow(sheet1.GetRow(row));
+
                 }
             }
 
@@ -5801,80 +5651,52 @@ WHERE CANCELOASAFILE = @STRFILE
 
                 //* 查詢數據
                 DataSet dstSearchData = searchData05140(param, nblkCode);
-                switch (i)
-                {
-                    case 0:
-                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
-                        break;
-                    case 1:
-                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
-                        break;
-                }
-
                 
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        switch (i)
+                        if (i == 0)
                         {
-                            case 0:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet1.CreateRow(row);
-                                    int dnum = row - 8;
-                                    for (int col = 0; col < 10; col++)
-                                    {
-                                        sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                        sheet1.GetRow(row).GetCell(col).CellStyle = cs;
-                                        sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                    }
-                                }
-                                break;
-                            case 1:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet2.CreateRow(row);
-                                    int dnum = row - 8;
-                                    for (int col = 0; col < 10; col++)
-                                    {
-                                        sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                        sheet2.GetRow(row).GetCell(col).CellStyle = cs;
-                                        sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                    }
-
-                                }
-                                break;
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, nblkCode);
                         }
+                        if (i > 0)
+                        {
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, nblkCode);
+                        }
+                        ISheet sheetN = wb.GetSheet(nblkCode);
+                        for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                        {
+                            sheetN.CreateRow(row);
+                            int dnum = row - 8;
+                            for (int col = 0; col < 10; col++)
+                            {
+                                sheetN.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                sheetN.GetRow(row).GetCell(col).CellStyle = cs;
+                                sheetN.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                            }
+                        }
+                        
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-
-                        switch (i)
-                        {
-                            case 0:
-                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
-                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 1:
-                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
-                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                        }
+                        sheetN.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        sheetN.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                        sheetN.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                        sheetN.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+                        sheetN.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                        sheetN.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                        sheetN.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
                         #endregion
                     }
                 }
                 
             }
-
+            wb.RemoveSheetAt(0);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_0Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
@@ -6135,7 +5957,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表_2 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-修正報表錯誤
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6182,105 +6004,68 @@ WHERE CANCELOASAFILE = @STRFILE
             #endregion 文字格式
 
             ISheet sheet1 = wb.GetSheet("工作表1");
-            wb.SetSheetName(0, sheet1.GetRow(8).GetCell(0).StringCellValue.ToString()); //sheet1 更名
-            wb.CloneSheet(0);
-            ISheet sheet2 = wb.GetSheet("B (2)");//sheet2 更名
-            wb.SetSheetName(1, sheet1.GetRow(9).GetCell(0).StringCellValue.ToString());
-            for (int i = 0; i < 3; i++)
+            for(int row = 8; row < sheet1.LastRowNum; row++)
             {
-                switch (i)
+                if (sheet1.GetRow(row) != null)
                 {
-                    case 0:
-                        sheet1.RemoveRow(sheet1.GetRow(8));
-                        sheet1.RemoveRow(sheet1.GetRow(9));
-                        break;
-                    case 1:
-                        sheet2.RemoveRow(sheet2.GetRow(8));
-                        sheet2.RemoveRow(sheet2.GetRow(9));
-                        break;
+                    sheet1.RemoveRow(sheet1.GetRow(row));
+
                 }
             }
+
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 String nblkCode = dt.Rows[i][dt.Columns["NBLKCode"]].ToString();
-                switch (i)
-                {
-                    case 0:
-                        sheet1.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
-                        break;
-                    case 1:
-                        sheet2.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
-                        break;
-                }
+
                 //* 查詢數據
                 DataSet dstSearchData = searchData05142(param, nblkCode);
-
                 
                 if (null != dstSearchData)
                 {
                     if (dstSearchData.Tables[0].Rows.Count > 0)
                     {
                         DataTable dt2 = dstSearchData.Tables[0];
-                        switch (i)
+                        if (i == 0)
                         {
-                            case 0:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet1.CreateRow(row);
-                                    int dnum = row - 8;
-                                    for (int col = 0; col < 12; col++)
-                                    {
-                                        sheet1.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                        sheet1.GetRow(row).GetCell(col).CellStyle = cs;
-                                        sheet1.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        sheet1.AutoSizeColumn(col);
-                                    }
-                                }
-                                break;
-                            case 1:
-                                for (int row = 8; row < 8 + dt2.Rows.Count; row++)
-                                {
-                                    sheet2.CreateRow(row);
-                                    int dnum = row - 8;
-                                    for (int col = 0; col < 12; col++)
-                                    {
-                                        sheet2.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
-                                        sheet2.GetRow(row).GetCell(col).CellStyle = cs;
-                                        sheet2.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
-                                        sheet2.AutoSizeColumn(col);
-                                    }
-
-                                }
-                                break;
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, nblkCode);
+                        }
+                        if (i > 0)
+                        {
+                            wb.CloneSheet(0);
+                            wb.SetSheetName(i + 1, nblkCode);
+                        }
+                        ISheet sheetN = wb.GetSheet(nblkCode);
+                        for (int row = 8; row < 8 + dt2.Rows.Count; row++)
+                        {
+                            sheetN.CreateRow(row);
+                            int dnum = row - 8;
+                            for (int col = 0; col < 12; col++)
+                            {
+                                sheetN.GetRow(row).CreateCell(col).SetCellValue(dt2.Rows[dnum][col].ToString());
+                                sheetN.GetRow(row).GetCell(col).CellStyle = cs;
+                                sheetN.GetRow(row).GetCell(col).CellStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("@");
+                                sheetN.AutoSizeColumn(col);
+                            }
                         }
 
                         #region 匯入Excel文檔
 
                         int totalNum = dt2.Rows.Count;
-                        switch (i)
-                        {
-                            case 0:
-                                sheet1.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet1.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet1.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
-                                sheet1.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet1.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                            case 1:
-                                sheet2.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
-                                sheet2.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
-                                sheet2.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
-                                sheet2.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
-                                sheet2.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
-                                break;
-                        }
+                        sheetN.GetRow(0).GetCell(0).SetCellValue("OASA監控補掛批次-" + (param["flag"] == "1" ? "成功報表" : "失敗報表") + "-" + nblkCode);
+                        sheetN.GetRow(1).GetCell(0).SetCellValue("檔案產出日：" + param["OstartDate"] + "~" + param["OendDate"]);
+                        sheetN.GetRow(2).GetCell(0).SetCellValue("類型：" + nblkCode);
+                        sheetN.GetRow(3).GetCell(0).SetCellValue("列印經辦：" + param["Ouser"]);
+                        sheetN.GetRow(4).GetCell(0).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+                        sheetN.GetRow(5).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 卡數：" + totalNum : "失敗" + " 卡數：" + totalNum);
+                        sheetN.GetRow(6).GetCell(0).SetCellValue(param["flag"] == "1" ? "成功" + " 總卡數：" + param["num"] : "失敗" + " 總卡數：" + param["num"]);
                         #endregion
                     }
                 }
                 
             }
-
+            wb.RemoveSheetAt(0);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514_2Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);

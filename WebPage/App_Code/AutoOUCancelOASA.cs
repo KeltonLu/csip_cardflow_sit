@@ -171,7 +171,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                     CommandText =
                         "SELECT ROW_NUMBER() over (order by a.CancelOASADate) as no, b.CancelOASAFile, CASE WHEN LEN(CardNo) < 15 THEN CardNo + ' - 卡號長度不全' ELSE REPLACE(CARDNO, SUBSTRING(CARDNO, 5, LEN(CARDNO) - 8), SUBSTRING('XXXXXXXXXXXXXXXX', 1, LEN(CARDNO) - 8)) END AS CardNo, BlockCode, MemoLog , '註銷失敗' AS SFFLG " +
                         "FROM TBL_CANCELOASA A " +
-                        "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE AND A.CANCELOASADATE = B.CANCELOASADATE" +
+                        "LEFT JOIN TBL_CANCELOASA_DETAIL B ON A.CANCELOASAFILE = B.CANCELOASAFILE AND A.CANCELOASADATE = B.CANCELOASADATE " +
                         "WHERE B.SFFLG = '2' " +
                         "AND (A.CANCELOASAFILE LIKE 'OU15%' OR A.CANCELOASAFILE LIKE 'OU16%') " +
                         "AND B.CARDNO LIKE('0377%') " +
