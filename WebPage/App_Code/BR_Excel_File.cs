@@ -21,7 +21,7 @@ using NPOI.XSSF.UserModel.Charts;
 
 /// <summary>
 /// BR_Excel_File 的摘要描述
-/// 修改日期: 2020/11/06_Ares_Stanley-變更0510資料順序
+/// 修改日期: 2020/11/06_Ares_Stanley-變更0510資料順序; 2020/11/17_Ares_Stanley-變更0519資料順序
 /// </summary>
 public class BR_Excel_File : BRBase<Entity_UnableCard>
 {
@@ -337,8 +337,8 @@ select a.id,
                when a.Merch_Code = 'C' then '金雅拓'
                else '' end
            )                as Factory,
-       a.kind,
        a.expdate,
+       a.kind,
        (
            case
                when a.kind = '0' then '普掛'
@@ -3093,6 +3093,9 @@ WHERE CANCELOASAFILE = @STRFILE
                 sqlSearchData.Parameters.Add(paramStartDate);
             }
 
+            // 修改記錄:2020/11/17 Area Luke 業務需求調整設定TimeOut為180(秒)
+            sqlSearchData.CommandTimeout = 180;
+            
             //* 查詢數據
             if (idx >= 0)
                 return SearchOnDataSet(sqlSearchData, idx, size, ref count);
