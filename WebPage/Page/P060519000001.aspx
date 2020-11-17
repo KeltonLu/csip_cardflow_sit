@@ -18,7 +18,7 @@
 </head>
 <body class="workingArea">
 	<form id="form1" runat="server">
-		<asp:ScriptManager ID="ScriptManager1" EnablePageMethods="True" runat="server">
+		<asp:ScriptManager ID="ScriptManager1" EnablePageMethods="True" runat="server" AsyncPostBackTimeout="300">
 		</asp:ScriptManager>
 
 		<script language="javascript" type="text/javascript">
