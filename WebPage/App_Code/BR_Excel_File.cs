@@ -3016,11 +3016,11 @@ WHERE CANCELOASAFILE = @STRFILE
             ExportExcelForNPOI(dt, ref wb, 1, "製卡相關資料"); // NPOI 起始ROW=1
 
             //設定自動欄寬
-            ISheet sheet1 = wb.GetSheet("製卡相關資料");
-            for(int i=0; i < 23; i++)
-            {
-                sheet1.AutoSizeColumn(i);
-            }
+            //ISheet sheet1 = wb.GetSheet("製卡相關資料");
+            //for(int i=0; i < 23; i++)
+            //{
+            //    sheet1.AutoSizeColumn(i);
+            //}
 
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".xlsx";

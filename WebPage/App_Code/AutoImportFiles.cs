@@ -305,11 +305,12 @@ public class AutoImportFiles : Quartz.IJob
 
             #region txt格式判斷
             //*讀取folder中的txt檔案并判斷格式
-            //修改時間:2020/11/05_Ares_Stanley-新增檔名判斷，避免錯誤的FormatStates回寫到正確的資料內
+            //修改時間:2020/11/05_Ares_Stanley-新增檔名判斷，避免錯誤的FormatStates回寫到正確的資料內; 2020/11/17_Ares_Stanley-修正TXT檢測錯誤，修改沒有TXT檔的LOG
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 string[] FileArray = FileTools.GetFileList(rowLocalFile["FolderName"].ToString());
                 int iCount = 0;
+                bool txtExists = false;
                 foreach (string strTmps in FileArray)
                 {
                     if(strTmps.ToString() == rowLocalFile["FolderName"].ToString() + rowLocalFile["TxtFileName"].ToString())
@@ -318,6 +319,7 @@ public class AutoImportFiles : Quartz.IJob
                         if (JobHelper.ValidateTxt(FileArray[iCount]))
                         {
                             rowLocalFile["FormatStates"] = "S";
+                            txtExists = true;
                         }
                         //*txt檔名格式錯誤
                         else
@@ -326,12 +328,16 @@ public class AutoImportFiles : Quartz.IJob
                             JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101001, rowLocalFile["ZipFileName"].ToString()));
                             continue;
                         }
-                        iCount++;
                     }
+                    iCount++;
                 }
-                if (FileArray.Length < 0)
+                //if (FileArray.Length < 0)
+                //{
+                //    JobHelper.SaveLog(Resources.JobResource.Job0000012);
+                //}
+                if (txtExists == false)
                 {
-                    JobHelper.SaveLog(Resources.JobResource.Job0000012);
+                    JobHelper.SaveLog(rowLocalFile["ZipFileName"] + " 沒有TXT檔", LogState.Info);
                 }
             }
             #endregion

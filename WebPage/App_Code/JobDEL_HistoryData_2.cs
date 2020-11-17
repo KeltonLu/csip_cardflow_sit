@@ -38,7 +38,7 @@ public class JobDEL_HistoryData_2 : IJob
     protected DateTime EndTime;
     protected string StrMailMsg = string.Empty;
 
-    private readonly int BatchNum = 3000;
+    private readonly int BatchNum = 1000;
 
     private readonly string _strFrom = UtilHelper.GetAppSettings("MailSender");
 
@@ -129,7 +129,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM LOGON_INFO DATEDIFF(YEAR, SYS_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM LOGON_INFO WHERE DATEDIFF(YEAR, SYS_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
                 };
             
                 int count = 0;

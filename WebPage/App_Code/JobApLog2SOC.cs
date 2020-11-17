@@ -19,6 +19,7 @@ using System.Text;
 using BusinessRules;
 using EntityLayer;
 using Framework.Common.Logging;
+using System.Linq;
 
 public class JobApLog2SOC : IJob
 {
@@ -404,7 +405,11 @@ public class JobApLog2SOC : IJob
     }
 
     /// <summary>
-    /// 寄信的方法
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:寄信的方法
+    /// 作    者:
+    /// 創建時間:
+    /// 修改紀錄:2020/11/17_Ares_Luke-調整信件Title(新增HostName、IP)
     /// </summary>
     /// <param name="logMsg"></param>
     private bool sendMailmsg(string logMsg)
@@ -424,7 +429,12 @@ public class JobApLog2SOC : IJob
                 MailUsers.Add(mDt.Rows[i][1].ToString());
             }
 
-            JobHelper.SendMail("", MailUsers.ToArray(), "SOC AP Log執行結果", logMsg);
+            string name = System.Net.Dns.GetHostName();
+            var host = System.Net.Dns.GetHostEntry(name);
+            System.Net.IPAddress ip = host.AddressList.Where(n => n.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
+            String strSubject = "(" + ip + "_" + name + ")  SOC AP Log執行結果";
+
+            JobHelper.SendMail("", MailUsers.ToArray(), strSubject , logMsg);
         }
         return result;
     }
