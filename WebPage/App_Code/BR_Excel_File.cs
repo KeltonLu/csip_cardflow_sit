@@ -22,6 +22,7 @@ using NPOI.XSSF.UserModel.Charts;
 /// <summary>
 /// BR_Excel_File 的摘要描述
 /// 修改日期: 2020/11/06_Ares_Stanley-變更0510資料順序; 2020/11/17_Ares_Stanley-變更0519資料順序
+///           2020/11/23_Ares_Luke   -變更檢查目錄機制;
 /// </summary>
 public class BR_Excel_File : BRBase<Entity_UnableCard>
 {
@@ -1980,61 +1981,6 @@ WHERE CANCELOASAFILE = @STRFILE
 
     #endregion
 
-    #region 共用 檢查目錄路徑
-
-    #region 檢查路徑是否存在，存在刪除該路徑下所有的文檔資料
-
-    /// <summary>
-    /// 檢查路徑是否存在，存在刪除該路徑下所有的文檔資料
-    /// </summary>
-    /// <param name="strPath"></param>
-    public static void CheckDirectory(ref string strPath)
-    {
-        try
-        {
-            string strOldPath = strPath;
-            //* 判斷路徑是否存在
-            strPath = strPath + "\\" + DateTime.Now.ToString("yyyyMMdd");
-            if (!Directory.Exists(strPath))
-            {
-                //* 如果不存在，創建路徑
-                Directory.CreateDirectory(strPath);
-            }
-
-            //* 取該路徑下所有路徑
-            string[] strDirectories = Directory.GetDirectories(strOldPath);
-            for (int intLoop = 0; intLoop < strDirectories.Length; intLoop++)
-            {
-                if (strDirectories[intLoop] != strPath)
-                {
-                    if (Directory.Exists(strDirectories[intLoop]))
-                    {
-                        // * 刪除目錄下的所有文檔
-                        DirectoryInfo di = new DirectoryInfo(strDirectories[intLoop]);
-                        FileSystemInfo[] fsi = di.GetFileSystemInfos();
-                        for (int intIndex = 0; intIndex < fsi.Length; intIndex++)
-                        {
-                            FileInfo fi = fsi[intIndex] as FileInfo;
-                            if (fi != null)
-                            {
-                                fi.Delete();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception exp)
-        {
-            Logging.Log(exp);
-            throw;
-        }
-    }
-
-    #endregion
-
-    #endregion
-
     #region 無法製卡檔查詢 - Excel
 
     /// <summary>
@@ -2055,8 +2001,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -2196,8 +2142,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -2336,8 +2282,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -2482,8 +2428,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -2697,8 +2643,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -2838,8 +2784,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             // 取要下載的資料
 
@@ -2982,8 +2928,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3093,7 +3039,7 @@ WHERE CANCELOASAFILE = @STRFILE
                 sqlSearchData.Parameters.Add(paramStartDate);
             }
 
-            // 修改記錄:2020/11/17 Area Luke 業務需求調整設定TimeOut為180(秒)
+            // 修改記錄:2020/11/17 Ares Luke 業務需求調整設定TimeOut為180(秒)
             sqlSearchData.CommandTimeout = 180;
             
             //* 查詢數據
@@ -3133,8 +3079,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3259,7 +3205,7 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
     #region 退件原因統計表 - Excel
 
     /// <summary>
@@ -3267,7 +3213,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:退件原因統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
-    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/23_Ares_Stanley-增加公式預先計算;
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3280,8 +3226,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3369,6 +3315,7 @@ WHERE CANCELOASAFILE = @STRFILE
                 sheet1.GetRow(sheet1.LastRowNum).GetCell(col).SetCellFormula(formu);
                 sheet1.GetRow(sheet1.LastRowNum).GetCell(col).CellStyle = bf;
             }
+            XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0517Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
@@ -3476,8 +3423,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3634,8 +3581,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3787,8 +3734,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -3924,8 +3871,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 
@@ -4015,8 +3962,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -4241,8 +4188,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 
@@ -4385,8 +4332,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             // 取要下載的資料
 
@@ -4518,8 +4465,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             // 取要下載的資料
 
@@ -4635,7 +4582,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA管制解管批次作業量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/10
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦; 2020/11/23_Ares_Stanley-增加公式預先計算;
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -4648,8 +4595,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -4744,6 +4691,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
             sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
+            XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0513Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
@@ -4868,8 +4816,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             DataTable dt = new DataTable();
             if (!getPageType05130(ref param, ref strMsgId, ref dt))
@@ -5127,8 +5075,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             DataTable dt = new DataTable();
             if (!getPageType05132(ref param, ref strMsgId, ref dt))
@@ -5374,7 +5322,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:OASA監控補掛報表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/12_Ares_Stanley-增加列印經辦; 2020/11/23_Ares_Stanley-增加公式預先計算;
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -5387,8 +5335,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -5481,7 +5429,7 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet1.GetRow(2).GetCell(0).SetCellValue("批次日：" + DateTime.Now.ToString("yyyy/MM/dd"));
             sheet1.GetRow(2).GetCell(5).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
             sheet1.GetRow(1).GetCell(5).SetCellValue("列印經辦：" + param["Ouser"]);
-
+            XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0514Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
@@ -5606,8 +5554,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             DataTable dt = new DataTable();
             if (!getPageType05140(ref param, ref strMsgId, ref dt))
@@ -5860,8 +5808,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             DataSet dstSearchData = searchData05140(param);
@@ -5973,8 +5921,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             DataTable dt = new DataTable();
             if (!getPageType05142(ref param, ref strMsgId, ref dt))
@@ -6229,8 +6177,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             DataSet dstSearchData = searchData05142(param);
@@ -6329,7 +6277,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:卡片數量統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/07/16
-    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI
+    /// 修改紀錄:2020/11/04_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/23_Ares_Stanley-增加公式預先計算;
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -6342,8 +6290,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -6444,6 +6392,8 @@ WHERE CANCELOASAFILE = @STRFILE
             sheet1.GetRow(0).GetCell(0).SetCellValue("卡片數量統計表 - " + param["FactoryName"]);
             sheet1.GetRow(1).GetCell(0).SetCellValue("統計日期：" + param["CountS"] + "~" + param["CountE"]);
             sheet1.GetRow(1).GetCell(12).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+
+            XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
             // 保存文件到程序運行目錄下
             strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0515Report" + ".xlsx";
             FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
@@ -6551,8 +6501,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -6752,8 +6702,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 
@@ -6849,8 +6799,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             //* 查詢數據
             Int32 count = 0;
@@ -6996,8 +6946,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 
@@ -7099,8 +7049,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 
@@ -7195,8 +7145,8 @@ WHERE CANCELOASAFILE = @STRFILE
         
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            CheckDirectory(ref strPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strPathFile);
 
             #region 依據Request查詢資料庫
 

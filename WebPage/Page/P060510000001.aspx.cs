@@ -8,6 +8,8 @@
 using System;
 using System.Data;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
+using System.IO;
 using EntityLayer;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
@@ -188,7 +190,7 @@ public partial class P060510000001 : PageBase
     /// 功能說明:列印按钮单击事件
     /// 作    者:JUN HU
     /// 創建時間:2010/06/23
-    /// 修改記錄:
+    /// 修改記錄:2020/11/24_Ares_Stanley-移除產生報表時畫面重新導向，於原頁面產生報表
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -204,7 +206,50 @@ public partial class P060510000001 : PageBase
         this.GetPrintData();
 
         //* 傳遞參數加密
-        Response.Redirect("P060510000002.aspx?indatefrom=" + RedirectHelper.GetEncryptParam(txtBackdateStart.Text.Trim()) + " &indateto=" + RedirectHelper.GetEncryptParam(txtBackdateEnd.Text.Trim()) + "&maildate=" + RedirectHelper.GetEncryptParam(txtClosedateStart.Text.Trim()) + "&maildate1=" + RedirectHelper.GetEncryptParam(txtClosedateEnd.Text.Trim()) + "", false);
+        //Response.Redirect("P060510000002.aspx?indatefrom=" + RedirectHelper.GetEncryptParam(txtBackdateStart.Text.Trim()) + " &indateto=" + RedirectHelper.GetEncryptParam(txtBackdateEnd.Text.Trim()) + "&maildate=" + RedirectHelper.GetEncryptParam(txtClosedateStart.Text.Trim()) + "&maildate1=" + RedirectHelper.GetEncryptParam(txtClosedateEnd.Text.Trim()) + "", false);
+        string strMsgId = string.Empty;
+
+        try
+        {
+            // 初始化報表參數
+            Dictionary<string, string> param = new Dictionary<string, string>();
+
+            // 製卡日期
+            String inDateFrom = txtBackdateStart.Text.Trim().Equals("") ? "NULL" : txtBackdateStart.Text.Trim();
+            param.Add("indatefrom", inDateFrom);
+            String inDateTo = txtBackdateEnd.Text.Trim().Equals("") ? "NULL" : txtBackdateEnd.Text.Trim();
+            param.Add("indateto", inDateTo);
+
+            // 扣卡日期
+            string maildate = txtClosedateStart.Text.Trim().Equals("") ? "NULL" : txtClosedateStart.Text.Trim();
+            param.Add("maildate", maildate);
+            string maildate1 = txtClosedateEnd.Text.Trim().Equals("") ? "NULL" : txtClosedateEnd.Text.Trim();
+            param.Add("maildate1", maildate1);
+
+            string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
+
+            //產生報表
+            bool result = BR_Excel_File.CreateExcelFile_0510Report(param, ref strServerPathFile, ref strMsgId);
+
+            if (result)
+            {
+                FileInfo fs = new FileInfo(strServerPathFile);
+                Session["ServerFile"] = strServerPathFile;
+                Session["ClientFile"] = fs.Name;
+                string urlString = @"location.href='DownLoadFile.aspx';";
+                jsBuilder.RegScript(this.Page, urlString);
+            }
+            else
+            {
+                MessageHelper.ShowMessage(this, strMsgId);
+            }
+        }
+        catch (Exception exp)
+        {
+            Logging.Log(exp, LogLayer.UI);
+            //jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051000_001"));
+            return;
+        }
     }
     #endregion
 

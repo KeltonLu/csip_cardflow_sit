@@ -556,6 +556,7 @@ public partial class Page_P060203000001 : PageBase
     /// 作    者:Ares Luke
     /// 修改時間:2020/10/05
     /// 修改紀錄:2020/11/04_Stanley_變更報表產出方式為NPOI
+    ///          2020/11/23_Ares_Luke-變更檢查目錄機制;
     /// </summary>
     protected void btnPrint_Click(object sender, EventArgs e)
     {
@@ -593,8 +594,8 @@ public partial class Page_P060203000001 : PageBase
         string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
         try
         {
-            // 檢查目錄，並刪除以前的文檔資料
-            BR_Excel_File.CheckDirectory(ref strServerPathFile);
+            // 檢查目錄
+            CSIPCommonModel.BaseItem.Function.CheckDirectory(ref strServerPathFile);
 
             #region 匯入Excel文檔
 

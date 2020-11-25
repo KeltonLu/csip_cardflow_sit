@@ -485,7 +485,7 @@ public partial class P060302000001 : PageBase
 
     /// <summary>
     /// 功能說明:選擇大宗檔錯誤資料查詢-Init與Change
-    /// 作    者:Area Luke
+    /// 作    者:Ares Luke
     /// 創建時間:2020/11/12
     /// 修改記錄: 
     /// </summary>

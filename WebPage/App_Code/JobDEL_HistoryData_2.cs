@@ -588,15 +588,21 @@ public class JobDEL_HistoryData_2 : IJob
 
 
     /// <summary>
-    /// Delete by SQL
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:Delete by SQL
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/08/21
+    /// 修改紀錄:2020/11/18_Ares_Luke-新增TimeOut時間
     /// </summary>
     /// <param name="command">DbCommand</param>
     /// <param name="strConnectionName">連接字串名</param>
+    /// <param name="count">筆數</param>
     private bool Delete(DbCommand command, string strConnectionName, ref int count)
     {
         var dh = new DataHelper(strConnectionName);
         try
         {
+            command.CommandTimeout = int.Parse(UtilHelper.GetAppSettings("SqlCmdTimeoutMax"));
             count = dh.ExecuteNonQuery(command);
             return true;
         }
@@ -609,17 +615,22 @@ public class JobDEL_HistoryData_2 : IJob
 
 
     /// <summary>
-    /// 統計總筆數與批次執行次數
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:統計總筆數與批次執行次數
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/08/21
+    /// 修改紀錄:2020/11/18_Ares_Luke-新增TimeOut時間
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="strConnectionName"></param>
-    /// <param name="totalNum"></param>
-    /// <param name="runNum"></param>
+    /// <param name="command">DbCommand</param>
+    /// <param name="strConnectionName">連接字串名</param>
+    /// <param name="totalNum">總筆數</param>
+    /// <param name="runNum">執行次數</param>
     private void TotalNum(DbCommand command, string strConnectionName, ref int totalNum, ref decimal runNum)
     {
         var dh = new DataHelper(strConnectionName);
         try
         {
+            command.CommandTimeout = int.Parse(UtilHelper.GetAppSettings("SqlCmdTimeoutMax"));
             totalNum = 0;
             runNum = 0;
             totalNum = (Int32) dh.ExecuteScalar(command);

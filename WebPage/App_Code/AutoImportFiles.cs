@@ -68,7 +68,7 @@ public class AutoImportFiles : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容
+    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容; 2020/11/24_Ares_Stanley-新增解壓縮失敗LOG
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -292,6 +292,7 @@ public class AutoImportFiles : Quartz.IJob
                     // SendMail("1", alInfo, Resources.JobResource.Job0000002);
                     rowLocalFile["ZipStates"] = "F";
                     FFileCount++;
+                    strTemps += rowLocalFile["ZipFileName"] + "解壓縮失敗" + " ";
                 }
             }
             if (errMsg != "")
