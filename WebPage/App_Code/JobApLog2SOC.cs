@@ -37,7 +37,7 @@ public class JobApLog2SOC : IJob
     /// 功能說明:Job執行入口
     /// 作    者:
     /// 創建時間:
-    /// 修改記錄:
+    /// 修改記錄:2020/11/25_Ares_Luke-新增排除資料機制(排除Customer_Id,Account_Nbr)與寄信內容
     /// </summary>
     /// <param name="context"></param>
     public void Execute(JobExecutionContext context)
@@ -114,11 +114,17 @@ public class JobApLog2SOC : IJob
 
 
             int intDataCnt = 0;
-            DataTable dt = getData(strRunDate);
+            int intExcludeCnt = 0;
+
+            DataTable dt = getData(strRunDate, true);
             if (dt != null)
             {
-                intDataCnt = dt.Rows.Count;
+                //排除Customer_Id,Account_Nbr為空。
+                intExcludeCnt = dt.Rows.Count;
             }
+            dt = getData(strRunDate, false);
+            intDataCnt = dt.Rows.Count;
+
             strErrMsg = SendTxt(dt, strRunDate);
 
             //記錄job結束時間
@@ -129,7 +135,7 @@ public class JobApLog2SOC : IJob
             //*判斷job完成狀態
             string strJobStatus = "S";
             string strReturnMsg = string.Empty;
-            strReturnMsg += string.Format("資料筆數:{0}", intDataCnt);
+            strReturnMsg += string.Format("總計筆數:{0}筆,送出筆數:{1}筆,無需送出筆數:{2}筆", intDataCnt + intExcludeCnt , intDataCnt, intExcludeCnt);
 
             //執行結果 寫入 DB            
             if (!string.IsNullOrEmpty(strErrMsg))
@@ -165,13 +171,15 @@ public class JobApLog2SOC : IJob
     }
     #endregion
 
-    private DataTable getData(string strRunDate)
+    private DataTable getData(string strRunDate,Boolean ExcludeStatue)
     {
         SqlCommand sqlcmd = new SqlCommand();
         string sql = "Select System_Code,Login_Account_Nbr,convert(char(23),Query_Datetime,121)Query_Datetime,AP_Txn_Code,Server_Name,User_Terminal,AP_Account_Nbr,Txn_Type_Code," +
             "Statement_Text,Object_Name,Txn_Status_Code,Customer_Id,Account_Nbr,Branch_Nbr,Role_Id,Import_Source,As_Of_Date " +
             "From L_AP_LOG (nolock) where As_Of_Date=@As_Of_Date  and IsUpload='0'";
-
+        if (ExcludeStatue) {
+            sql += " and ISNULL(Customer_Id,'') = '' and ISNULL(Account_Nbr,'') = '' ";
+        }
         sqlcmd.Parameters.Add(new SqlParameter("@As_Of_Date", strRunDate));
 
         sql += " order by Query_Datetime";
@@ -438,4 +446,8 @@ public class JobApLog2SOC : IJob
         }
         return result;
     }
+
+
+
+    
 }
