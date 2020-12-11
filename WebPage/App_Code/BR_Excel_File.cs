@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Text;
 using DataTable = System.Data.DataTable;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -2916,6 +2917,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 作    者:Ares Luke
     /// 創建時間:2020/
     /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI
+    /// 2020/12/10 Ares_Luke-業務需求調整NPOI to CSV
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -2955,27 +2957,36 @@ WHERE CANCELOASAFILE = @STRFILE
 
             #region 匯入Excel文檔
 
-            string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
-                                      UtilHelper.GetAppSettings("ReportTemplate") + "0519Report.xlsx";
-            FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
-            XSSFWorkbook wb = new XSSFWorkbook(fs);
-            ExportExcelForNPOI(dt, ref wb, 1, "製卡相關資料"); // NPOI 起始ROW=1
+            // string strExcelPathFile = AppDomain.CurrentDomain.BaseDirectory +
+            //                           UtilHelper.GetAppSettings("ReportTemplate") + "0519Report.xlsx";
+            // FileStream fs = new FileStream(strExcelPathFile, FileMode.Open);
+            // XSSFWorkbook wb = new XSSFWorkbook(fs);
+            // ExportExcelForNPOI(dt, ref wb, 1, "製卡相關資料"); // NPOI 起始ROW=1
+            //
+            // //設定自動欄寬
+            // //ISheet sheet1 = wb.GetSheet("製卡相關資料");
+            // //for(int i=0; i < 23; i++)
+            // //{
+            // //    sheet1.AutoSizeColumn(i);
+            // //}
+            //
+            // // 保存文件到程序運行目錄下
+            // strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".xlsx";
+            // FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
+            // wb.Write(fs1);
+            // fs1.Close();
+            // fs.Close();
 
-            //設定自動欄寬
-            //ISheet sheet1 = wb.GetSheet("製卡相關資料");
-            //for(int i=0; i < 23; i++)
-            //{
-            //    sheet1.AutoSizeColumn(i);
-            //}
+            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".csv";
+            String[] titleArr =
+            {
+                "身份證字號", "卡號", "製卡日", "退件日期", "Action", "Action名稱", "結案日", "結案原因代號", "結案原因名稱", "郵寄日期", "退件原因代碼",
+                "退件原因名稱",
+                "Card Type", "認同代碼", "Photo Type", "製卡廠名稱", "有效期限", "Take Card Flag", "取卡方式", "ZIP CODE", "地址", "分行",
+                "序號"
+            };
 
-            // 保存文件到程序運行目錄下
-            strPathFile = strPathFile + @"\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "0519Report" + ".xlsx";
-            FileStream fs1 = new FileStream(strPathFile, FileMode.Create);
-            wb.Write(fs1);
-            fs1.Close();
-            fs.Close();
-
-            return true;
+            return ToCsv(dt, titleArr , strPathFile);
 
             #endregion
         }
@@ -7343,5 +7354,69 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
+
+
+    /// <summary>
+    /// 專案代號:20200031-CSIP EOS
+    /// 功能說明:將DataTable to Csv 
+    /// 作    者:Ares Luke
+    /// 創建時間:2020/12/10
+    /// 修改紀錄:
+    /// </summary>
+    /// <param name="dt">資料</param>
+    /// <param name="titleArr">資料表抬頭</param>
+    /// <param name="strFilePath">儲存路徑</param>
+    /// <returns></returns>
+    private static bool ToCsv(DataTable dt, string[] titleArr , string strFilePath)
+    {
+        try
+        {
+            //檢查長度是否相符
+            if (titleArr.Length != dt.Columns.Count)
+            {
+                return false;
+            }
+
+            StreamWriter sw = new StreamWriter(strFilePath, false, Encoding.GetEncoding("UTF-8"));
+
+            //headers
+            for (int i = 0; i < titleArr.Length; i++)
+            {
+                sw.Write(titleArr[i]);
+                if (i < dt.Columns.Count - 1)
+                {
+                    sw.Write(",");
+                }
+            }
+
+            sw.Write(sw.NewLine);
+
+            //detail
+            foreach (DataRow dr in dt.Rows)
+            {
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    if (!Convert.IsDBNull(dr[i]))
+                    {
+                        string value = dr[i].ToString();
+                        value = String.Format("=\"{0}\"", value); 
+                        sw.Write(value);
+                    }
+                    if (i < dt.Columns.Count - 1)
+                    {
+                        sw.Write(",");
+                    }
+                }
+                sw.Write(sw.NewLine);
+            }
+            sw.Close();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logging.Log(ex);
+            return false;
+        }
+    }
 
 }
