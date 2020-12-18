@@ -51,7 +51,7 @@ public class AutoOutputDataChange : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/19
-    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容
+    /// 修改記錄:2020/11/09_Ares_Stanley-調整Log內容; 2020/12/17_Ares_Stanley-變更CardChange PSNO 儲存欄位長度Int16->Int32
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -1061,7 +1061,7 @@ public class AutoOutputDataChange : Quartz.IJob
                 CardChange.Sno = int.Parse(rowChangeCard["Sno"].ToString());
                 if (!string.IsNullOrEmpty(BaseHelper.ObjToString(rowChangeCard["PSNO"])))
                 {
-                    CardChange.ParentSno = Convert.ToInt16(BaseHelper.ObjToString(rowChangeCard["PSNO"]));
+                    CardChange.ParentSno = Convert.ToInt32(BaseHelper.ObjToString(rowChangeCard["PSNO"]));
                 }
                 CardChange.OutputFlg = "Y";
                 CardChange.FilePath = strFilePath;

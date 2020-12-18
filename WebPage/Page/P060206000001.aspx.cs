@@ -396,8 +396,22 @@ public partial class Page_P060206000001 : PageBase
             return;
         }
     }
+    /// <summary>
+    /// 修改紀錄:2020/12/17_Ares_Stanley-調整AP_LOG紀錄順序, 避免錯誤的查詢條件導致寫入AP_LOG失敗, 增加查詢條件錯誤的LOG
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     protected void btnSearch_Click(object sender, EventArgs e)
     {
+        string strMsgID = string.Empty;
+        if (!CheckCondition(ref strMsgID))
+        {
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "');");
+            string errorMsg = string.Format("退件處理查詢輸入異常：員編:{0}, 身分證字號: {1}", this.eAgentInfo.agent_id, this.txtId.Text);
+            Logging.Log(errorMsg, LogState.Info, LogLayer.None);
+            return;
+        }
+
         //------------------------------------------------------
         //AuditLog to SOC
         CSIPCommonModel.EntityLayer_new.EntityL_AP_LOG log = BRL_AP_LOG.getDefaultValue(eAgentInfo, sPageInfo.strPageCode);
@@ -405,13 +419,6 @@ public partial class Page_P060206000001 : PageBase
         BRL_AP_LOG.Add(log);
         //------------------------------------------------------
 
-
-        string strMsgID = string.Empty;
-        if (!CheckCondition(ref strMsgID))
-        {
-            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsgID) + "');");
-            return;
-        }
         PanelVisibleFalse();
         BindGridView();
         hidSearchAdd.Value = "0";

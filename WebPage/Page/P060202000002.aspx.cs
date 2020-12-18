@@ -785,7 +785,7 @@ public partial class Page_P060202000002 : PageBase
     /// 功能說明:修改地址(1,2,3)
     /// 作    者:HAO CHEN
     /// 創建時間:2010/06/24
-    /// 修改記錄:
+    /// 修改記錄:2020/12/15_Ares_Stanley-修改CallEMFS_SUCCESS LOG層級
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -845,7 +845,7 @@ public partial class Page_P060202000002 : PageBase
             }
             else
             {
-                Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Error, LogLayer.UI);
+                Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Info, LogLayer.UI);
             }
             //如果要測試，就要把上面這段電訊單註記起來  END
 

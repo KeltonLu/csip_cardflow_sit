@@ -43,7 +43,7 @@ public class AutoImportDataChange : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:
+    /// 修改記錄:2020/12/16_Ares_Stanley-移除LOG:"異動回饋檔匯入失敗，請進入異動回饋檔錯誤處理頁面下載後修正。", 補充成功/失敗數LOG
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -240,6 +240,7 @@ public class AutoImportDataChange : Quartz.IJob
             #region 開始資料匯入
             DataRow[] Row = dtLocalFile.Select("FormatStates='S'");
             JobHelper.SaveLog("開始資料匯入部分！", LogState.Info);
+            string failFileName = "";
             if (Row != null && Row.Length > 0)
             {
                 //*讀取檔名正確資料
@@ -282,6 +283,7 @@ public class AutoImportDataChange : Quartz.IJob
                             JobHelper.SaveLog("檢核檔案失敗！");
                             Row[rowcount]["CheckStates"] = "F";
                             Row[rowcount]["ImportStates"] = "F";
+                            failFileName += (strFileName + " ");
                             //*send mail
                             StringBuilder sbErrorInfo = new StringBuilder();
                             for (int iError = 0; iError < arrayErrorMsg.Count; iError++)
@@ -342,13 +344,14 @@ public class AutoImportDataChange : Quartz.IJob
             string strReturnMsg = string.Empty;
             if (FCount > 0)
             {
-                strReturnMsg = Resources.JobResource.Job010503;
+                //strReturnMsg = Resources.JobResource.Job010503;
+                strReturnMsg = string.Format("異動回饋檔匯入失敗，成功：{0}; 失敗：{1}; 失敗檔案：{2}", SCount, FCount, failFileName);
                 JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "F", strReturnMsg);
             }
             else
             {
                 strReturnMsg = Resources.JobResource.Job010502;
-                JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "S", strReturnMsg);
+                JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "S", strReturnMsg + string.Format("，成功：{0}", SCount));
             }
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             #endregion

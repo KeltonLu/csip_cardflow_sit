@@ -109,7 +109,7 @@ public class AutoImportFiles : Quartz.IJob
                         if (!string.IsNullOrWhiteSpace(arrStrParam[1]) && DateTime.TryParse(arrStrParam[1], out tempDt))
                         {
                             //轉檔日
-                            inDate = DateTime.Parse(arrStrParam[1]);
+                            tranDate = DateTime.Parse(arrStrParam[1]);
                             JobHelper.SaveLog(strJobId + ",檢核參數成功,設定轉檔日參數:" + arrStrParam[1], LogState.Info);
                         }
                         else
@@ -118,7 +118,7 @@ public class AutoImportFiles : Quartz.IJob
                         if (!string.IsNullOrWhiteSpace(arrStrParam[2]) && DateTime.TryParse(arrStrParam[2], out tempDt))
                         {
                             //製卡日
-                            tranDate = DateTime.Parse(arrStrParam[2]);
+                            inDate = DateTime.Parse(arrStrParam[2]);
                             JobHelper.SaveLog(strJobId + ",檢核參數成功,設定製卡日參數:" + arrStrParam[2], LogState.Info);
                         }
                         else

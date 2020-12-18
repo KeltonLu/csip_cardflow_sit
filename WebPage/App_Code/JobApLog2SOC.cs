@@ -37,7 +37,7 @@ public class JobApLog2SOC : IJob
     /// 功能說明:Job執行入口
     /// 作    者:
     /// 創建時間:
-    /// 修改記錄:2020/11/25_Ares_Luke-新增排除資料機制(排除Customer_Id,Account_Nbr)與寄信內容
+    /// 修改記錄:2020/11/25_Ares_Luke-新增排除資料機制(排除Customer_Id,Account_Nbr)與寄信內容; 2020/12/15_Ares_Stanley-變更START & END的LOG層級, 變更END LOG在發送mail之後
     /// </summary>
     /// <param name="context"></param>
     public void Execute(JobExecutionContext context)
@@ -51,7 +51,7 @@ public class JobApLog2SOC : IJob
             string strRETSTR = string.Empty;
 
             strRETSTR = "*********** " + strJobId + " START **************";
-            JobHelper.SaveLog(strRETSTR);
+            JobHelper.SaveLog(strRETSTR, LogState.Info);
 
             #region 取得 查詢條件和取值
             //若沒指定日期就是要查前一天,但放置的目錄還是當天
@@ -150,9 +150,6 @@ public class JobApLog2SOC : IJob
 
             #endregion
 
-            strRETSTR = "*********** " + strJobId + " End **************";
-            JobHelper.SaveLog(strRETSTR);
-
             updateUploadflag(strRunDate);
             strErrMsg = strReturnMsg;
         }
@@ -165,9 +162,10 @@ public class JobApLog2SOC : IJob
             strErrMsg = ex.Message;
         }
 
-
         sendMailmsg(strErrMsg);
 
+        string strRETSTR_END = "*********** " + strJobId + " End **************";
+        JobHelper.SaveLog(strRETSTR_END, LogState.Info);
     }
     #endregion
 
@@ -281,6 +279,7 @@ public class JobApLog2SOC : IJob
 
     /// <summary>
     /// 產檔,上傳FTP
+    /// 修改記錄: 2020/12/15_Ares_Stanley-增加D, H檔案是否存在檢核; 2020/12/16_Ares_Stanley-復原上次更動
     /// </summary>
     /// <param name="dt"></param>
     /// <param name="RunDate"></param>

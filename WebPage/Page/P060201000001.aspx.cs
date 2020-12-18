@@ -198,20 +198,12 @@ public partial class P060201000001 : PageBase
     /// 功能說明:查詢事件
     /// 作    者:Simba Liu
     /// 創建時間:2010/04/19
-    /// 修改記錄:
+    /// 修改記錄:2020/12/17_Ares_Stanley-調整AP_LOG紀錄順序, 避免錯誤的查詢條件導致寫入AP_LOG失敗, 增加查詢條件錯誤的LOG
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-
-        //------------------------------------------------------
-        //AuditLog to SOC
-        CSIPCommonModel.EntityLayer_new.EntityL_AP_LOG log = BRL_AP_LOG.getDefaultValue(eAgentInfo, sPageInfo.strPageCode);
-        log.Customer_Id = this.txtId.Text;
-        log.Account_Nbr = this.txtNo.Text;
-        BRL_AP_LOG.Add(log);
-        //------------------------------------------------------
         string strMsgID = string.Empty;
         if (this.txtId.Text.Trim() != "")
         {
@@ -219,6 +211,8 @@ public partial class P060201000001 : PageBase
             {
                 //*身份證字號驗證不通過
                 MessageHelper.ShowMessage(UpdatePanel1, "06_06040100_025");
+                string errorMsg = string.Format("綜合資料處理查詢輸入異常：員編:{0}, 卡號: {1}, 身分證字號: {2}, 掛號號碼前6碼:{3}", this.eAgentInfo.agent_id, this.txtNo.Text, this.txtId.Text, this.txtMailNo.Text );
+                Logging.Log(errorMsg, LogState.Info, LogLayer.None);
                 return;
             }
         }
@@ -228,6 +222,8 @@ public partial class P060201000001 : PageBase
             {
                 //*卡號驗證不通過
                 MessageHelper.ShowMessage(UpdatePanel1, "06_06040100_013");
+                string errorMsg = string.Format("綜合資料處理查詢輸入異常：員編:{0}, 卡號: {1}, 身分證字號: {2}, 掛號號碼前6碼:{3}", this.eAgentInfo.agent_id, this.txtNo.Text, this.txtId.Text, this.txtMailNo.Text);
+                Logging.Log(errorMsg, LogState.Info, LogLayer.None);
                 return;
             }
         }
@@ -237,6 +233,8 @@ public partial class P060201000001 : PageBase
             {
                 //*掛號號碼小於六碼
                 MessageHelper.ShowMessage(UpdatePanel1, "06_06020100_000");
+                string errorMsg = string.Format("綜合資料處理查詢輸入異常：員編:{0}, 卡號: {1}, 身分證字號: {2}, 掛號號碼前6碼:{3}", this.eAgentInfo.agent_id, this.txtNo.Text, this.txtId.Text, this.txtMailNo.Text);
+                Logging.Log(errorMsg, LogState.Info, LogLayer.None);
                 return;
             }
         }
@@ -246,6 +244,13 @@ public partial class P060201000001 : PageBase
             MessageHelper.ShowMessage(UpdatePanel1, "06_06020100_001");
             return;
         }
+        //------------------------------------------------------
+        //AuditLog to SOC
+        CSIPCommonModel.EntityLayer_new.EntityL_AP_LOG log = BRL_AP_LOG.getDefaultValue(eAgentInfo, sPageInfo.strPageCode);
+        log.Customer_Id = this.txtId.Text;
+        log.Account_Nbr = this.txtNo.Text;
+        BRL_AP_LOG.Add(log);
+        //------------------------------------------------------
         BindGridView();
     }
 

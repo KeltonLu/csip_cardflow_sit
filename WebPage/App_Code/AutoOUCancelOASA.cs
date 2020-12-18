@@ -730,7 +730,7 @@ public class AutoOUCancelOASA : Quartz.IJob
 
                         //到  strLocalPath 找 31天前的檔名
                         string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate + ".EXE";
-                        string WorkPath = strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
+                        string WorkPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
                         if (File.Exists(importFile))
