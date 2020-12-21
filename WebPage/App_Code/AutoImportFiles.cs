@@ -755,6 +755,7 @@ public class AutoImportFiles : Quartz.IJob
 
     /// <summary>
     /// 匯入檢核
+    /// 修改紀錄:2020/12/18_Ares_Stanley-修正strMsgID
     /// </summary>
     /// <param name="strUserID"> 用戶ID</param>
     /// <param name="strFunctionKey">系統權限</param>
@@ -814,7 +815,7 @@ public class AutoImportFiles : Quartz.IJob
         //* 判斷檔案是否存在
         if (!file.Exists)
         {
-            strMsgID = Resources.JobResource.Job0000012;
+            strMsgID = "Job0000012";
             eLUpload.UPLOAD_STATUS = "N";
             BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -828,7 +829,7 @@ public class AutoImportFiles : Quartz.IJob
             }
             catch
             {
-                strMsgID = Resources.JobResource.Job0000013;
+                strMsgID = "Job0000013";
                 eLUpload.UPLOAD_STATUS = "N";
                 BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -841,7 +842,7 @@ public class AutoImportFiles : Quartz.IJob
                 //* 判斷檔案類型
                 if (file.Extension.ToUpper() != dtblUploadCheck.Rows[0]["EXTEND_NAME"].ToString())
                 {
-                    strMsgID = Resources.JobResource.Job0000014;
+                    strMsgID = "Job0000014";
                     eLUpload.UPLOAD_STATUS = "N";
                     BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -850,7 +851,7 @@ public class AutoImportFiles : Quartz.IJob
             }
             else
             {
-                strMsgID = Resources.JobResource.Job0000015;
+                strMsgID = "Job0000015";
                 eLUpload.UPLOAD_STATUS = "N";
                 BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -875,7 +876,7 @@ public class AutoImportFiles : Quartz.IJob
         }
         catch
         {
-            strMsgID = Resources.JobResource.Job0000013;
+            strMsgID = "Job0000013";
             eLUpload.UPLOAD_STATUS = "N";
             BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -897,7 +898,7 @@ public class AutoImportFiles : Quartz.IJob
         }
         else
         {
-            strMsgID = Resources.JobResource.Job0000015;
+            strMsgID = "Job0000015";
             eLUpload.UPLOAD_STATUS = "N";
             BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -933,7 +934,7 @@ public class AutoImportFiles : Quartz.IJob
         }
         catch
         {
-            strMsgID = Resources.JobResource.Job0000016;
+            strMsgID = "Job0000016";
             eLUpload.UPLOAD_STATUS = "N";
             BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -948,7 +949,7 @@ public class AutoImportFiles : Quartz.IJob
         //* 資料行數大于15000,提示錯誤
         if (intUploadTotalCount - intBeginCount - intEndCount > intMax)
         {
-            strMsgID = Resources.JobResource.Job0000017;
+            strMsgID = "Job0000017";
             eLUpload.UPLOAD_STATUS = "N";
             BaseHelper.LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -993,7 +994,7 @@ public class AutoImportFiles : Quartz.IJob
                     string[] strUploads = strString.Split(strSplit.ToCharArray());
                     if (strUploads.Length <= 20)
                     {
-                        strMsgID = Resources.JobResource.Job0000036;
+                        strMsgID = "Job0000036";
                         eLUpload.UPLOAD_STATUS = "N";
                         DataRow drowUpload = dtblUpload.NewRow();
                         drowUpload["Context"] = strString;
@@ -1241,7 +1242,7 @@ public class AutoImportFiles : Quartz.IJob
                     string[] strUploads = strString.Split("|".ToCharArray());
                     if (strUploads.Length > 1)
                     {
-                        strMsgID = Resources.JobResource.Job0000036;
+                        strMsgID = "Job0000036";
 
                         DataRow drowUpload = dtblUpload.NewRow();
                         drowUpload["Context"] = strString;

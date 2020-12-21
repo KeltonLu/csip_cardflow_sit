@@ -3340,6 +3340,11 @@ WHERE CANCELOASAFILE = @STRFILE
         catch (Exception ex)
         {
             Logging.Log(ex);
+            string errorSQL = SearchExport0517;
+            errorSQL = errorSQL.Replace("@Action", string.Format("'{0}'", param["Action"]));
+            errorSQL = errorSQL.Replace("@MstatrDate", string.Format("'{0}'", param["MstatrDate"].Replace("/", "")));
+            errorSQL = errorSQL.Replace("@MendDate", string.Format("'{0}'", param["MendDate"].Replace("/", "")));
+            Logging.Log(string.Format("\r\n========== 報表錯誤SQL Command_Start ==========\r\n{0}\r\n========== 報表錯誤SQL Command_End ==========", errorSQL));
             throw;
         }
         finally

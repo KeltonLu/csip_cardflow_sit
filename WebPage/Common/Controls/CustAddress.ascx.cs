@@ -91,6 +91,7 @@ public partial class Common_Controls_Address : System.Web.UI.UserControl
 
     /// <summary>
     /// 初始化兩個下拉選單(DB內Add1一般爲6碼文字前3字Add1_1,后3字Add1_2)
+    /// 修改紀錄:2020/12/18_Ares_Luke-修正 Substring Exception 問題
     /// </summary>
     /// <param name="strAdd1_1">預設值文字</param>
     /// <returns>True - 成功; False - 失敗</returns>
@@ -99,6 +100,12 @@ public partial class Common_Controls_Address : System.Web.UI.UserControl
    
         try
         {
+            if (string.IsNullOrWhiteSpace(strAdd) || strAdd.Length < 6)
+            {
+                Logging.Log("CustAddress.InitalAdd1: 地址長度不符。", LogLayer.UI);
+                return false;
+            }
+
             string strAdd1_1 = strAdd.Substring(0, 3);
             string strAdd1_2 = strAdd.Substring(3, 3);
 
