@@ -77,7 +77,7 @@ public class ValidateHelper
     /// 功能說明:中文字符驗證
     /// 作    者:Simba Liu
     /// 創建時間:2010/04/09
-    /// 修改記錄:
+    /// 修改記錄:2020/12/21_Ares_Stanley-修改中文字驗證條件
     /// </summary>
     /// <param name="strChinese"></param>
     /// <returns></returns>
@@ -90,14 +90,15 @@ public class ValidateHelper
         }
         else
         {
-            if (!Regex.IsMatch(strVal, "[^\u4E00-\u9FA5]+"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Regex.IsMatch(strVal, "[\u4E00-\u9FA5]");
+            //if (!Regex.IsMatch(strVal, "^[\u4E00-\u9FA5]+"))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
     }
 

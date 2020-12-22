@@ -441,7 +441,7 @@
                             </div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateN" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateN_Click"
-                                    OnClientClick="return IsConfirm('N')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('N')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                         <td style="height: 25px; width: 15%;" align="right">
                             <cc1:CustLabel ID="CustLabel16" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
@@ -503,7 +503,7 @@
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel></div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateP" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateP_Click"
-                                    OnClientClick="return IsConfirm('P')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('P')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                         <td style="height: 25px; width: 15%;" align="right">
                             <cc1:CustLabel ID="CustLabel19" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
@@ -519,7 +519,7 @@
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel></div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateM" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateM_Click"
-                                    OnClientClick="return IsConfirm('M')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('M')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                     </tr>
                     <tr class="trEven">
@@ -586,7 +586,7 @@
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel></div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateC" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateC_Click"
-                                    OnClientClick="return IsConfirm('C')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('C')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                     </tr>
                     <tr class="trOdd">
@@ -604,7 +604,7 @@
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel></div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateA" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateA_Click"
-                                    OnClientClick="return IsConfirm('A')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('A')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                         <td align="right" style="height: 25px; width: 15%;">
                             <cc1:CustLabel ID="CustLabel23" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
@@ -620,7 +620,7 @@
                                     SetBreak="False" ForeColor="red" SetOmit="False" ShowID="" StickHeight="False"></cc1:CustLabel></div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateG" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateG_Click"
-                                    OnClientClick="return IsConfirm('G')" Style="cursor: hand" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('G')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
                     </tr>
                     <tr class="trEven">

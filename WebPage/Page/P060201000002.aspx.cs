@@ -107,7 +107,7 @@ public partial class P06020101 : PageBase
     /// 功能說明:頁面加載綁定數據
     /// 作    者:Simba Liu
     /// 創建時間:2010/04/09
-    /// 修改記錄:
+    /// 修改記錄:2020/12/22_Ares_Stanley-增加按鈕權限不足顏色變更檢查
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -136,6 +136,12 @@ public partial class P06020101 : PageBase
             BindData();
             m_Status = "Y";
             ViewState["FlgEdit"] = "FALSE";
+            if (!this.btnUpdateA.Enabled) { this.btnUpdateA.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateA.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+            if (!this.btnUpdateC.Enabled) { this.btnUpdateC.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateC.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+            if (!this.btnUpdateG.Enabled) { this.btnUpdateG.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateG.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+            if (!this.btnUpdateM.Enabled) { this.btnUpdateM.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateM.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+            if (!this.btnUpdateN.Enabled) { this.btnUpdateN.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateN.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+            if (!this.btnUpdateP.Enabled) { this.btnUpdateP.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateP.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
         }
     }
 
@@ -1537,8 +1543,12 @@ public partial class P06020101 : PageBase
                 custbtn.Enabled = true;
                 txtBox.Enabled = true;
             }
+            if (!custbtn.Enabled)
+            {
+                custbtn.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899");
+                custbtn.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5");
+            }
         }
-
     }
     protected void btnCancelN_Click(object sender, EventArgs e)
     {

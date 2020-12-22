@@ -30,12 +30,12 @@ td{width:25%;height:25px;}
 /*--------------- End Table style  ---------------*/
 
 /*--------------- Begin Button  style ---------------*/
-/* 修改紀錄:2020/12/15_Ares_Stanely-新增smallButton:disabled */
+/* 修改紀錄:2020/12/15_Ares_Stanely-新增smallButton:disabled 2020/12/22_Ares_Stanley-變更色碼 */
 .smallButton {
 	FONT-WEIGHT: normal;FONT-SIZE: 8pt;COLOR: #006666;FONT-STYLE: normal;FONT-FAMILY: "verdana";background-color: #CEF9F9;border: 1px solid #c8d5b3;
 }
 .smallButton:disabled {
-	FONT-WEIGHT: normal;FONT-SIZE: 8pt;COLOR: #888888;FONT-STYLE: normal;FONT-FAMILY: "verdana";background-color: #CCCCCC;border: 1px solid #999999;
+	FONT-WEIGHT: normal;FONT-SIZE: 8pt;COLOR: #ACA899;FONT-STYLE: normal;FONT-FAMILY: "verdana";background-color: #F5F5F5;border: 1px solid #999999;
 }
 .ChoiceButton
 {

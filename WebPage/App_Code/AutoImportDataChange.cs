@@ -43,7 +43,7 @@ public class AutoImportDataChange : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:Simba Liu
     /// 創建時間:2010/05/14
-    /// 修改記錄:2020/12/16_Ares_Stanley-移除LOG:"異動回饋檔匯入失敗，請進入異動回饋檔錯誤處理頁面下載後修正。", 補充成功/失敗數LOG
+    /// 修改記錄:2020/12/16_Ares_Stanley-移除LOG:"異動回饋檔匯入失敗，請進入異動回饋檔錯誤處理頁面下載後修正。", 補充成功/失敗數LOG; 2020/12/21_Ares_Stanley-增加匯入失敗時串接檔名
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -275,6 +275,7 @@ public class AutoImportDataChange : Quartz.IJob
                             {
                                 Row[rowcount]["ImportStates"] = "F";
                                 JobHelper.SaveLog(string.Format(Resources.JobResource.Job010302, strFileName));
+                                failFileName += (strFileName + " ");
                             }
                         }
                         //*檢核失敗
