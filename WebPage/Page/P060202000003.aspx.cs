@@ -501,7 +501,7 @@ public partial class P060202000003 : PageBase
     /// 功能說明:更新異動檔資料
     /// 作    者:HAO CHEN
     /// 創建時間:2010/06/22
-    /// 修改記錄:
+    /// 修改記錄:2021/01/05_Ares_Stanley-修正CallEMFS SUCCESS的LOG層級
     /// </summary>
     /// <param name="strField">字段名稱</param>
     /// <param name="strChangeData">更新欄位項</param>
@@ -684,7 +684,7 @@ public partial class P060202000003 : PageBase
                 }
                 else
                 {
-                    Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Error, LogLayer.UI);
+                    Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Info, LogLayer.UI);
                 }
 
                 if (null != dtCardDataChange && dtCardDataChange.Rows.Count > 0)

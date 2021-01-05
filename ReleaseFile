@@ -1,7 +1,4 @@
 \bin\BusinessRules.dll
-\bin\BusinessRulesNew.dll
 \bin\CardFlow.dll
 \bin\Framework.Common.dll
-\App_Themes\Default\global.css
-\Page\P060201000002.aspx
-\Web.Config
+\bin\CSIPCommonModel.BusinessRules.dll

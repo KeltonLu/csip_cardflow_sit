@@ -3070,6 +3070,26 @@ WHERE CANCELOASAFILE = @STRFILE
 
     #endregion
 
+    #region 製卡相關資料查詢 - 記錄SQL
+    /// <summary>
+    /// 功能說明：執行報表產出時記錄SQL語法
+    /// 作者：Ares_Stanley
+    /// 創建時間：2020/12/29
+    /// </summary>
+    /// <param name="param"></param>
+    /// <returns></returns>
+    public static bool recordSQL_0519(Dictionary<string, string> param)
+    {
+        StringBuilder sb = new StringBuilder(SearchExport0519.ToUpper());
+        foreach (var data in param)
+        {
+            sb.Replace("@" + data.Key.ToUpper().ToString(), String.Format("'{0}'", data.Value));
+        }
+        Logging.Log(string.Format("\r\n========== 0519報表SQL Command_Start ==========\r\n{0}\r\n========== 0519報表SQL Command_End ==========", sb.ToString()));
+        return true;
+    }
+    #endregion
+
     #region 退件日報表 - Excel
 
     /// <summary>
@@ -3224,7 +3244,7 @@ WHERE CANCELOASAFILE = @STRFILE
     /// 功能說明:退件原因統計表 - Excel 
     /// 作    者:Ares Luke
     /// 創建時間:2020/
-    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/23_Ares_Stanley-增加公式預先計算;
+    /// 修改紀錄:2020/10/29_Ares_Stanley-更改報表產出方式為NPOI; 2020/11/23_Ares_Stanley-增加公式預先計算; 2020/12/29_Ares_Stanley-獨立SQL紀錄
     /// </summary>
     /// <param name="strPathFile">服務器端生成的Excel文檔路徑</param>
     /// <param name="strMsgId">返回消息ID</param>
@@ -3340,11 +3360,6 @@ WHERE CANCELOASAFILE = @STRFILE
         catch (Exception ex)
         {
             Logging.Log(ex);
-            string errorSQL = SearchExport0517;
-            errorSQL = errorSQL.Replace("@Action", string.Format("'{0}'", param["Action"]));
-            errorSQL = errorSQL.Replace("@MstatrDate", string.Format("'{0}'", param["MstatrDate"].Replace("/", "")));
-            errorSQL = errorSQL.Replace("@MendDate", string.Format("'{0}'", param["MendDate"].Replace("/", "")));
-            Logging.Log(string.Format("\r\n========== 報表錯誤SQL Command_Start ==========\r\n{0}\r\n========== 報表錯誤SQL Command_End ==========", errorSQL));
             throw;
         }
         finally
@@ -3418,7 +3433,27 @@ WHERE CANCELOASAFILE = @STRFILE
     }
 
     #endregion
-    
+
+    #region 退件原因統計表 - 記錄SQL
+    /// <summary>
+    /// 功能說明：執行報表產出時記錄SQL語法
+    /// 作者：Ares_Stanley
+    /// 創建時間：2020/12/29
+    /// </summary>
+    /// <param name="param"></param>
+    /// <returns></returns>
+    public static bool recordSQL_0517(Dictionary<string, string> param)
+    {
+        StringBuilder sb = new StringBuilder(SearchExport0517.ToUpper());
+        foreach(var data in param)
+        {
+            sb.Replace("@" + data.Key.ToUpper().ToString(), String.Format("'{0}'", data.Value));
+        }
+        Logging.Log(string.Format("\r\n========== 0517報表SQL Command_Start ==========\r\n{0}\r\n========== 0517報表SQL Command_End ==========", sb.ToString()));
+        return true;
+    }
+    #endregion
+
     #region 退件連絡報表 - Excel
 
     /// <summary>

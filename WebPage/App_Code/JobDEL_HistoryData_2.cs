@@ -9,6 +9,7 @@
 //*  修改記錄：Ares Luke 2020/12/01 新增計時器LOG。
 //*  修改紀錄：2020/12/17_Ares_Stanley-修改LOG紀錄文字避免欄位不足
 //*  修改記錄：Ares Luke 2020/12/17 調整多收信人。
+//*  修改紀錄：2020/12/30_Ares_Stanley-修正查詢、刪除的SQL語法
 
 //*<author>            <time>            <TaskID>                <desc>
 //*******************************************************************
@@ -138,11 +139,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM LOGON_INFO WHERE DATEDIFF(YEAR, SYS_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM LOGON_INFO WHERE DATEDIFF(DAY, SYS_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -152,7 +153,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM LOGON_INFO WHERE DATEDIFF(YEAR, SYS_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM LOGON_INFO WHERE DATEDIFF(DAY, SYS_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -173,11 +174,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM TBL_JOBERRORINFO WHERE DATEDIFF(YEAR,IMPORTTIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM TBL_JOBERRORINFO WHERE DATEDIFF(DAY, IMPORTTIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -187,7 +188,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM TBL_JOBERRORINFO WHERE DATEDIFF(YEAR,IMPORTTIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM TBL_JOBERRORINFO WHERE DATEDIFF(DAY, IMPORTTIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -210,11 +211,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM TBS_LOG WHERE DATEDIFF(YEAR,CREATE_DT, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM TBS_LOG WHERE DATEDIFF(DAY, CREATE_DT, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -224,9 +225,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM TBS_LOG WHERE DATEDIFF(YEAR,CREATE_DT, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM TBS_LOG WHERE DATEDIFF(DAY,CREATE_DT, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -247,11 +248,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM SESSION_INFO WHERE DATEDIFF(YEAR,CHANGED_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM SESSION_INFO WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -261,9 +262,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM SESSION_INFO WHERE DATEDIFF(YEAR,CHANGED_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM SESSION_INFO WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -284,11 +285,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_FUNCTION_HS WHERE DATEDIFF(YEAR,CHANGED_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM M_FUNCTION_HS WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -298,9 +299,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_FUNCTION_HS WHERE DATEDIFF(YEAR,CHANGED_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM M_FUNCTION_HS WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -321,11 +322,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_ACTION_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM M_ACTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -335,9 +336,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_ACTION_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM M_ACTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -358,11 +359,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -372,9 +373,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -395,11 +396,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -409,9 +410,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -433,11 +434,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -447,9 +448,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -471,11 +472,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM WORK_DATE_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM WORK_DATE_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -485,9 +486,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM WORK_DATE_HS WHERE DATEDIFF(YEAR,ACTION_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM WORK_DATE_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -508,11 +509,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM L_AP_LOG WHERE DATEDIFF(YEAR,QUERY_DATETIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM L_AP_LOG WHERE DATEDIFF(DAY,QUERY_DATETIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -522,9 +523,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM L_AP_LOG WHERE DATEDIFF(YEAR,QUERY_DATETIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM L_AP_LOG WHERE DATEDIFF(DAY,QUERY_DATETIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -545,11 +546,11 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM L_BATCH_LOG WHERE DATEDIFF(YEAR,START_TIME, GETDATE()) >= 1"
+                CommandText = "SELECT COUNT(*) FROM L_BATCH_LOG WHERE DATEDIFF(DAY,START_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
             };
-            
+
             TotalNum(sql, dbName, ref totalNum, ref runNum);
-            
+
             //實際刪除筆數計算
             totalDeleteCount = 0;
             for (int i = 0; i < runNum; i++)
@@ -559,9 +560,9 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM L_BATCH_LOG WHERE DATEDIFF(YEAR,START_TIME, GETDATE()) >= 1) DELETE DEL WHERE 1=1"
+                                  " * FROM L_BATCH_LOG WHERE DATEDIFF(DAY,START_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
                 };
-            
+
                 int count = 0;
                 Delete(sql, dbName, ref count);
                 totalDeleteCount += count;
@@ -569,7 +570,7 @@ public class JobDEL_HistoryData_2 : IJob
 
             tempMsg = "12.排程執行紀錄,刪除：" + totalDeleteCount + "筆";
             Logging.Log(tempMsg, StrJobId, LogState.Info);
-            StrMailMsg += tempMsg ;
+            StrMailMsg += tempMsg;
 
             #endregion
             ConsumeTimeEnd(sw);
@@ -621,7 +622,7 @@ public class JobDEL_HistoryData_2 : IJob
 
             if (!string.IsNullOrWhiteSpace(mailTo))
             {
-                var strTo = new[] {mailTo.Trim()};
+                var strTo = new[] { mailTo.Trim() };
                 var strBody = StrMailMsg + ",Exception:" + exp;
                 JobHelper.SendMail(_strFrom, strTo, strSubject + "執行失敗！", strBody);
             }

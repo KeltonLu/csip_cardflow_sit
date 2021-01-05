@@ -79,7 +79,7 @@ public partial class P060517000001 : PageBase
     /// 專案代號:20200031-CSIP EOS
     /// 功能說明:業務新增查詢顯示需求功能
     /// 作    者:Ares JaJa
-    /// 修改時間:2020/09/04
+    /// 修改時間:2020/09/04; 2021/01/04_Ares_Stanley-新增查詢時記錄SQL語法
     /// </summary>
     private void BindGridView()
     {
@@ -89,6 +89,7 @@ public partial class P060517000001 : PageBase
         {
             try
             {
+                BR_Excel_File.recordSQL_0517(param); // 記錄0517 SQL Command
                 DataTable dt = new DataTable();
                 Int32 count = 0;
                 Boolean result = BR_Excel_File.GetDataTable0517(param, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref count, ref dt);
@@ -216,7 +217,7 @@ public partial class P060517000001 : PageBase
     /// 專案代號:20200031-CSIP EOS
     /// 功能說明:業務新增列印需求功能
     /// 作    者:Ares JaJa
-    /// 修改時間:2020/09/04
+    /// 修改時間:2020/09/04, 2020/12/29_Ares_Stanley-新增執行報表產出時，記錄SQL語法
     /// </summary>
     protected void btnPrint_Click(object sender, EventArgs e)
     {
@@ -226,6 +227,8 @@ public partial class P060517000001 : PageBase
         {
             try
             {
+                BR_Excel_File.recordSQL_0517(param); // 記錄0517 SQL Command
+
                 string strMsgId = string.Empty;
                 string strServerPathFile = this.Server.MapPath(UtilHelper.GetAppSettings("ExportExcelFilePath"));
 
