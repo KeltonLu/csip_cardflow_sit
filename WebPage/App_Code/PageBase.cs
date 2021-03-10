@@ -331,7 +331,8 @@ public class PageBase : System.Web.UI.Page
                     //檢核KEY是否相符
                     if (!Session["usrGUID"].Equals(this.ViewState["usrGUID"]))
                     {
-                        Response.Redirect(strUrlErrorIframe);
+                        //2021/02/17_Ares_Stanley-增加false參數
+                        Response.Redirect(strUrlErrorIframe, false);
                         //jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage(strMsg) + "');var local = window.parent.location!=window.location?window.parent:window.opener?window.opener.parent:window;local.location.href='" + strUrlError2 + "';");
                         return;
                     }

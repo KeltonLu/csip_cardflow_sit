@@ -335,7 +335,7 @@ public class AutoImportFilesReturn : Quartz.IJob
 
                         DataTable dtDetail = null;                 //檢核結果列表
                         //*檢核資料
-                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);;
+                        JobHelper.SaveLog("開始檢核檔案：" + strFileName, LogState.Info);
                         if (UploadCheck(strPath, strFunctionName, ref No, ref arrayErrorMsg, ref dtDetail))
                         {
                             JobHelper.SaveLog("檢核檔案成功！", LogState.Info);
@@ -499,6 +499,7 @@ public class AutoImportFilesReturn : Quartz.IJob
     }
     /// <summary>
     /// 資料匯入並檢核郵寄天數，不符合條件則發送郵件
+    /// 修改日期:2021/01/08_Ares_Stanley-變更日期格式避免查詢錯誤; 2021/01/11_Ares_Stanley-新增卡號隱碼; 2021/02/26_Ares_Stanley-增加發mail前LOG、隱碼調整
     /// </summary>
     /// <param name="dtResult"></param>
     public bool BatUpdateFor0102(DataTable dtResult)
@@ -509,6 +510,8 @@ public class AutoImportFilesReturn : Quartz.IJob
             DataTable dtDetail = BRM_TCardBaseInfo.GetKindTableFor0102(dtResult, Resources.JobResource.Job010202);
             int iThreeMailDay = int.Parse(UtilHelper.GetAppSettings("ThreeMailDay"));
             int iUsualMailDay = int.Parse(UtilHelper.GetAppSettings("UsualMailDay"));
+            bool haveiThreeMailDay = false;
+            bool haveiUsualMailDay = false;
             String errMsg = "";
 
             for (int i = 0; i < dtResult.Rows.Count; i++)
@@ -549,9 +552,26 @@ public class AutoImportFilesReturn : Quartz.IJob
 
                 if (dtDetail.Rows[i]["KIND"].ToString().Trim().Equals("5"))
                 {
-                    if (int.Parse(CSIPCommonModel.BusinessRules.BRWORK_DATE.QueryByDate("06", dtDetail.Rows[i]["INDATE1"].ToString().Replace(".", "/"), dtDetail.Rows[i]["MailDate"].ToString().Replace(".", "/"))) > iThreeMailDay)
+                    if (int.Parse(CSIPCommonModel.BusinessRules.BRWORK_DATE.QueryByDate("06", dtDetail.Rows[i]["INDATE1"].ToString().Replace(".", ""), dtDetail.Rows[i]["MailDate"].ToString().Replace(".", ""))) > iThreeMailDay)
                     {
-                        errMsg += (errMsg == "" ? "" : "、") + dtDetail.Rows[i]["CARDNO"].ToString();
+                        string current_carNo = dtDetail.Rows[i]["CARDNO"].ToString().Trim().Replace("-", "");
+                        // 卡號隱碼
+                        string star = "";
+                        string cardNoHead = "";
+                        string cardNoFoot = "";
+                        if (current_carNo.Length > 10)
+                        {
+                            for (int starN = 0; starN < current_carNo.Length - 10; starN++)
+                            {
+                                star += "*";
+                            }
+                            cardNoHead = current_carNo.Substring(0, 6);
+                            cardNoFoot = current_carNo.Substring(current_carNo.Length - 4);
+                            current_carNo = cardNoHead + star + cardNoFoot;
+                        }
+
+                        errMsg += (errMsg == "" ? "" : "、") + current_carNo;
+                        haveiThreeMailDay = true;
                         // ArrayList MailInfo = new ArrayList();
                         // MailInfo.Add(dtDetail.Rows[i]["CARDNO"].ToString());
                         // SendMail("7", MailInfo, "");
@@ -559,17 +579,47 @@ public class AutoImportFilesReturn : Quartz.IJob
                 }
                 else
                 {
-                    if (int.Parse(CSIPCommonModel.BusinessRules.BRWORK_DATE.QueryByDate("06", dtDetail.Rows[i]["INDATE1"].ToString().Replace(".", "/"), dtDetail.Rows[i]["MailDate"].ToString().Replace(".", "/"))) > iUsualMailDay)
+                    if (int.Parse(CSIPCommonModel.BusinessRules.BRWORK_DATE.QueryByDate("06", dtDetail.Rows[i]["INDATE1"].ToString().Replace(".", ""), dtDetail.Rows[i]["MailDate"].ToString().Replace(".", ""))) > iUsualMailDay)
                     {
-                        errMsg += (errMsg == "" ? "" : "、") + dtDetail.Rows[i]["CARDNO"].ToString();
-                        // ArrayList MailInfo = new ArrayList();
-                        // MailInfo.Add(dtDetail.Rows[i]["CARDNO"].ToString());
-                        // SendMail("7", MailInfo, "");
+                    string current_carNo = dtDetail.Rows[i]["CARDNO"].ToString().Trim().Replace("-","");
+                    // 卡號隱碼
+                    string star = "";
+                    string cardNoHead = "";
+                    string cardNoFoot = "";
+                    if (current_carNo.Length > 10)
+                    {
+                        for (int starN = 0; starN < current_carNo.Length - 10; starN++)
+                        {
+                            star += "*";
+                        }
+                        cardNoHead = current_carNo.Substring(0, 6);
+                        cardNoFoot = current_carNo.Substring(current_carNo.Length - 4);
+                        current_carNo = cardNoHead + star + cardNoFoot;
+                    }
+
+                    errMsg += (errMsg == "" ? "" : "、") + current_carNo;
+                        haveiUsualMailDay = true;
+                    // ArrayList MailInfo = new ArrayList();
+                    // MailInfo.Add(dtDetail.Rows[i]["CARDNO"].ToString());
+                    // SendMail("7", MailInfo, "");
                     }
                 }
             }
             if (errMsg != "")
             {
+                if (haveiThreeMailDay == true && haveiUsualMailDay == true) //三天快速發卡+一般發卡
+                {
+                    JobHelper.SaveLog("即將發送Mail-檔案內有三天快速發卡及一般發卡不符合天數條件", LogState.Info);
+                }
+                if (haveiThreeMailDay == true && haveiUsualMailDay == false) //三天快速發卡
+                {
+                    JobHelper.SaveLog("即將發送Mail-檔案內有三天快速發卡不符合天數條件", LogState.Info);
+                }
+                if (haveiThreeMailDay == false && haveiUsualMailDay == true) //一般發卡
+                {
+                    JobHelper.SaveLog("即將發送Mail-檔案內有一般發卡不符合天數條件", LogState.Info);
+                }
+                
                 ArrayList MailInfo = new ArrayList();
                 MailInfo.Add(errMsg);
                 SendMail("7", MailInfo, "");

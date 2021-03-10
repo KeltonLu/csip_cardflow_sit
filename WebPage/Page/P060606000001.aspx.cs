@@ -487,7 +487,15 @@ public partial class Page_P060606000001 : PageBase
             ddlFtpIp.SelectByValue(dtblAutoJob.Rows[0]["FtpIP"].ToString());
             txtFtpPath.Text = dtblAutoJob.Rows[0]["FtpPath"].ToString();
             txtFtpUser.Text = dtblAutoJob.Rows[0]["FtpUserName"].ToString();
-            txtFtpPwd.Text = dtblAutoJob.Rows[0]["FtpPwd"].ToString();
+            // txtFtpPwd.Text = dtblAutoJob.Rows[0]["FtpPwd"].ToString();
+
+            // 專案代號:20200031-CSIP EOS 功能說明:TBL_FILEINFO FTP PWD加密 - CSIP EOS 作者:Ares Luke 創建時間:2021/01/13
+            if (null != dtblAutoJob.Rows[0]["FtpPwd"])
+            {
+                txtFtpPwd.Text = RedirectHelper.GetDecryptString(dtblAutoJob.Rows[0]["FtpPwd"].ToString());
+            }
+
+
         }
     }
 
@@ -604,8 +612,10 @@ public partial class Page_P060606000001 : PageBase
                 esFileInfo.FtpIP = ddlFtpIp.SelectedValue.Trim();        //FTP IP
                 esFileInfo.FtpPath = txtFtpPath.Text.Trim();             //FTP路徑.
                 esFileInfo.FtpUserName = txtFtpUser.Text.Trim();         //登陸FTP USER 
-                //esFileInfo.FtpPwd = RedirectHelper.GetEncryptParam(txtFtpPwd.Text.Trim());
-                esFileInfo.FtpPwd = txtFtpPwd.Text.Trim();               //登陸FTP PWD
+
+                // 專案代號:20200031-CSIP EOS 功能說明:TBL_FILEINFO FTP PWD加密 - CSIP EOS 作者:Ares Luke 創建時間:2021/01/13
+                esFileInfo.FtpPwd = RedirectHelper.GetEncryptParam(txtFtpPwd.Text.Trim());
+                // esFileInfo.FtpPwd = txtFtpPwd.Text.Trim();               //登陸FTP PWD
                 
 
                 if (!BRM_FileInfo.insert(esFileInfo))
@@ -700,8 +710,19 @@ public partial class Page_P060606000001 : PageBase
                 esFileInfo.FtpIP = ddlFtpIp.SelectedValue.Trim();        //FTP IP
                 esFileInfo.FtpPath = txtFtpPath.Text.Trim();             //FTP路徑.
                 esFileInfo.FtpUserName = txtFtpUser.Text.Trim();         //登陸FTP USER 
-                //esFileInfo.FtpPwd = RedirectHelper.GetEncryptParam(txtFtpPwd.Text.Trim());
-                esFileInfo.FtpPwd = txtFtpPwd.Text.Trim();               //登陸FTP PWD
+
+                // 專案代號:20200031-CSIP EOS 功能說明:TBL_FILEINFO FTP PWD加密 - CSIP EOS 作者:Ares Luke 創建時間:2021/01/13
+                // esFileInfo.FtpPwd = txtFtpPwd.Text.Trim();               //登陸FTP PWD
+                if (!string.IsNullOrEmpty(txtFtpPwd.Text))
+                {
+                    esFileInfo.FtpPwd = RedirectHelper.GetEncryptParam(txtFtpPwd.Text.Trim());
+                }
+                else
+                {
+                    esFileInfo.FtpPwd = string.Empty;
+                }
+
+
 
 
                 string strFileID = string.Empty;

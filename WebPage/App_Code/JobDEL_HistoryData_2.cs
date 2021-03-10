@@ -53,6 +53,7 @@ public class JobDEL_HistoryData_2 : IJob
 
     /// <summary>
     /// Job 調用入口
+    /// 修改紀錄:2021/02/04_Ares_Stanley-調整查詢條件的SQL語法
     /// </summary>
     /// <param name="context"></param>
     public void Execute(JobExecutionContext context)
@@ -139,7 +140,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM LOGON_INFO WHERE DATEDIFF(DAY, SYS_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM LOGON_INFO WHERE CONVERT(VARCHAR, SYS_TIME,111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -153,7 +154,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM LOGON_INFO WHERE DATEDIFF(DAY, SYS_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM LOGON_INFO WHERE CONVERT(VARCHAR, SYS_TIME,111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -174,7 +175,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM TBL_JOBERRORINFO WHERE DATEDIFF(DAY, IMPORTTIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM TBL_JOBERRORINFO WHERE IMPORTTIME <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -188,7 +189,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM TBL_JOBERRORINFO WHERE DATEDIFF(DAY, IMPORTTIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM TBL_JOBERRORINFO WHERE IMPORTTIME <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -211,7 +212,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM TBS_LOG WHERE DATEDIFF(DAY, CREATE_DT, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM TBS_LOG WHERE SUBSTRING(CREATE_DT, 1, 10) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -225,7 +226,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM TBS_LOG WHERE DATEDIFF(DAY,CREATE_DT, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM TBS_LOG WHERE SUBSTRING(CREATE_DT, 1, 10) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -248,7 +249,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM SESSION_INFO WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM SESSION_INFO WHERE CONVERT(VARCHAR, CHANGED_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) "
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -262,7 +263,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM SESSION_INFO WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM SESSION_INFO WHERE CONVERT(VARCHAR, CHANGED_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -279,13 +280,13 @@ public class JobDEL_HistoryData_2 : IJob
 
             ConsumeTimeStart(sw = new Stopwatch());
             #region 005. 功能歷程記錄
-
+            //修改紀錄：2021/01/07_Ares_Stanley-變更刪除條件
             dbName = "Connection_CSIP";
             //* 聲明SQL Command變量
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_FUNCTION_HS WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM M_FUNCTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -299,7 +300,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_FUNCTION_HS WHERE DATEDIFF(DAY,CHANGED_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM M_FUNCTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -322,7 +323,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_ACTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM M_ACTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -336,7 +337,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_ACTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM M_ACTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -359,7 +360,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM M_PROPERTY_KEY_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -373,7 +374,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM M_PROPERTY_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM M_PROPERTY_KEY_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -396,7 +397,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -410,7 +411,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM R_ROLE_FUNCTION_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM R_ROLE_FUNCTION_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -434,7 +435,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM R_ROLE_FUNCTION_KEY_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) "
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -448,7 +449,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM R_ROLE_FUNCTION_KEY_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM R_ROLE_FUNCTION_KEY_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -472,7 +473,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM WORK_DATE_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM WORK_DATE_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -486,7 +487,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM WORK_DATE_HS WHERE DATEDIFF(DAY,ACTION_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM WORK_DATE_HS WHERE CONVERT(VARCHAR, ACTION_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -509,7 +510,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM L_AP_LOG WHERE DATEDIFF(DAY,QUERY_DATETIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM L_AP_LOG WHERE CONVERT(VARCHAR, QUERY_DATETIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -523,7 +524,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM L_AP_LOG WHERE DATEDIFF(DAY,QUERY_DATETIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM L_AP_LOG WHERE CONVERT(VARCHAR, QUERY_DATETIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;
@@ -546,7 +547,7 @@ public class JobDEL_HistoryData_2 : IJob
             sql = new SqlCommand
             {
                 CommandType = CommandType.Text,
-                CommandText = "SELECT COUNT(*) FROM L_BATCH_LOG WHERE DATEDIFF(DAY,START_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0"
+                CommandText = "SELECT COUNT(*) FROM L_BATCH_LOG WHERE CONVERT(VARCHAR, START_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) )"
             };
 
             TotalNum(sql, dbName, ref totalNum, ref runNum);
@@ -560,7 +561,7 @@ public class JobDEL_HistoryData_2 : IJob
                 {
                     CommandType = CommandType.Text,
                     CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM L_BATCH_LOG WHERE DATEDIFF(DAY,START_TIME, DATEADD( YEAR,- 1, GETDATE( ) ) ) >= 0) DELETE DEL WHERE 1=1"
+                                  " * FROM L_BATCH_LOG WHERE CONVERT(VARCHAR, START_TIME, 111) <= DATEADD( YEAR,- 1, GETDATE( ) ) ) DELETE DEL WHERE 1=1"
                 };
 
                 int count = 0;

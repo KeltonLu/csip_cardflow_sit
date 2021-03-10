@@ -20,6 +20,7 @@ using Framework.Common.Logging;
 using System.Data.SqlClient;
 using System.Data;
 using BusinessRules;
+using Framework.Common.Utility;
 using Framework.Data;
 
 /// <summary>
@@ -58,6 +59,16 @@ public class Com_FileInfo
             if (ds != null)
             {
                 dtFileInfo = ds.Tables[0];
+
+
+                // 專案代號:20200031-CSIP EOS 功能說明:FTP PWD加解密 - CSIP EOS 作者:Ares Luke 創建時間:2021/01/13
+                foreach (DataRow rowFileInfo in dtFileInfo.Rows)
+                {
+                    if (rowFileInfo["FtpPwd"] != null)
+                    {
+                        rowFileInfo["FtpPwd"] = RedirectHelper.GetDecryptString(rowFileInfo["FtpPwd"].ToString());
+                    }
+                }
                 return true;
             }
             else

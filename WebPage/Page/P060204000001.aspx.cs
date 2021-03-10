@@ -9,6 +9,7 @@
 //*******************************************************************
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using EntityLayer;
@@ -340,7 +341,7 @@ public partial class Page_P060204000001 : PageBase
     /// 功能說明:匯入資料檢核
     /// 作    者:Linda
     /// 創建時間:2010/06/07
-    /// 修改記錄:
+    /// 修改記錄:2021/02/25_Ares_Stanley-調整重複卡號文字內容; 2021/02/26_Ares_Stanley-調整重複卡號條件
     /// </summary>
     /// <param name="strPath"></param>
     /// <param name="strTpye"></param>
@@ -358,6 +359,9 @@ public partial class Page_P060204000001 : PageBase
         DataTable dtblBegin = new DataTable();
         DataTable dtblEnd = new DataTable();
         int intMax = 15000;
+        ArrayList alTmpCardNo = new ArrayList();
+        int firstCardNoIndex = 0;//第一筆重複資料的index
+        Dictionary<string, string> dicErrCardNo = new Dictionary<string, string>();//卡號, 重複卡號第N筆
         #endregion
 
         dtDetail = BaseHelper.UploadCheck(strUserID, strFunctionKey, strUploadID,
@@ -380,13 +384,36 @@ public partial class Page_P060204000001 : PageBase
 
                     //以下用來判斷卡號不可重覆
 
-                    if (strTmpCardNo.IndexOf(strCardNo, 0) > 0)
+                    if (strTmpCardNo.IndexOf(strCardNo, 0) >= 0)
                     {
                         blnResult = false;
-                        arrayErrorMsg.Add(string.Format(MessageHelper.GetMessage("06_06020400_009"), i + 1));
+                        if (dicErrCardNo.ContainsKey(strCardNo))
+                        {
+                            dicErrCardNo[strCardNo] = dicErrCardNo[strCardNo] + "及第" + (i + 1).ToString() + "筆";
+                        }
+                        else
+                        {
+                            dicErrCardNo.Add(strCardNo.ToString(), "及第" + (i + 1).ToString() + "筆");
+                        }
+                        //arrayErrorMsg.Add(string.Format(MessageHelper.GetMessage("06_06020400_009"), i + 1));
                     }
-
+                    alTmpCardNo.Add(strCardNo);
                     strTmpCardNo += strCardNo + "|";
+                }
+                if (dicErrCardNo != null)
+                {
+                    foreach(KeyValuePair<string, string> errCardNo in dicErrCardNo)
+                    {
+                        for (int c = 0; c < alTmpCardNo.Count; c++)
+                        {
+                            if (errCardNo.Key == alTmpCardNo[c].ToString())
+                            {
+                                firstCardNoIndex = c + 1;
+                                break;
+                            }
+                        }
+                        arrayErrorMsg.Add(string.Format(MessageHelper.GetMessage("06_06020400_014"), firstCardNoIndex, errCardNo.Value));
+                    }
                 }
             }
         }

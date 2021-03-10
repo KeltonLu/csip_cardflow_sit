@@ -56,7 +56,7 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// 功能說明:Job執行入口
     /// 作    者:linda
     /// 創建時間:2010/06/08
-    /// 修改記錄:
+    /// 修改記錄:2021/02/24_Ares_Stanley-增加0KB檔案檢查; 2021/02/26_Ares_Stanley-調整JobEnd訊息順序
     /// </summary>
     /// <param name="context"></param>
     public void Execute(Quartz.JobExecutionContext context)
@@ -128,6 +128,9 @@ public class AutoOUCancelOASA : Quartz.IJob
 
             #region 登陸ftp下載注銷檔 
             ProssDownload();
+            #endregion
+            #region 檢查是否有0KB檔案
+            ProcFileSizeCheck();
             #endregion
             #region 處理本地壓縮檔  
             ProcDeCompress();
@@ -244,7 +247,6 @@ public class AutoOUCancelOASA : Quartz.IJob
             }
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
-            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】9. 執行結束！", LogState.Info);
             #endregion
         }
         catch (Exception ex)
@@ -263,6 +265,7 @@ public class AutoOUCancelOASA : Quartz.IJob
         finally
         {
             JobHelper.SaveLog(DateTime.Now.ToString() + strJobLogMsg);
+            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】9. 執行結束！", LogState.Info);
             //如有設定參數則回復為空白(同一JOBID都清空)
             //BR_FileInfo.UpdateParameter(strJobId);
 
@@ -518,9 +521,22 @@ public class AutoOUCancelOASA : Quartz.IJob
         foreach (DataRow rowLocalFile in dtLocalFile.Rows)
         {
             string strZipFileName = rowLocalFile["ZipFileName"].ToString().Trim();
+            long fileSize = new System.IO.FileInfo(rowLocalFile["LocalFilePath"].ToString()).Length;
+            bool blnResult = false;
             //if (strZipFileName.Substring(0, 4) != "OS56")
             //{
-            bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
+            //2021/02/24_Ares_Stanley
+            //檢查檔案大小, 若為0則不做解壓縮
+            if (fileSize != 0)
+            {
+                blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
+            }
+            else
+            {
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】檔案"+strZipFileName+"檔案為0KB，不做解壓縮！", LogState.Info);
+                continue;
+            }
+            
             ////*解壓成功
             if (blnResult)
             {
@@ -695,6 +711,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                             }
 
                         }
+                        else
+                        {
+                            //2021/02/17_Ares_Stanley-新增下載失敗LOG
+                            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + strFileInfo + "】 下載失敗！", LogState.Info);
+                        }
                     }
                     //*檔案不存在
                     else
@@ -765,12 +786,124 @@ public class AutoOUCancelOASA : Quartz.IJob
                             CancelOASA.FCount = -1;
                             CancelOASA.CancelOASASource = "0";
                             BR_CancelOASA.InsertCancelOASA(CancelOASA);
-
+                            // 2021/02/17_Ares_Stanley-增加ou13沒有31天前檔案的LOG
+                            JobHelper.SaveLog(string.Format(Resources.JobResource.Job0109001, strOUFileInfo), LogState.Info);
+                            strJobLogMsg = strJobLogMsg + DateTime.Now.ToString() + " JOB : 【" + strJobId + "】註銷檔 : 【" + strOUFileInfo + "】 不存在！\n";
+                            JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + strOUFileInfo + "】 不存在！", LogState.Info);
                         }
                     }
                 }
             }
         }
+    }
+    #endregion
+
+    /// <summary>
+    /// 建立日期:2021/02/23_Ares_Stanley-檢查資料夾內是否有檔案為0KB, 若有則重新執行檔案下載, 上限3次; 2021/02/26_Ares_Stanley-邏輯調整
+    /// </summary>
+    #region
+    private void ProcFileSizeCheck()
+    {
+        string ou13FilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
+        string otherFilePath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+        int ou13FilesCount = Directory.GetFiles(ou13FilePath).Length;
+        int otherFilesCount = Directory.GetFiles(otherFilePath).Length;
+        string[] ou13Files = new string[ou13FilesCount];
+        string[] otherFiles = new string[otherFilesCount];
+        long fileSize = 0;
+        string fileName = "";
+        int downloadPassFlag = 0;
+        //檢查開始
+        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】開始執行0KB檔案檢查！", LogState.Info);
+
+        //檢查OU13Tmp資料夾是否有0KB檔案
+        ou13Files = Directory.GetFiles(ou13FilePath);
+        for (int reDownloadTimes = 0; reDownloadTimes < 4; reDownloadTimes++)
+        {
+            downloadPassFlag = 0; //下載成功Flag初始化
+            if (ou13Files.Length != 0) //OU13TMP有檔案
+            {
+                foreach (string ou13File in ou13Files)
+                {
+                    fileSize = new System.IO.FileInfo(ou13File).Length; //檔案大小
+                    fileName = Path.GetFileName(ou13File); //檔案名稱
+                    if (fileSize == 0 && reDownloadTimes < 3)
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + fileName + "】 為 0KB！", LogState.Info);
+                        File.Delete(ou13File); //刪除0KB檔案重新下載
+                        for (int rowNo = 0; rowNo < dtLocalFile.Rows.Count; rowNo++)
+                        {
+                            if (dtLocalFile.Rows[rowNo]["FileName"].ToString() == fileName)
+                            {
+                                DataRow row = dtLocalFile.Rows[rowNo];
+                                dtLocalFile.Rows.Remove(row);
+                            }
+                        }
+                        downloadPassFlag += 1;
+                    }
+                    else if (fileSize == 0 && reDownloadTimes >= 3)
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + fileName + "】 為 0KB，請注意！", LogState.Error);
+                        downloadPassFlag += 1;
+                    }
+                }
+            }
+            else
+            {
+                //OU13TMP沒有檔案
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】資料夾OU13TMP沒有檔案！", LogState.Error);
+            }
+            //檢查FileDownload資料夾是否有0KB檔案
+            otherFiles = Directory.GetFiles(otherFilePath);
+            if (otherFiles.Length != 0) //資料夾有檔案
+            {
+                foreach (string otherFile in otherFiles)
+                {
+                    fileSize = new System.IO.FileInfo(otherFile).Length;
+                    fileName = Path.GetFileName(otherFile);
+                    if (fileSize == 0 && reDownloadTimes < 3)
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + fileName + "】 為 0KB！", LogState.Info);
+                        File.Delete(otherFile); //刪除0KB檔案重新下載
+                        for (int rowNo = 0; rowNo < dtLocalFile.Rows.Count; rowNo++)
+                        {
+                            if (dtLocalFile.Rows[rowNo]["FileName"].ToString() == fileName)
+                            {
+                                DataRow row = dtLocalFile.Rows[rowNo];
+                                dtLocalFile.Rows.Remove(row);
+                            }
+                        }
+                        downloadPassFlag += 1;
+
+                    }
+                    else if (fileSize == 0 && reDownloadTimes >= 3)
+                    {
+                        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】3. 註銷檔 : 【" + fileName + "】 為 0KB，請注意！", LogState.Error);
+                        downloadPassFlag += 1;
+                    }
+                }
+            }
+            else
+            {
+                //資料夾沒有檔案
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】資料夾" + otherFilePath + "沒有檔案！", LogState.Error);
+            }
+            // 執行重新下載
+            if (downloadPassFlag != 0 && reDownloadTimes < 3)
+            {
+                JobHelper.Write(strJobId, "===============" + DateTime.Now.ToString() + " JOB : 【" + strJobId + "】0KB檔案重新下載，開始！次數：" + (reDownloadTimes + 1) + "===============\n", LogState.Info);
+                ProssDownload();
+                JobHelper.Write(strJobId, "===============" + DateTime.Now.ToString() + " JOB : 【" + strJobId + "】0KB檔案重新下載，結束！次數：" + (reDownloadTimes + 1) + "===============\n", LogState.Info);
+            }
+            else if (downloadPassFlag == 0)
+            {
+                //無0KB檔案
+                break;
+            }
+        }
+
+    //檢查完畢
+    JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】0KB檔案檢查完畢！", LogState.Info);
     }
     #endregion
 

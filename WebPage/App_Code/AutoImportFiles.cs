@@ -33,8 +33,11 @@ public class AutoImportFiles : Quartz.IJob
     protected JobHelper JobHelper = new JobHelper();
     protected int SCount;
     protected int FCount;
+    protected int FCount_total; //2021/02/23_Ares_Stanley-增加總錯誤筆數
     protected int FFileCount;
     protected string strLocalPath = string.Empty;
+    protected ArrayList fileImportStatus = new ArrayList(); //2021/02/23_Ares_Stanley-增加匯入檔案明細
+    protected string mailDetail = "{0}-成功{1}筆, 失敗{2}筆"; //2021/02/23_Ares_Stanley-增加匯入檔案明細格式(檔名-成功n筆,失敗n筆)
 
     protected DataTable dtLocalFile;
     protected DataTable dtFileInfo;
@@ -382,8 +385,9 @@ public class AutoImportFiles : Quartz.IJob
                         }
 
                         drError = dtDetail.Select("action is null");
-                        other = dtDetail.Select("action is not null"); // other.Length = current SCount
-                        FCount = drError.Length;
+                        other = dtDetail.Select("action is not null"); // other.Length = success count of current file
+                        FCount_total += drError.Length; //2021/02/22_Ares_Stanley-新增FCount累加, 2021/02/23_Ares_Stanley-新增所有檔案錯誤總筆數變數FCount_total
+                        FCount = drError.Length; // 當前檔案錯誤筆數
                         if (null != drError && drError.Length > 0)
                         {
                             //匯入檢核錯誤的資料至錯誤資料檔
@@ -458,6 +462,8 @@ public class AutoImportFiles : Quartz.IJob
                         JobHelper.SaveLog(string.Format(Resources.JobResource.Job0101004, strPath));
                         FFileCount++;
                     }
+                    if (other.Length == 0 || FCount > 0) // 2021/02/23_Ares_Stanley-沒有任何匯入成功或有任何失敗時, 記錄匯入檔案明細
+                        fileImportStatus.Add(string.Format(mailDetail, Row[rowcount]["TxtFileName"].ToString(), other.Length, FCount));
                 }
                 JobHelper.SaveLog("結束讀取要匯入的檔案資料！", LogState.Info);
             }
@@ -487,11 +493,12 @@ public class AutoImportFiles : Quartz.IJob
 
             #region job結束日誌記錄
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
-            DataRow[] RowS = dtLocalFile.Select("ZipStates='S' and FormatStates='S' and ImportStates='S'");
+            //DataRow[] RowS = dtLocalFile.Select("ZipStates='S' and FormatStates='S' and ImportStates='S'");
+            DataRow[] RowS = dtLocalFile.Select("ZipStates='S' and FormatStates='S'"); //2021/02/23_Ares_Stanley-變更SCount計數為總匯入檔案數
             if (RowS != null && RowS.Length > 0)
             {
                 SCount = RowS.Length;
-                SCount = dtLocalFile.Rows.Count - FFileCount;
+                //SCount = dtLocalFile.Rows.Count - FFileCount; //2021/02/23_Ares_Stanley-改為總匯入檔案數, 不減去失敗檔案數
             }
 
             //*判斷job完成狀態
@@ -506,7 +513,7 @@ public class AutoImportFiles : Quartz.IJob
                 ArrayList alInfo = new ArrayList();
                 alInfo.Add(sbErrorFiles);
                 alInfo.Add(SCount);
-                alInfo.Add(FCount);
+                alInfo.Add(FCount_total); //2021/02/23_Ares_Stanley-調整信中錯誤總筆數
                 //內容格式錯誤
                 SendMail("2", alInfo, Resources.JobResource.Job0000036);
                 JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, "F", strReturnMsg);
@@ -616,7 +623,7 @@ public class AutoImportFiles : Quartz.IJob
     /// 功能說明:mail警訊通知
     /// 作    者:HAO CHEN
     /// 創建時間:2010/06/11
-    /// 修改記錄:
+    /// 修改記錄:2021/02/26_Ares_Stanley-調整mail內容
     /// </summary>
     /// <param name="strCallType">Mail警訊種類</param>
     /// <param name="strCallType">Mail警訊內文</param>
@@ -663,6 +670,10 @@ public class AutoImportFiles : Quartz.IJob
                     //格式化Mail Body
                     strBody = dtCallMail.Rows[0]["MailContext"].ToString();
                     strBody = string.Format(strBody, strDateTime, alMailInfo[0], alMailInfo[1], alMailInfo[2]);
+                    foreach(string fileStatus in fileImportStatus) //2021/02/23_Ares_Stanley-加入匯入失敗的檔案明細
+                    {
+                        strBody += "<br>" + fileStatus;
+                    }
                     //發送Mail
                     JobHelper.SendMail(strTo, strCc, strFrom, strSubject, strBody);
                     break;
