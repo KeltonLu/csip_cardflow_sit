@@ -2,7 +2,7 @@
 //*  功能說明：自動化卡片管制解管
 //*  作    者：linda
 //*  創建日期：2010/07/12
-//*  修改記錄：
+//*  修改記錄：2021/04/01
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -17,6 +17,7 @@ using Framework.Data.OM.Collections;
 using Framework.Common.Utility;
 using Framework.Data.OM;
 using CSIPCommonModel.EntityLayer;
+using System.Linq;
 
 /// <summary>
 /// AutoImportCancelOASAUD 的摘要描述
@@ -48,7 +49,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
     protected string strJobId;
 
     private DateTime _jobDate = DateTime.Now;
-    #endregion
+    #endregion；
 
     #region 程式入口
     /// <summary>
@@ -114,7 +115,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             }
             #endregion
 
-            
+
             #endregion
 
             #region 記錄job啟動時間
@@ -204,16 +205,20 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                                 strFileDate = _jobDate.AddDays(-1).ToString("yyyy/MM/dd");
                             }
                         }
+                        //20210401 取消鎖定副檔名 Joe Chen
                         switch (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4))
                         {
                             case "OS56":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".TXT";
+                                //strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".TXT";
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
                                 break;
                             case "os55":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                //strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
                                 break;
                             case "os66":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                //strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
                                 break;
                         }
 
@@ -272,6 +277,14 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                 string strZipFileName = rowLocalFile["ZipFileName"].ToString().Trim();
                 if (strZipFileName.Substring(0, 4) != "OS56")
                 {
+                    //20210401 檢索副檔名 Joe Chen
+                    string[] fileNames = Directory.GetFiles(rowLocalFile["LocalFilePath"].ToString(), "*.EXE");
+                    if (!fileNames.Contains(strZipFileName))
+                    {
+                        JobHelper.SaveLog("檔案為TXT無須解壓縮！");
+                        continue;
+                    }
+
                     bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
                     ////*解壓成功
                     if (blnResult)
