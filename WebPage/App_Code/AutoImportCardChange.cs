@@ -2,7 +2,7 @@
 //*  功能說明：自動化換卡異動檔匯入
 //*  作    者：zhiyuan
 //*  創建日期：2010/05/20
-//*  修改記錄：
+//*  修改記錄：2021/04/06 增加.TXT檔案處理
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -37,7 +37,7 @@ public class AutoImportCardChange : Quartz.IJob
     string strFtpUserName = string.Empty;
     string strFtpPwd = string.Empty;
     FTPFactory objFtp;
-    
+
     private DateTime _jobDate = DateTime.Now;
     #endregion
 
@@ -57,8 +57,8 @@ public class AutoImportCardChange : Quartz.IJob
             JobHelper.strJobId = strJobId;
             //strJobId = "0107";
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
-            
-            
+
+
             #region 判斷是否手動啟動排程
             if (context.JobDetail.JobDataMap["param"] != null)
             {
@@ -89,8 +89,8 @@ public class AutoImportCardChange : Quartz.IJob
             }
             #endregion
 
-            
-            
+
+
             #region 記錄job啟動時間的分段
             string strAmOrPm = string.Empty;
             JobHelper.IsAmOrPm(StartTime, ref strAmOrPm);
@@ -192,7 +192,7 @@ public class AutoImportCardChange : Quartz.IJob
                             {
                                 //FTP 路徑+檔名
                                 string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFile;
-                                
+
                                 JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                                 //*下載檔案         
                                 if (objFtp.Download(strFtpFileInfo, strLocalPath, strFile))
@@ -250,6 +250,12 @@ public class AutoImportCardChange : Quartz.IJob
             #region 處理本地壓縮檔
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
+                //2021/04/06 增加.TXT檔案處理
+                if (rowLocalFile["ZipPwd"].ToString().Trim() == "")
+                {
+                    continue;
+                }
+
                 string strZipFileName = rowLocalFile["ZipFileName"].ToString().Trim();
 
                 bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
@@ -258,6 +264,8 @@ public class AutoImportCardChange : Quartz.IJob
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FormatStates"] = "S";
+
+                    //2021/04/06 增加.TXT檔案處理
                     rowLocalFile["TxtFileName"] = strZipFileName.Replace(".EXE", ".txt");
                     JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
@@ -400,7 +408,7 @@ public class AutoImportCardChange : Quartz.IJob
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, strReturnMsg);
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             #endregion
-            
+
             JobHelper.SaveLog("JOB結束！", LogState.Info);
         }
         catch (Exception ex)
