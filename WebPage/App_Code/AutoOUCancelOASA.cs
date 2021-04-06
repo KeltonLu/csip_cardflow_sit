@@ -528,7 +528,7 @@ public class AutoOUCancelOASA : Quartz.IJob
             //2021/02/24_Ares_Stanley
             //檢查檔案大小, 若為0則不做解壓縮
             //2021/04/06 新增.TXT處理 陳永銘
-            if (fileSize != 0 && rowLocalFile["ZipPwd"].ToString() !== "")
+            if (fileSize != 0 && rowLocalFile["ZipPwd"].ToString() != "")
             {
                 blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
             }
