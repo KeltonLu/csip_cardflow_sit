@@ -177,7 +177,7 @@ public class AutoImportCardChange : Quartz.IJob
 
                         strFtpPwd = rowFileInfo["FtpPwd"].ToString();
                         //2021/04/07 新增 LOG紀錄 陳永銘
-                        JobHelper.SaveLog("FTP密碼:" + strFtpUserName, LogState.Info);
+                        JobHelper.SaveLog("FTP密碼:" + strFtpPwd, LogState.Info);
 
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
@@ -202,9 +202,17 @@ public class AutoImportCardChange : Quartz.IJob
                             string filename = "No";
                             if (strFile.Length > 8)
                             {
+                                //2021/04/07 新增 LOG紀錄 陳永銘
+                                JobHelper.SaveLog("檔案名稱長度大於8", LogState.Info);
+
+                                //2021/04/07 新增 LOG紀錄 陳永銘
+                                JobHelper.SaveLog("目標檔名:" + "rr01" + DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("MMdd"), LogState.Info);
+
                                 if (strFile.Substring(0, 8).Equals("rr01" + DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", _jobDate.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("MMdd")))
                                 {
                                     filename = "ok";
+                                    //2021/04/07 新增 LOG紀錄 陳永銘
+                                    JobHelper.SaveLog("檔案名稱檢核" + filename, LogState.Info);
                                 }
                             }
                             //    if (!string.IsNullOrEmpty(strFile) && strFile.Substring(0, 8).Equals("rr01" + DateTime.ParseExact(CSIPCommonModel.BusinessRules.BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("MMdd")))
@@ -213,6 +221,8 @@ public class AutoImportCardChange : Quartz.IJob
                             {
                                 //FTP 路徑+檔名
                                 string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFile;
+                                //2021/04/07 新增 LOG紀錄 陳永銘
+                                JobHelper.SaveLog("檔案路徑:" + strFtpFileInfo, LogState.Info);
 
                                 JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                                 //*下載檔案         
@@ -239,6 +249,8 @@ public class AutoImportCardChange : Quartz.IJob
                                 //*檔案不存在
                                 else
                                 {
+                                    //2021/04/07 新增 LOG紀錄 陳永銘
+                                    JobHelper.SaveLog("檔案不存在", LogState.Info);
                                     JobHelper.SaveLog(string.Format(Resources.JobResource.Job0107001, rowFileInfo["FtpFileName"].ToString()));
                                     errMsg += (errMsg == "" ? "" : "、") + rowFileInfo["FtpFileName"].ToString();
                                     // SendMail(rowFileInfo["FtpFileName"].ToString(), Resources.JobResource.Job0000008);
@@ -280,15 +292,12 @@ public class AutoImportCardChange : Quartz.IJob
                 }
 
                 string strZipFileName = rowLocalFile["ZipFileName"].ToString().Trim();
-
                 bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
                 ////*解壓成功
                 if (blnResult)
                 {
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FormatStates"] = "S";
-
-                    //2021/04/06 增加.TXT檔案處理
                     rowLocalFile["TxtFileName"] = strZipFileName.Replace(".EXE", ".txt");
                     JobHelper.SaveLog("解壓縮檔案成功！", LogState.Info);
                 }
