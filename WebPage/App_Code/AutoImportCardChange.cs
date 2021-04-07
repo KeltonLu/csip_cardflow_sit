@@ -3,6 +3,7 @@
 //*  作    者：zhiyuan
 //*  創建日期：2010/05/20
 //*  修改記錄：2021/04/06 增加.TXT檔案處理
+//*  修改記錄：2021/04/07 新增 LOG紀錄 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -156,6 +157,9 @@ public class AutoImportCardChange : Quartz.IJob
                 JobHelper.SaveLog("從DB中讀取檔案資料成功！", LogState.Info);
                 if (dtFileInfo.Rows.Count > 0)
                 {
+                    //2021/04/07 新增 LOG紀錄 陳永銘
+                    JobHelper.SaveLog("資料筆數:" + dtFileInfo.Rows.Count.ToString(), LogState.Info);
+
                     //*創建子目錄名稱，存放下載文件
                     string strMsg = string.Empty;
                     JobHelper.CreateFolderName(strJobId, ref strFolderName);
@@ -164,17 +168,34 @@ public class AutoImportCardChange : Quartz.IJob
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
                         strFtpIp = rowFileInfo["FtpIP"].ToString();
+                        //2021/04/07 新增 LOG紀錄 陳永銘
+                        JobHelper.SaveLog("FTP主機:" + strFtpIp, LogState.Info);
+
                         strFtpUserName = rowFileInfo["FtpUserName"].ToString();
+                        //2021/04/07 新增 LOG紀錄 陳永銘
+                        JobHelper.SaveLog("FTP使用者名稱:" + strFtpUserName, LogState.Info);
+
                         strFtpPwd = rowFileInfo["FtpPwd"].ToString();
+                        //2021/04/07 新增 LOG紀錄 陳永銘
+                        JobHelper.SaveLog("FTP密碼:" + strFtpUserName, LogState.Info);
+
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
                         //獲取FTP路徑下的所有檔案
+                        //2021/04/07 新增 LOG紀錄 陳永銘
+                        JobHelper.SaveLog("FTP路徑:" + rowFileInfo["FtpPath"].ToString(), LogState.Info);
                         string[] strFiles = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString() + "//");
+
                         //本地路徑
                         strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
+                        //2021/04/07 新增 LOG紀錄 陳永銘
+                        JobHelper.SaveLog("本地路徑:" + strLocalPath, LogState.Info);
 
                         foreach (string strFile in strFiles)
                         {
+                            //2021/04/07 新增 LOG紀錄 陳永銘
+                            JobHelper.SaveLog("檔案名稱:" + strFile, LogState.Info);
+
                             //抓取為rr01開頭的檔案
                             //增加抓取前一工作日的檔案
                             //if (!string.IsNullOrEmpty(strFile) && strFile.Substring(0, 4).Equals("rr01"))
@@ -253,6 +274,8 @@ public class AutoImportCardChange : Quartz.IJob
                 //2021/04/06 增加.TXT檔案處理
                 if (rowLocalFile["ZipPwd"].ToString().Trim() == "")
                 {
+                    //2021/04/07 新增 LOG紀錄 陳永銘
+                    JobHelper.SaveLog("無解壓縮密碼", LogState.Info);
                     continue;
                 }
 
