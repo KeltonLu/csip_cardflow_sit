@@ -657,7 +657,8 @@ public class AutoOUCancelOASA : Quartz.IJob
                     }
                     //  string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.Now.ToString("yyyyMMdd").Substring(4, 4) + ".EXE";
                     string strFinfo = rowFileInfo["FtpFileName"].ToString() + strGetDate;
-                    string strFileInfo = strFinfo + ".EXE";
+                    //2021/04/06 新增.TXT處理 陳永銘
+                    string strFileInfo = strFinfo;
                     //若已下載，則略過
                     if (SDC.ContainsKey(strFileInfo))
                     {
@@ -751,7 +752,8 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
 
                         //到  strLocalPath 找 31天前的檔名
-                        string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate + ".EXE";
+                        //2021/04/06 新增.TXT處理 陳永銘
+                        string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate;
                         string WorkPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄

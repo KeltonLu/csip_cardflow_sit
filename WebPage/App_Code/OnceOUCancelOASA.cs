@@ -2,7 +2,7 @@
 //*  功能說明：自動化卡片註消   執行一次，抓取40天前FTP上OU13
 //*  作    者：Talas
 //*  創建日期：2019/12/30
-//*  修改記錄：
+//*  修改記錄：2021/04/06 新增.TXT處理 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 
 //*******************************************************************
@@ -159,7 +159,7 @@ public class OnceOUCancelOASA : Quartz.IJob
                         if (!Directory.Exists(strLocalPath)){
                             Directory.CreateDirectory(strLocalPath);
                         }
-                        string strFileInfo = rowFileInfo["FtpFileName"].ToString() + strGetDate + ".EXE";
+                        string strFileInfo = rowFileInfo["FtpFileName"].ToString() + strGetDate;
                         strLocalPath = strLocalPath + "\\";
                         //FTP 路徑+檔名
                         string strFtpFileInfo = rowFileInfo["FtpPath"].ToString() + "//" + strFileInfo;
