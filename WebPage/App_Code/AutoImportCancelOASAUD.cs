@@ -3,7 +3,6 @@
 //*  作    者：linda
 //*  創建日期：2010/07/12
 //*  修改記錄：2021/04/06 新增.TXT處理 陳永銘
-//*  修改記錄：2021/04/07 新增 LOG紀錄 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -185,9 +184,6 @@ public class AutoImportCancelOASAUD : Quartz.IJob
 
                     foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                     {
-                        //2021/04/07 新增 LOG紀錄 陳永銘
-                        JobHelper.SaveLog("讀取檔案資料！", LogState.Info);
-
                         strFileInfo = string.Empty;
                         strImportDate = rowFileInfo["ImportDate"].ToString().Trim();
                         strFileDate = string.Empty;
@@ -199,9 +195,6 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         }
                         else
                         {
-                            //2021/04/07 新增 LOG紀錄 陳永銘
-                            JobHelper.SaveLog("檔案名稱！" + rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"), LogState.Info);
-
                             if (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"))
                             {
                                 strFileDate = _jobDate.ToString("yyyy/MM/dd");
@@ -213,25 +206,17 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         }
                         switch (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4))
                         {
-
                             case "OS56":
                                 //2021/04/06 新增.TXT處理 陳永銘
                                 strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
-                                //2021/04/07 新增 LOG紀錄 陳永銘
-                                JobHelper.SaveLog("檔案名稱！" + rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"), LogState.Info);
                                 break;
                             case "os55":
                                 //2021/04/06 新增.TXT處理 陳永銘
                                 strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
-                                //2021/04/07 新增 LOG紀錄 陳永銘
-                                JobHelper.SaveLog("檔案名稱！" + rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"), LogState.Info);
                                 break;
                             case "os66":
                                 //2021/04/06 新增.TXT處理 陳永銘
                                 strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
-                                //2021/04/07 新增 LOG紀錄 陳永銘
-                                JobHelper.SaveLog("檔案名稱！" + rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4).Equals("os66"), LogState.Info);
-
                                 break;
                         }
 
@@ -240,12 +225,6 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         strFtpIp = rowFileInfo["FtpIP"].ToString();
                         strFtpUserName = rowFileInfo["FtpUserName"].ToString();
                         strFtpPwd = rowFileInfo["FtpPwd"].ToString();
-
-                        //2021/04/07 新增 LOG紀錄 陳永銘
-                        JobHelper.SaveLog("FtpPath:" + strFtpFileInfo, LogState.Info);
-                        JobHelper.SaveLog("FtpIP:" + strFtpIp, LogState.Info);
-                        JobHelper.SaveLog("FtpUserName:" + strFtpUserName, LogState.Info);
-                        JobHelper.SaveLog("FtpPwd:" + strFtpPwd, LogState.Info);
 
                         FTPFactory objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
                         //*檔案存在
@@ -272,8 +251,6 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         //*檔案不存在
                         else
                         {
-                            JobHelper.SaveLog("檔案不存在！", LogState.Info);
-
                             JobHelper.SaveLog(string.Format(Resources.JobResource.Job0108001, rowFileInfo["FtpFileName"].ToString()));
                         }
                     }
@@ -302,11 +279,10 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                     if (rowLocalFile["ZipPwd"].ToString() == "")
                     {
                         rowLocalFile["ZipStates"] = "S";
-                        rowLocalFile["FormatStates"] = "S";
+                        rowLocalFile["FileName"] = strZipFileName;
                         JobHelper.SaveLog("無須解壓縮檔案！", LogState.Info);
                         continue;
                     }
-
                     bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
                     ////*解壓成功
                     if (blnResult)
