@@ -685,17 +685,17 @@ public class AutoOUCancelOASA : Quartz.IJob
                         {
                             // strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath");
                             strLocalPath = strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
-
-                            if (!Directory.Exists(strLocalPath))
-                            {
-                                Directory.CreateDirectory(strLocalPath);
-                            }
                         }
                         else
                         {
                             strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         }
 
+                        //2021/04/12 建立資料夾 陳永銘
+                        if (!Directory.Exists(strLocalPath))
+                        {
+                            Directory.CreateDirectory(strLocalPath);
+                        }
 
                         //*下載檔案
                         if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
