@@ -659,6 +659,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                     string strFinfo = rowFileInfo["FtpFileName"].ToString() + strGetDate;
                     //2021/04/06 新增.TXT處理 陳永銘
                     string strFileInfo = strFinfo;
+                    if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                        strFileInfo += ".txt";
+                    else
+                        strFileInfo += ".EXE";
+                    break;
                     //若已下載，則略過
                     if (SDC.ContainsKey(strFileInfo))
                     {
@@ -754,6 +759,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                         //到  strLocalPath 找 31天前的檔名
                         //2021/04/06 新增.TXT處理 陳永銘
                         string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate;
+                        if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                            strOUFileInfo += ".txt";
+                        else
+                            strOUFileInfo += ".EXE";
+                        break;
                         string WorkPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
@@ -1171,6 +1181,7 @@ public class AutoOUCancelOASA : Quartz.IJob
         string strExeFileName = srcZipFile.Substring(0, srcZipFile.Trim().Length - 4);
 
         strTXTFileName = srcZipFile.Replace(".EXE", "");
+
 
         System.Diagnostics.Process p = new System.Diagnostics.Process();
         //设定程序名

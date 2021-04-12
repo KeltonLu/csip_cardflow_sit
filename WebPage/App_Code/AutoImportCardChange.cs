@@ -258,7 +258,7 @@ public class AutoImportCardChange : Quartz.IJob
                     rowLocalFile["ZipStates"] = "S";
                     rowLocalFile["FormatStates"] = "S";
                     rowLocalFile["TxtFileName"] = rowLocalFile["ZipFileName"].ToString().Trim();
-                    JobHelper.SaveLog("無須解壓縮檔案！", LogState.Info);
+                    JobHelper.SaveLog("檔案無須解壓縮！", LogState.Info);
                     continue;
                 }
 

@@ -22,7 +22,7 @@ public class OnceOUCancelOASA : Quartz.IJob
     #region job基本參數設置
     protected string strJobId;
     protected string strFunctionKey = "06";
-   // private string strSessionId = "";
+    // private string strSessionId = "";
     protected JobHelper JobHelper = new JobHelper();
     protected int SCount;
     protected int FCount;
@@ -108,7 +108,7 @@ public class OnceOUCancelOASA : Quartz.IJob
             #region job結束日誌記錄
 
             //*判斷job完成狀態
-            string strJobStatus = "S";          
+            string strJobStatus = "S";
             JobHelper.WriteLogToDB(strJobId, StartTime, EndTime, strJobStatus, "下載完成");
             BRM_LBatchLog.Delete(strFunctionKey, strJobId, StartTime, "R");
             JobHelper.SaveLog("JOB結束！", LogState.Info);
@@ -148,7 +148,7 @@ public class OnceOUCancelOASA : Quartz.IJob
                 foreach (DataRow rowFileInfo in dtFileInfo.Rows)
                 {
                     //只會有OU13
-                  
+
                     //FTP 檔名
                     //string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.Now.AddDays(-1).ToString("yyyyMMdd").Substring(4, 4) + ".EXE";
                     //下載 40 天內所有的檔案
@@ -156,9 +156,11 @@ public class OnceOUCancelOASA : Quartz.IJob
                     {
                         string strGetDate = DateTime.Today.AddDays(-1 * i).ToString("yyyyMMdd").Substring(4, 4);
                         strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");
-                        if (!Directory.Exists(strLocalPath)){
+                        if (!Directory.Exists(strLocalPath))
+                        {
                             Directory.CreateDirectory(strLocalPath);
                         }
+                        //2021/04/06 新增.TXT處理 陳永銘
                         string strFileInfo = rowFileInfo["FtpFileName"].ToString() + strGetDate;
                         strLocalPath = strLocalPath + "\\";
                         //FTP 路徑+檔名
