@@ -692,10 +692,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
 
                         //2021/04/12 建立資料夾 陳永銘
+                        JobHelper.Write(strJobId, "資料夾路徑:" + strLocalPath, LogState.Info);
                         if (!Directory.Exists(strLocalPath))
                         {
                             Directory.CreateDirectory(strLocalPath);
-                            JobHelper.Write(strJobId, "資料夾路徑:" + strLocalPath, LogState.Info);
+                            JobHelper.Write(strJobId, "建立資料夾:" + strLocalPath, LogState.Info);
                         }
 
                         //*下載檔案
@@ -1392,6 +1393,10 @@ public class AutoOUCancelOASA : Quartz.IJob
     public Dictionary<string, string> GetFileDic()
     {
         string sPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
+
+        //2021/04/13 增加log 陳永銘
+        JobHelper.Write(strJobId, "資料夾路徑" + sPath, LogState.Info);
+
         if (!Directory.Exists(sPath))
         {
             return new Dictionary<string, string>();
