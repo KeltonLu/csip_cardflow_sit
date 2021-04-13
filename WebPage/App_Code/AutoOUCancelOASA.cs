@@ -695,6 +695,7 @@ public class AutoOUCancelOASA : Quartz.IJob
                         if (!Directory.Exists(strLocalPath))
                         {
                             Directory.CreateDirectory(strLocalPath);
+                            JobHelper.Write(strJobId, "資料夾路徑:" + strLocalPath, LogState.Info);
                         }
 
                         //*下載檔案
