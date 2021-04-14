@@ -1,5 +1,4 @@
-﻿//******************************************************************
-//*  功能說明：自動化卡片註消
+﻿//*  功能說明：自動化卡片註消
 //*  作    者：linda
 //*  創建日期：2010/07/06
 //*  修改記錄：2021/04/06 新增.TXT處理 陳永銘
@@ -663,7 +662,6 @@ public class AutoOUCancelOASA : Quartz.IJob
                         strFileInfo += ".txt";
                     else
                         strFileInfo += ".EXE";
-                    break;
                     //若已下載，則略過
                     if (SDC.ContainsKey(strFileInfo))
                     {
@@ -692,11 +690,9 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
 
                         //2021/04/12 建立資料夾 陳永銘
-                        JobHelper.Write(strJobId, "資料夾路徑:" + strLocalPath, LogState.Info);
                         if (!Directory.Exists(strLocalPath))
                         {
                             Directory.CreateDirectory(strLocalPath);
-                            JobHelper.Write(strJobId, "建立資料夾:" + strLocalPath, LogState.Info);
                         }
 
                         //*下載檔案
@@ -765,7 +761,6 @@ public class AutoOUCancelOASA : Quartz.IJob
                             strOUFileInfo += ".txt";
                         else
                             strOUFileInfo += ".EXE";
-                        break;
                         string WorkPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
@@ -1393,10 +1388,6 @@ public class AutoOUCancelOASA : Quartz.IJob
     public Dictionary<string, string> GetFileDic()
     {
         string sPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId;
-
-        //2021/04/13 增加log 陳永銘
-        JobHelper.Write(strJobId, "資料夾路徑" + sPath, LogState.Info);
-
         if (!Directory.Exists(sPath))
         {
             return new Dictionary<string, string>();
