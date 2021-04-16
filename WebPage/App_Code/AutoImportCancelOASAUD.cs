@@ -207,7 +207,12 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                         switch (rowFileInfo["FtpFileName"].ToString().Trim().Substring(0, 4))
                         {
                             case "OS56":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".TXT";
+                                //2021/04/15 新增.TXT處理 陳永銘
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
+                                if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                                    strFileInfo += "";
+                                else
+                                    strFileInfo += ".EXE";
                                 break;
                             case "os55":
                                 //2021/04/06 新增.TXT處理 陳永銘
@@ -218,7 +223,12 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                                     strFileInfo += ".EXE";
                                 break;
                             case "os66":
+                                //2021/04/15 新增.TXT處理 陳永銘
                                 strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                                    strFileInfo += "";
+                                else
+                                    strFileInfo += ".EXE";
                                 break;
                         }
 
