@@ -2,7 +2,7 @@
 //*  功能說明：自動化卡片管制解管
 //*  作    者：linda
 //*  創建日期：2010/07/12
-//*  修改記錄：
+//*  修改記錄：2021/04/06 新增.TXT處理 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -114,7 +114,7 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             }
             #endregion
 
-            
+
             #endregion
 
             #region 記錄job啟動時間
@@ -210,10 +210,20 @@ public class AutoImportCancelOASAUD : Quartz.IJob
                                 strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".TXT";
                                 break;
                             case "os55":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                //2021/04/06 新增.TXT處理 陳永銘
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
+                                if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                                    strFileInfo += "";
+                                else
+                                    strFileInfo += ".EXE";
                                 break;
                             case "os66":
-                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4) + ".EXE";
+                                //2021/04/15 新增.TXT處理 陳永銘
+                                strFileInfo = rowFileInfo["FtpFileName"].ToString() + strFileDate.Replace("/", "").Substring(4, 4);
+                                if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                                    strFileInfo += "";
+                                else
+                                    strFileInfo += ".EXE";
                                 break;
                         }
 
@@ -270,7 +280,8 @@ public class AutoImportCancelOASAUD : Quartz.IJob
             foreach (DataRow rowLocalFile in dtLocalFile.Rows)
             {
                 string strZipFileName = rowLocalFile["ZipFileName"].ToString().Trim();
-                if (strZipFileName.Substring(0, 4) != "OS56")
+                //2021/04/06 新增.TXT處理 陳永銘
+                if (strZipFileName.Substring(0, 4) != "OS56" && rowLocalFile["ZipPwd"].ToString() != "")
                 {
                     bool blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
                     ////*解壓成功

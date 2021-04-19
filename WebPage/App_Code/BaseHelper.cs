@@ -11,6 +11,8 @@ using Framework.Common.Utility;
 using Framework.Common.Message;
 using Framework.Common.Logging;
 
+//2021/04/12 修改副檔名檢核 陳永銘
+
 /// <summary>
 /// Summary description for BaseHelper
 /// </summary>
@@ -314,14 +316,18 @@ public sealed class BaseHelper
             //* 判斷該匯入檢核有無類型判斷數據
             if (dtblUploadCheck.Rows.Count > 0)
             {
-                //* 判斷檔案類型
-                if (file.Extension.ToUpper() != dtblUploadCheck.Rows[0]["EXTEND_NAME"].ToString())
+                //2021/04/12 修改副檔名檢核 陳永銘
+                if (file.Extension != "")
                 {
-                    strMsgID = "Job0000014";
-                    eLUpload.UPLOAD_STATUS = "N";
-                    LogUpload(eLUpload, eLUploadDetail, strMsgID);
+                    //* 判斷檔案類型
+                    if (file.Extension.ToUpper() != dtblUploadCheck.Rows[0]["EXTEND_NAME"].ToString())
+                    {
+                        strMsgID = "Job0000014";
+                        eLUpload.UPLOAD_STATUS = "N";
+                        LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
-                    return dtblUpload;
+                        return dtblUpload;
+                    }
                 }
             }
             else

@@ -1,8 +1,7 @@
-﻿//******************************************************************
-//*  功能說明：自動化卡片註消
+﻿//*  功能說明：自動化卡片註消
 //*  作    者：linda
 //*  創建日期：2010/07/06
-//*  修改記錄：
+//*  修改記錄：2021/04/06 新增.TXT處理 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //  Nash (U)          20190503          就算OU檔案是空檔，也會寫入系統中讓User可以知道資料筆數為0
 //  Nash (U)          20190503          新增LOG
@@ -109,11 +108,11 @@ public class AutoOUCancelOASA : Quartz.IJob
                 //*job停止
             }
             #endregion
-            
+
             #region 檢測JOB是否在執行中
             if (BRM_LBatchLog.JobStatusChk(strFunctionKey, strJobId, DateTime.Now))
             {
-            
+
                 JobHelper.SaveLog(DateTime.Now.ToString() + "JOB 工作狀態為：正在執行！", LogState.Info);
                 // 返回不在執行           
                 return;
@@ -527,16 +526,17 @@ public class AutoOUCancelOASA : Quartz.IJob
             //{
             //2021/02/24_Ares_Stanley
             //檢查檔案大小, 若為0則不做解壓縮
-            if (fileSize != 0)
+            //2021/04/06 新增.TXT處理 陳永銘
+            if (fileSize != 0 && rowLocalFile["ZipPwd"].ToString() != "")
             {
                 blnResult = ExeFile(strLocalPath, strZipFileName, rowLocalFile["ZipPwd"].ToString());
             }
             else
             {
-                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】檔案"+strZipFileName+"檔案為0KB，不做解壓縮！", LogState.Info);
+                JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】檔案" + strZipFileName + "不做解壓縮！", LogState.Info);
                 continue;
             }
-            
+
             ////*解壓成功
             if (blnResult)
             {
@@ -656,7 +656,12 @@ public class AutoOUCancelOASA : Quartz.IJob
                     }
                     //  string strFileInfo = rowFileInfo["FtpFileName"].ToString() + DateTime.Now.ToString("yyyyMMdd").Substring(4, 4) + ".EXE";
                     string strFinfo = rowFileInfo["FtpFileName"].ToString() + strGetDate;
-                    string strFileInfo = strFinfo + ".EXE";
+                    //2021/04/06 新增.TXT處理 陳永銘
+                    string strFileInfo = strFinfo;
+                    if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                        strFileInfo += ".txt";
+                    else
+                        strFileInfo += ".EXE";
                     //若已下載，則略過
                     if (SDC.ContainsKey(strFileInfo))
                     {
@@ -678,17 +683,17 @@ public class AutoOUCancelOASA : Quartz.IJob
                         {
                             // strLocalPath = UtilHelper.GetAppSettings("OU13TmpFilePath");
                             strLocalPath = strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath") + "\\";
-
-                            if (!Directory.Exists(strLocalPath))
-                            {
-                                Directory.CreateDirectory(strLocalPath);
-                            }
                         }
                         else
                         {
                             strLocalPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("FileDownload") + "\\" + strJobId + "\\" + strFolderName + "\\";
                         }
 
+                        //2021/04/12 建立資料夾 陳永銘
+                        if (!Directory.Exists(strLocalPath))
+                        {
+                            Directory.CreateDirectory(strLocalPath);
+                        }
 
                         //*下載檔案
                         if (objFtp.Download(strFtpFileInfo, strLocalPath, strFileInfo))
@@ -750,7 +755,12 @@ public class AutoOUCancelOASA : Quartz.IJob
                         }
 
                         //到  strLocalPath 找 31天前的檔名
-                        string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate + ".EXE";
+                        //2021/04/06 新增.TXT處理 陳永銘
+                        string strOUFileInfo = rowFileInfo["FtpFileName"].ToString() + ou13RealDate;
+                        if (string.IsNullOrEmpty(rowFileInfo["ZipPwd"].ToString()))
+                            strOUFileInfo += ".txt";
+                        else
+                            strOUFileInfo += ".EXE";
                         string WorkPath = AppDomain.CurrentDomain.BaseDirectory + UtilHelper.GetAppSettings("OU13TmpFilePath");    //暫存檔目錄
                         string LocalFile = strLocalPath + strOUFileInfo;       //應匯入檔案，在真正下載目錄
                         string importFile = WorkPath + "\\" + strOUFileInfo;   //31天前檔案，在暫存目錄
@@ -902,8 +912,8 @@ public class AutoOUCancelOASA : Quartz.IJob
             }
         }
 
-    //檢查完畢
-    JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】0KB檔案檢查完畢！", LogState.Info);
+        //檢查完畢
+        JobHelper.Write(strJobId, DateTime.Now.ToString() + " JOB : 【" + strJobId + "】0KB檔案檢查完畢！", LogState.Info);
     }
     #endregion
 
@@ -1213,7 +1223,7 @@ public class AutoOUCancelOASA : Quartz.IJob
     /// <param name="strCallType">Mail警訊內文</param>
     /// <param name="strCallType">錯誤狀況</param>
     /// <param name="lastTimeDt">最後一次的查詢結果</param>
-    public void SendMail(string strCallType, ArrayList alMailInfo, string strErrorName,DataTable lastTimeDt = null)
+    public void SendMail(string strCallType, ArrayList alMailInfo, string strErrorName, DataTable lastTimeDt = null)
     {
         try
         {
@@ -1315,12 +1325,12 @@ public class AutoOUCancelOASA : Quartz.IJob
                                         "NO", "檔案來源", "卡號", "BLOCK CODE", "備註(訊息說明)", "註銷狀態");
                                 }
 
-                                strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(), 
+                                strBody += string.Format(dtCallMail.Rows[0]["MailContext"].ToString(),
                                         lastTimeDt.Rows[i]["no"],
                                         lastTimeDt.Rows[i]["CancelOASAFile"],
-                                        lastTimeDt.Rows[i]["CardNo"], 
-                                        lastTimeDt.Rows[i]["BlockCode"], 
-                                        lastTimeDt.Rows[i]["MemoLog"], 
+                                        lastTimeDt.Rows[i]["CardNo"],
+                                        lastTimeDt.Rows[i]["BlockCode"],
+                                        lastTimeDt.Rows[i]["MemoLog"],
                                         lastTimeDt.Rows[i]["SFFLG"]);
 
                                 if (i == lastTimeDt.Rows.Count - 1)
