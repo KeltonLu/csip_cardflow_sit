@@ -11,6 +11,8 @@ using Framework.Common.Utility;
 using Framework.Common.Message;
 using Framework.Common.Logging;
 
+//2021/04/12 修改副檔名檢核 陳永銘
+
 /// <summary>
 /// Summary description for BaseHelper
 /// </summary>
@@ -110,7 +112,7 @@ public sealed class BaseHelper
     /// <param name="arrlErrorRow">錯誤行數數組</param>
     public static void AddErrorMsg(int intTemp, int intColumn, string strMsgID, ref ArrayList arrListMsg)
     {
-        arrListMsg.Add(Resources.JobResource.Job0000009 + intTemp.ToString() + Resources.JobResource.Job0000010 + Resources.JobResource.Job0000009 + Convert.ToString(intColumn + 1) + Resources.JobResource.ResourceManager.GetString(strMsgID));
+        arrListMsg.Add(Resources.JobResource.Job0000009 + intTemp.ToString() + Resources.JobResource.Job0000010 + Resources.JobResource.Job0000009 + Convert.ToString(intColumn + 1) +Resources.JobResource.ResourceManager.GetString(strMsgID));
     }
 
     /// <summary>
@@ -205,7 +207,7 @@ public sealed class BaseHelper
     /// <returns>int</returns>
     public static void LogUpload(EntityL_UPLOAD eLUpload, EntityL_UPLOAD_DETAIL eLUploadDetail, string strMsgID)
     {
-        eLUploadDetail.FAIL_REASON = Resources.JobResource.ResourceManager.GetString(strMsgID);
+        eLUploadDetail.FAIL_REASON =Resources.JobResource.ResourceManager.GetString(strMsgID);
         BRL_UPLOAD.Add(eLUpload, eLUploadDetail, ref strMsgID);
 
     }
@@ -222,12 +224,13 @@ public sealed class BaseHelper
         eLUploadDetail.FAIL_REC_NO = intRow.ToString();
         eLUploadDetail.FAIL_REASON = strMsg;
 
-        BRL_UPLOAD_DETAIL.Add(eLUploadDetail, ref strMsg);
+        BRL_UPLOAD_DETAIL.Add(eLUploadDetail, ref  strMsg);
 
     }
 
     /// <summary>
     /// 匯入檢核
+    /// 修改紀錄:2020/12/18_Ares_Stanley-修正strMsgID
     /// </summary>
     /// <param name="strUserID"> 用戶ID</param>
     /// <param name="strFunctionKey">系統權限</param>
@@ -289,7 +292,7 @@ public sealed class BaseHelper
         //* 判斷檔案是否存在
         if (!file.Exists)
         {
-            strMsgID = Resources.JobResource.Job0000012;
+            strMsgID = "Job0000012";
             eLUpload.UPLOAD_STATUS = "N";
             LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -303,7 +306,7 @@ public sealed class BaseHelper
             }
             catch
             {
-                strMsgID = Resources.JobResource.Job0000013;
+                strMsgID = "Job0000013";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -319,7 +322,7 @@ public sealed class BaseHelper
                     //* 判斷檔案類型
                     if (file.Extension.ToUpper() != dtblUploadCheck.Rows[0]["EXTEND_NAME"].ToString())
                     {
-                        strMsgID = Resources.JobResource.Job0000014;
+                        strMsgID = "Job0000014";
                         eLUpload.UPLOAD_STATUS = "N";
                         LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -329,7 +332,7 @@ public sealed class BaseHelper
             }
             else
             {
-                strMsgID = Resources.JobResource.Job0000015;
+                strMsgID = "Job0000015";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -354,7 +357,7 @@ public sealed class BaseHelper
         }
         catch
         {
-            strMsgID = Resources.JobResource.Job0000013;
+            strMsgID = "Job0000013";
             eLUpload.UPLOAD_STATUS = "N";
             LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -374,7 +377,7 @@ public sealed class BaseHelper
         }
         else
         {
-            strMsgID = Resources.JobResource.Job0000015;
+            strMsgID = "Job0000015";
             eLUpload.UPLOAD_STATUS = "N";
             LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -414,7 +417,7 @@ public sealed class BaseHelper
             }
             catch
             {
-                strMsgID = Resources.JobResource.Job0000016;
+                strMsgID = "Job0000016";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -428,7 +431,7 @@ public sealed class BaseHelper
             //* 資料行數大于15000,提示錯誤
             if (intUploadTotalCount - intBeginCount - intEndCount > intMax)
             {
-                strMsgID = Resources.JobResource.Job0000017;
+                strMsgID = "Job0000017";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -681,7 +684,7 @@ public sealed class BaseHelper
             }
             catch
             {
-                strMsgID = Resources.JobResource.Job0000016;
+                strMsgID = "Job0000016";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -696,7 +699,7 @@ public sealed class BaseHelper
             //* 資料行數大于15000,提示錯誤
             if (intUploadTotalCount - intBeginCount - intEndCount > intMax)
             {
-                strMsgID = Resources.JobResource.Job0000017;
+                strMsgID = "Job0000017";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
@@ -1140,7 +1143,7 @@ public sealed class BaseHelper
             }
             catch
             {
-                strMsgID = Resources.JobResource.Job0000016;
+                strMsgID = "Job0000016";
                 eLUpload.UPLOAD_STATUS = "N";
                 LogUpload(eLUpload, eLUploadDetail, strMsgID);
 
