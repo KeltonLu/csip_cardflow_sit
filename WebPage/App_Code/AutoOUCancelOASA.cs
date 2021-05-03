@@ -788,7 +788,8 @@ public class AutoOUCancelOASA : Quartz.IJob
                         {
                             //增加一個寫入NA 
                             Entity_CancelOASA CancelOASA = new Entity_CancelOASA();
-                            CancelOASA.CancelOASAFile = rowFileInfo["FtpFileName"].ToString() + ou13RealDate;
+                            //2021/05/03 新增.TXT處理 陳永銘
+                            CancelOASA.CancelOASAFile = rowFileInfo["FtpFileName"].ToString() + strOUFileInfo;
                             CancelOASA.CancelOASADate = CurrentJobDate.ToString("yyyy/MM/dd");
                             CancelOASA.CancelOASAUser = "sys";
                             CancelOASA.TotalCount = -1;
