@@ -2,7 +2,7 @@
 //*  功能說明：OASA注銷Log檔處理業務邏輯層       為了空檔寫入0及無檔案寫入NA複寫此方法
 //*  作    者：zhiyuan
 //*  創建日期：2010/05/27
-//*  修改記錄：
+//*  修改記錄：2021/05/05 執行後更新狀態 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -38,14 +38,15 @@ public class BR_CancelOASA : BRBase<Entity_CancelOASA>
         else
         {
             //有筆數才更新，不然維持原狀
-            if (inData.TotalCount > 0)
-            {
-                result = Update(inData);
-            }
-            else
-            {
-                result = true;
-            }
+            //if (inData.TotalCount > 0)
+            //{
+            //2021/05/05 執行後更新狀態 陳永銘
+            result = Update(inData);
+            //}
+            //else
+            //{
+            //result = true;
+            //}
         }
         return result;
     }
@@ -127,9 +128,9 @@ set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource 
 ";
         strSQL += " where CancelOASAFile=@CancelOASAFile and  CancelOASADate=@CancelOASADate ";
         SqlCommand sqlcmd = new SqlCommand();
-        sqlcmd.CommandType = CommandType.Text; 
+        sqlcmd.CommandType = CommandType.Text;
         sqlcmd.CommandText = strSQL;
-       
+
         sqlcmd.Parameters.Add(new SqlParameter("@TotalCount", paramObj.TotalCount));
         sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
         sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
