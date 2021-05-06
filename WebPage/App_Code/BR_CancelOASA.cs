@@ -2,7 +2,7 @@
 //*  功能說明：OASA注銷Log檔處理業務邏輯層       為了空檔寫入0及無檔案寫入NA複寫此方法
 //*  作    者：zhiyuan
 //*  創建日期：2010/05/27
-//*  修改記錄：2021/05/05 執行後更新狀態 陳永銘
+//*  修改記錄：2021/05/06 執行後更新狀態 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -31,27 +31,29 @@ public class BR_CancelOASA : BRBase<Entity_CancelOASA>
     public static bool InsertCancelOASA(Entity_CancelOASA inData)
     {
         bool result = false;
-        if (!IsExist(inData))
+        int totalCount = 0;
+        if (!IsExist(inData, ref totalCount))
         {
             result = Insert(inData);
         }
         else
         {
             //有筆數才更新，不然維持原狀
-            //if (inData.TotalCount > 0)
-            //{
-            //2021/05/05 執行後更新狀態 陳永銘
-            result = Update(inData);
-            //}
-            //else
-            //{
-            //result = true;
-            //}
+            //2021/05/06 執行後更新狀態 陳永銘
+            if (inData.TotalCount > 0)
+            {
+                result = Update(inData);
+            }
+            else if (totalCount < 0)
+            {
+                //result = true;
+                result = Update(inData);
+            }
         }
         return result;
     }
 
-    private static bool IsExist(Entity_CancelOASA inData)
+    private static bool IsExist(Entity_CancelOASA inData, ref int totalCount)
     {
         bool result = false;
         string strSQL = @"SELECT TOP 1 [CancelOASAFile],[CancelOASADate],[CancelOASAUser],[TotalCount]
@@ -73,6 +75,7 @@ public class BR_CancelOASA : BRBase<Entity_CancelOASA>
                 if (dtOASACardInfo.Rows.Count > 0)
                 {
                     result = true;
+                    totalCount = Convert.ToInt32(dtOASACardInfo.Rows[0]["TotalCount"]);
                 }
                 else
                 {
