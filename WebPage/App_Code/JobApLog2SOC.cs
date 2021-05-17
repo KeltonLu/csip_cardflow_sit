@@ -113,8 +113,8 @@ public class JobApLog2SOC : IJob
             #endregion
 
 
-            int intDataCnt = 0;
-            int intExcludeCnt = 0;
+            int intDataCnt = 0; //送出筆數
+            int intExcludeCnt = 0; //無需送出筆數
 
             DataTable dt = getData(strRunDate, true);
             if (dt != null)
@@ -175,12 +175,12 @@ public class JobApLog2SOC : IJob
         string sql = "Select System_Code,Login_Account_Nbr,convert(char(23),Query_Datetime,121)Query_Datetime,AP_Txn_Code,Server_Name,User_Terminal,AP_Account_Nbr,Txn_Type_Code," +
             "Statement_Text,Object_Name,Txn_Status_Code,Customer_Id,Account_Nbr,Branch_Nbr,Role_Id,Import_Source,As_Of_Date " +
             "From L_AP_LOG (nolock) where As_Of_Date=@As_Of_Date  and IsUpload='0'";
-        if (ExcludeStatue)
+        if (ExcludeStatue)  //20210506_Ares_Stanley-調整送出或不需送出的SQL
         {
-            sql += " and ISNULL(Customer_Id,'') = '' and ISNULL(Account_Nbr,'') = '' ";
+            sql += " and ISNULL(Customer_Id,'') = '' ";
         }
         else {
-            sql += " and (ISNULL(Customer_Id,'') != '' or ISNULL(Account_Nbr,'') != '') ";
+            sql += " and ISNULL(Customer_Id,'') != '' ";
         }
         sqlcmd.Parameters.Add(new SqlParameter("@As_Of_Date", strRunDate));
 
