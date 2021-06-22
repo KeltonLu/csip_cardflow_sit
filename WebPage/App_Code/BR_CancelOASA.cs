@@ -127,9 +127,9 @@ set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource 
 ";
         strSQL += " where CancelOASAFile=@CancelOASAFile and  CancelOASADate=@CancelOASADate ";
         SqlCommand sqlcmd = new SqlCommand();
-        sqlcmd.CommandType = CommandType.Text; 
+        sqlcmd.CommandType = CommandType.Text;
         sqlcmd.CommandText = strSQL;
-       
+
         sqlcmd.Parameters.Add(new SqlParameter("@TotalCount", paramObj.TotalCount));
         sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
         sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
