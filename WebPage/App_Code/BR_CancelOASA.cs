@@ -1,4 +1,4 @@
-﻿//******************************************************************
+//******************************************************************
 //*  功能說明：OASA注銷Log檔處理業務邏輯層       為了空檔寫入0及無檔案寫入NA複寫此方法
 //*  作    者：zhiyuan
 //*  創建日期：2010/05/27
@@ -127,9 +127,9 @@ set TotalCount = @TotalCount,SCount = @SCount,FCount = @FCount,CancelOASASource 
 ";
         strSQL += " where CancelOASAFile=@CancelOASAFile and  CancelOASADate=@CancelOASADate ";
         SqlCommand sqlcmd = new SqlCommand();
-        sqlcmd.CommandType = CommandType.Text;
+        sqlcmd.CommandType = CommandType.Text; 
         sqlcmd.CommandText = strSQL;
-
+       
         sqlcmd.Parameters.Add(new SqlParameter("@TotalCount", paramObj.TotalCount));
         sqlcmd.Parameters.Add(new SqlParameter("@SCount", paramObj.SCount));
         sqlcmd.Parameters.Add(new SqlParameter("@FCount", paramObj.FCount));
