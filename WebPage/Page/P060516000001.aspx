@@ -2,7 +2,7 @@
 <%@ Register Assembly="Framework.WebControls" Namespace="Framework.WebControls" TagPrefix="cc1" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<%--20210618_Ares_Stanley-變更資料排序--%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
@@ -105,25 +105,25 @@
 									<asp:BoundField DataField="CountEnd">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
-									<asp:BoundField DataField="END0">
-										<ItemStyle Width="8%" HorizontalAlign="Center" />
-									</asp:BoundField>
 									<asp:BoundField DataField="END1">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="END2">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
-									<asp:BoundField DataField="END3">
+									<asp:BoundField DataField="END6">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="END4">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
-									<asp:BoundField DataField="END5">
+									<asp:BoundField DataField="END0">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
-									<asp:BoundField DataField="END6">
+									<asp:BoundField DataField="END3">
+										<ItemStyle Width="8%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="END5">
 										<ItemStyle Width="8%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="END7">

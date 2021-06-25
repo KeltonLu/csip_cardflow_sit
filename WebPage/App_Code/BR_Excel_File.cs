@@ -395,10 +395,13 @@ where (@backdate = 'NULL' or b.backdate in (select max(b.Backdate)
     #endregion
 
     #region SearchExport0516
-
+    /// <summary>
+    /// 修改紀錄：20210618_Ares_Stanley-變更資料排序
+    /// END0：自取/END1：普掛/END2：限掛/END3：快遞/END4：夜間投遞/END5：卡片註銷/END6：卡片碎卡/END7：其他
+    /// </summary>
     private const string SearchExport0516 = @"
-select ReasonName, sum(DayIn) DayIn,sum(DayOut) DayOut,sum(CountEnd) CountEnd,sum(END0) END0
-,sum(END1) END1,sum(END2) END2,sum(END3) END3,sum(END4) END4,sum(END5) END5,sum(END6) END6,sum(END7) END7
+select ReasonName, sum(DayIn) DayIn,sum(DayOut) DayOut,sum(CountEnd) CountEnd
+,sum(END1) END1,sum(END2) END2,sum(END6) END6,sum(END4) END4,sum(END0) END0,sum(END3) END3,sum(END5) END5,sum(END7) END7
 from (
 select T.cardtype,
      isnull((select CardTypeName From tbl_CardType where CardType=T.cardtype),'信用卡') ReasonName,
