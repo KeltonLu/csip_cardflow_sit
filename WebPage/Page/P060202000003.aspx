@@ -46,6 +46,8 @@
                 {
                     var UserName = document.getElementById("txtUserName");
                     var Tel = document.getElementById("txtTel");
+                    var newCardnewAccount = document.getElementById("newCardnewAccount");
+                    var newCardoldAccount = document.getElementById("newCardoldAccount");
                     if(UserName.value == "")
                     {
                         alert("連絡姓名不能為空");
@@ -54,6 +56,10 @@
                     if(Tel.value == "")
                     {
                         alert("連絡電話不能為空");
+                        return false;
+                    }
+                    if (newCardnewAccount.checked === false && newCardoldAccount.checked === false) {
+                        alert("類別為必填！");
                         return false;
                     }
                 }
@@ -100,7 +106,16 @@
         }
     }
     </script>
+    <script language="javascript" type="text/javascript">
+        window.addEventListener("scroll", scroll, false);
 
+        function scroll() {
+
+            $("#divProgress").css("top", 290 + document.documentElement.scrollTop);
+
+        }
+
+    </script>
 </head>
 <body class="workingArea">
     <form id="form1" runat="server">
@@ -205,7 +220,7 @@
                     </tr>
                     <tr>
                         <td colspan="3" style="height: 25px">
-                            <cc1:CustGridView ID="grvUserView" runat="server" Width="100%" OnRowEditing="grvUserView_RowEditing"
+                            <cc1:CustGridView ID="grvUserView" runat="server" Width="100%" OnRowCommand="grvUserView_RowSelecting"
                                 DataKeyNames="id" BorderStyle="Solid" CellSpacing="1" CellPadding="0" BorderWidth="0px"
                                 PagerID="gpList" AllowPaging="False" AllowSorting="True" Height="1px" OnRowDataBound="grvUserView_RowDataBound">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
@@ -226,7 +241,7 @@
                                     </asp:TemplateField>
                                     <asp:TemplateField>
                                         <itemtemplate>
-                                    <cc1:CustButton id="btnSure" class="smallButton" runat="server" ShowID="06_06020003_010" Width="64px" CommandName="edit" CommandArgument='<%# Bind("SNo") %>'></cc1:CustButton> 
+                                    <cc1:CustButton id="btnSure" class="smallButton" runat="server" ShowID="06_06020003_010" Width="64px" CommandName="select" CommandArgument='<%# Bind("SNo") %>'></cc1:CustButton> 
                                     </itemtemplate>
                                         <itemstyle width="20%" horizontalalign="Center"></itemstyle>
                                     </asp:TemplateField>
@@ -253,7 +268,7 @@
                 <asp:ImageButton ID="AddButtonA" Style="display: none" runat="server" />
                 <ajaxToolkit:ModalPopupExtender ID="ModalPopupExtenderA" runat="server" TargetControlID="AddButtonA"
                     PopupControlID="PanA" BackgroundCssClass="modal" CancelControlID="btnCancelA"
-                    DropShadow="False" />
+                    DropShadow="False" Y="150" />
                 <asp:Panel ID="PanA" CssClass="workingArea" runat="server" Style="display: none;"
                     Width="473px" Height="1px">
                     <table id="tbContextMailAdd" width="100%" border="0" cellpadding="0" cellspacing="1">
@@ -270,6 +285,20 @@
                                 <cc1:CustLabel ID="CustLabel80" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                     IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
                                     SetBreak="False" SetOmit="False" ShowID="06_02020003_016" StickHeight="False"></cc1:CustLabel></td>
+                        </tr>
+                        <tr class="trOdd" id="category_tr" runat="server">
+                            <td align="right" style="width: 20%; height: 25px">
+                                <cc1:CustLabel ID="category_Title" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                    IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                    SetBreak="False" SetOmit="False" ShowID="06_02020003_030" StickHeight="False">
+                                </cc1:CustLabel>
+                            </td>
+                            <td align="left" style="width:30%; height:25px;">
+                                <cc1:CustRadioButton ID="newCardnewAccount" runat="server" Checked="false" BorderStyle="None"
+								GroupName="categroy_Item"/>
+                                <cc1:CustRadioButton ID="newCardoldAccount" runat="server" Checked="false" BorderStyle="None"
+								GroupName="categroy_Item" />
+                            </td>
                         </tr>
                         <tr class="trEven">
                             <td align="right" style="width: 20%; height: 25px">
@@ -400,6 +429,36 @@
                 <asp:HiddenField ID="hidStatus" runat="Server" />
             </ContentTemplate>
         </asp:UpdatePanel>
+        <asp:UpdateProgress ID="updateProgress1" runat="server">
+
+            <ProgressTemplate>
+
+                <div id="divProgress" align="center" class="progress" style="position: absolute;
+
+                    top: 290px; width: 100%; filter: Alpha(opacity=80); text-align: center; z-index:10003;">
+
+                    <div id="divProgress2" align="center" class="progress" style="background-color: White;
+
+                        width: 50%; margin: 0px auto; z-index:10004;">
+
+                        <br />
+
+                        <img alt="Please Wait..." src="../Common/images/Waiting.gif" />
+
+                        <br />
+
+                        <cc1:CustLabel ID="lblWaiting" runat="server" CurAlign="center" CurSymbol="£" FractionalDigit="2"
+
+                            IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+
+                            SetBreak="False" SetOmit="False" ShowID="00_00000000_000" StickHeight="False"></cc1:CustLabel>
+
+                    </div>
+
+                </div>
+
+            </ProgressTemplate>
+        </asp:UpdateProgress>
     </form>
 </body>
 </html>

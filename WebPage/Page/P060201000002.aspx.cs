@@ -15,6 +15,9 @@ using BusinessRules;
 using Framework.Common.Message;
 using Framework.Data.OM;
 using Framework.Common.Utility;
+using Framework.Common.Logging;
+using TIBCO.EMS;
+using ESBOrderUp;
 
 public partial class P06020101 : PageBase
 {
@@ -142,6 +145,17 @@ public partial class P06020101 : PageBase
             if (!this.btnUpdateM.Enabled) { this.btnUpdateM.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateM.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
             if (!this.btnUpdateN.Enabled) { this.btnUpdateN.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateN.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
             if (!this.btnUpdateP.Enabled) { this.btnUpdateP.ForeColor = System.Drawing.ColorTranslator.FromHtml("#ACA899"); this.btnUpdateP.BackColor = System.Drawing.ColorTranslator.FromHtml("#F5F5F5"); }
+
+            //判斷是否顯示通知客服按鈕
+            if (this.lblKind.Text.Contains("無法製卡") && (this.lblAction.Text.Contains("掛失") || this.lblAction.Text.Contains("毀補") || this.lblAction.Text.Contains("年度換卡")))
+            {
+                this.btnSendDispatch.Visible = true;
+            }
+            else
+            {
+                this.btnSendDispatch.Visible = false;
+            }
+
         }
     }
 
@@ -666,19 +680,66 @@ public partial class P06020101 : PageBase
         Response.Redirect("P060201000001.aspx");
     }
 
+    ///// <summary>
+    ///// 功能說明:更新備注
+    ///// 作    者:Simba Liu
+    ///// 創建時間:2010/04/09
+    ///// 修改記錄:
+    ///// </summary>
+    ///// <param name="sender"></param>
+    ///// <param name="e"></param>
+    //protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
+    //{
+    //    string strMsgID = string.Empty;
+    //    CustButton btnSure = grvUserView.Rows[e.NewEditIndex].Cells[2].FindControl("btnSure") as CustButton;
+    //    TextBox txtcNote = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("txtcNote") as TextBox;
+    //    if (txtcNote == null || string.IsNullOrEmpty(txtcNote.Text.Trim()))
+    //    {
+    //        //*備註不通過
+    //        MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_000");
+    //        return;
+    //    }
+    //    if (btnSure != null && txtcNote != null)
+    //    {
+    //        Entity_CardDataChange CardDataChange = new Entity_CardDataChange();
+    //        //*修改異動單備註
+    //        CardDataChange.Sno = int.Parse(btnSure.CommandArgument.ToString());
+    //        CardDataChange.CNote = txtcNote.Text.Trim();
+    //        CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
+    //        SqlHelper sqlhelp = new SqlHelper();
+    //        sqlhelp.AddCondition(Entity_CardDataChange.M_Sno, Operator.Equal, DataTypeUtils.Integer, CardDataChange.Sno.ToString());
+
+    //        string strLogMsg = BaseHelper.GetShowText("06_06020101_035") + "：" + BaseHelper.GetShowText("06_06020101_023");
+    //        BRM_Log.Insert(CardDataChange.UpdUser, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), strLogMsg, "U");
+
+    //        if (BRM_CardDataChange.update(CardDataChange, sqlhelp.GetFilterCondition(), ref strMsgID, "CNote"))
+    //        {
+    //            MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_001");
+    //            BindData();
+    //        }
+    //        else
+    //        {
+    //            MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_002");
+    //        }
+    //    }
+    //}
+
     /// <summary>
     /// 功能說明:更新備注
     /// 作    者:Simba Liu
     /// 創建時間:2010/04/09
-    /// 修改記錄:
+    /// 修改記錄:20210701_Ares_Stanley-更新方始由Editing改為Selecting避免文字顯示欄位變成可編輯
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
+    protected void grvUserView_RowSelecting(object sender, GridViewCommandEventArgs e)
     {
         string strMsgID = string.Empty;
-        CustButton btnSure = grvUserView.Rows[e.NewEditIndex].Cells[2].FindControl("btnSure") as CustButton;
-        TextBox txtcNote = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("txtcNote") as TextBox;
+        Button btn = (Button)e.CommandSource;
+        GridViewRow row = btn.NamingContainer as GridViewRow;
+        Int32 idx = row.RowIndex;
+        CustButton btnSure = grvUserView.Rows[idx].Cells[2].FindControl("btnSure") as CustButton;
+        TextBox txtcNote = grvUserView.Rows[idx].Cells[1].FindControl("txtcNote") as TextBox;
         if (txtcNote == null || string.IsNullOrEmpty(txtcNote.Text.Trim()))
         {
             //*備註不通過
@@ -694,10 +755,10 @@ public partial class P06020101 : PageBase
             CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
             SqlHelper sqlhelp = new SqlHelper();
             sqlhelp.AddCondition(Entity_CardDataChange.M_Sno, Operator.Equal, DataTypeUtils.Integer, CardDataChange.Sno.ToString());
-            
+
             string strLogMsg = BaseHelper.GetShowText("06_06020101_035") + "：" + BaseHelper.GetShowText("06_06020101_023");
             BRM_Log.Insert(CardDataChange.UpdUser, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), strLogMsg, "U");
-            
+
             if (BRM_CardDataChange.update(CardDataChange, sqlhelp.GetFilterCondition(), ref strMsgID, "CNote"))
             {
                 MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_001");
@@ -709,7 +770,6 @@ public partial class P06020101 : PageBase
             }
         }
     }
-
     /// <summary>
     /// 功能說明:回上頁
     /// 作    者:Simba Liu
@@ -1166,6 +1226,136 @@ public partial class P06020101 : PageBase
         }
     }
 
+    /// <summary>
+    /// 功能說明:發送工單給客服
+    /// 作    者:Ares Stanley
+    /// 創建時間:2021/06/01
+    /// 修改記錄: 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void btnSureS_Click(object sender, EventArgs e)
+    {
+        #region 20210601_Ares_Stanley新工單
+        #region params
+        string strResult = string.Empty;
+        string caseNo = string.Empty;
+        string resultErrorMsg = string.Empty;
+        bool blnResult = false;
+        string strMsgID = string.Empty;
+        string resultRspCode = string.Empty;
+        string resultErrorCode = string.Empty;
+
+        //變更取卡方式電文參數
+        ESBOrderUpClass esborderup = new ESBOrderUpClass(Session);
+        esborderup.CDM_C0701_NOTICECSCTODOLIST = "1"; //是否為集作通知客服待處理事項 0:否/1:是
+        esborderup.CDM_C0701_PID = m_Id; //身分證字號
+        esborderup.CDM_C0701_NAME = this.lblname1.Text.Trim(); //姓名
+        esborderup.CDM_C0701_COMPANY = ""; //公司名稱
+        esborderup.CDM_C0701_EMAIL = ""; //Email
+        esborderup.CDM_C0701_HOMEPHONE = ""; //HomePhone
+        esborderup.CDM_C0701_CELLPHONE = ""; //CellPhone
+        esborderup.CDM_C0701_CONTACTREMARK = this.txtRemark_dispatch.Text.Trim();
+        esborderup.CDM_C0701_CARDNO = m_CardNo; //卡號
+        esborderup.CDM_C0701_POSTALAREA = BaseHelper.ToDBC(this.lblNewzipAjax.Text.Trim()); //郵遞區號*改卡單地址為必填*
+        esborderup.CDM_C0701_ADDR1 = this.lblAdd1New.Text == "" ? this.lblAdd1.Text : this.lblAdd1New.Text; //地址1*改卡單地址為必填*
+        esborderup.CDM_C0701_ADDR2 = this.lblAdd2New.Text == "" ? this.lblAdd2.Text : this.lblAdd2New.Text; //地址2*改卡單地址為必填*
+        esborderup.CDM_C0701_ADDR3 = this.lblAdd3New.Text == "" ? this.lblAdd3.Text : this.lblAdd3New.Text; //地址3
+        //卡片類別_0:新卡新戶/_1:新卡舊戶/_2:掛毀補/_3:年度換卡/_4:卡退回
+        string DICT_CUSTOMWORD_ID = string.Empty;
+        if (!this.lblAction_dispatch.Text.Contains("掛失") && !this.lblAction_dispatch.Text.Contains("毀補") && !this.lblAction_dispatch.Text.Contains("年度換卡"))
+        {
+            jsBuilder.RegScript(this.Page, "alert('卡片類別需為掛失、毀補、年度換卡！')");
+            return;
+        }
+        if (this.lblAction_dispatch.Text.Contains("掛失") || this.lblAction_dispatch.Text.Contains("毀補"))
+        {
+            DICT_CUSTOMWORD_ID = UtilHelper.GetAppSettings("DICT_CUSTOMWORD_ID_2");
+        }
+        if (this.lblAction_dispatch.Text.Contains("年度換卡"))
+        {
+            DICT_CUSTOMWORD_ID = UtilHelper.GetAppSettings("DICT_CUSTOMWORD_ID_3");
+        }
+        esborderup.DICT_CUSTOMWORD_ID = DICT_CUSTOMWORD_ID;
+        //原取卡方式
+        string takeWayOri = string.Empty;
+        GetKindName("2", m_Kind, ref takeWayOri);
+        string takeWayNew = string.Empty;
+        GetKindName("2", "9", ref takeWayNew);
+        esborderup.ORIG_GETCARDTYPE_ID = !string.IsNullOrEmpty(takeWayOri) ? takeWayOri.Substring(0, 1) : ""; //原取卡方式
+        esborderup.NEW_GETCARDTYPE_ID = !string.IsNullOrEmpty(takeWayNew) ? takeWayNew.Substring(0, 1) : ""; //新取卡方式
+        #endregion params
+
+        //打電文預設線路1
+        strResult = ConntoESB.ConnESB(esborderup, "1");
+
+        //當線路1 連線失敗 ,再換線路2
+        if (esborderup.ConnStatus == "F")
+            strResult = ConntoESB.ConnESB(esborderup, "2");
+
+        //取資料
+        caseNo = esborderup.CaseNo;
+        resultErrorMsg = esborderup.ErrorMessage;
+        resultRspCode = esborderup.RspCode;
+        resultErrorCode = esborderup.ErrorCode;
+
+        if (esborderup.ConnStatus == "S")
+        {
+            if (resultRspCode != "-1")
+            {
+                jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
+                Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
+                Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
+                return;
+            }
+        }
+        else
+        {
+            resultErrorMsg = "ESB電文連線失敗!!";
+            jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
+            Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
+            Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
+            return;
+        }
+        #endregion
+
+        #region 將異動寫入CardDataChange
+        Entity_CardDataChange CardDataChange = new Entity_CardDataChange();
+        CardDataChange.NewWay = "9";
+
+        string takWayNew = string.Empty;
+        GetKindName("2", "9", ref takWayNew);
+
+        string takWay = string.Empty;
+        GetKindName("2", m_Kind, ref takWay);
+
+        //CardDataChange.CNote = this.txtCNoteC.Text.Trim();//*備註
+        CardDataChange.CNote = this.txtRemark_dispatch.Text.Trim() + string.Format(" {0}-工單發送完成", caseNo);//*備註
+
+        CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_02020000_008", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), takWay, takWayNew + "  (發送工單通知客服)");//*異動記錄說明
+        CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
+        CardDataChange.UpdTime = DateTime.Now.ToString("HH:mm");
+        CardDataChange.OutputFlg = "N";
+        CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
+        CardDataChange.CardNo = m_CardNo;
+        CardDataChange.action = m_Action;
+        CardDataChange.Trandate = m_Trandate;
+        CardDataChange.indate1 = this.lblIndate1.Text;
+        CardDataChange.id = m_Id;
+        blnResult = BRM_CardDataChange.Insert(CardDataChange, ref strMsgID);
+        if (blnResult)
+        {
+            this.BindData();
+            this.UpdatePanel1.Update();
+        }
+        else
+        {
+            jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020103_000") + "')");
+        }
+        #endregion
+        return;
+    }
+
 
     /// <summary>
     /// 功能說明:備注-異動欄位
@@ -1298,6 +1488,43 @@ public partial class P06020101 : PageBase
     {
         InitControls();
         this.ModalPopupExtenderG.Show();
+    }
+
+    protected void btnSendDispatch_Click(object sender, EventArgs e)
+    {
+        InitControls();
+        this.lblCardno_dispatch.Text = this.lblCardno.Text;
+        this.lblAction_dispatch.Text = this.lblAction.Text;
+        string remarkText = string.Empty;
+        string remarkText_action = this.lblAction_dispatch.Text.Split(' ')[1];
+        string remarkText_CNote = string.Empty;
+        //取備註資料
+        DataTable dtCardDataChange = new DataTable();
+        string strMsgID = string.Empty;
+        SqlHelper sqlhelp = new SqlHelper();
+        //sqlhelp.AddCondition(Entity_CardDataChange.M_action, Operator.Equal, DataTypeUtils.String, m_Action);
+
+        sqlhelp.AddCondition(Entity_CardDataChange.M_CardNo, Operator.Equal, DataTypeUtils.String, m_CardNo);
+        sqlhelp.AddCondition(Entity_CardDataChange.M_indate1, Operator.Equal, DataTypeUtils.String, this.lblIndate1.Text);
+        sqlhelp.AddCondition(Entity_CardDataChange.M_NoteCaptions, Operator.Like, DataTypeUtils.String, "%無法製卡%");
+        //sqlhelp.AddOrderCondition(Entity_CardDataChange.M_Sno, ESortType.DESC);
+
+        if (BRM_CardDataChange.SearchByCardNo(sqlhelp.GetFilterCondition(), ref dtCardDataChange, ref strMsgID))
+        {
+            //若無資料顯示提示訊息
+            if (dtCardDataChange.Rows.Count == 0)
+            {
+                jsBuilder.RegScript(this.Page, "alert('查無無法製卡資料！')");
+                this.txtRemark_dispatch.Text = "";
+            }
+            else
+            {
+                remarkText_CNote = dtCardDataChange.Rows[0]["CNote"].ToString().Contains("：") ? dtCardDataChange.Rows[0]["CNote"].ToString().Split('：')[1] : dtCardDataChange.Rows[0]["CNote"].ToString();
+                remarkText = dtCardDataChange.Rows[0]["CNote"].ToString().Contains("卡體不良") ? string.Format("{0}，卡號{1}，卡片因外觀檢核未過，請協助毀補卡片(無須照會客戶)", remarkText_action, this.lblCardno_dispatch.Text) : string.Format("{0}，卡號{1}，{2}，無法製出請協助更正後毀補卡片", remarkText_action, this.lblCardno_dispatch.Text, remarkText_CNote);
+                this.txtRemark_dispatch.Text = remarkText;
+            }
+        }
+        this.ModalPopupExtenderS.Show();
     }
 
 
@@ -1481,6 +1708,9 @@ public partial class P06020101 : PageBase
         this.txtCNoteM.Text = string.Empty;
         this.txtCNoteC.Text = string.Empty;
         this.txtCNoteG.Text = string.Empty;
+
+        this.lblCardno_dispatch.Text = string.Empty;
+        this.lblAction_dispatch.Text = string.Empty;
     }
     /// <summary>
     /// 功能說明:MergeTable加載製卡廠名稱
@@ -1573,5 +1803,9 @@ public partial class P06020101 : PageBase
     protected void btnCancelG_Click(object sender, EventArgs e)
     {
         this.ModalPopupExtenderG.Hide();
+    }
+    protected void btnCancelS_Click(object sender, EventArgs e)
+    {
+        this.ModalPopupExtenderS.Hide();
     }
 }

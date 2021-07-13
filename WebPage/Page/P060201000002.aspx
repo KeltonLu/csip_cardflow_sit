@@ -5,6 +5,7 @@
 <%@ Register Assembly="Framework.WebControls" Namespace="Framework.WebControls" TagPrefix="cc1" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+    <%-- 2020/12/22_Ares_Stanley-修正失效游標語法 --%>
 <head runat="server">
     <title>綜合資料處理修改</title>
 
@@ -585,8 +586,11 @@
                                     IsColon="False" ForeColor="red" IsCurrency="False" NeedDateFormat="False" NumBreak="0"
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel></div>
                             <div align="right">
+                                <asp:Button ID="btnSendDispatch" runat="server" Text="發工單通知客服" CssClass="smallButton" OnClick="btnSendDispatch_Click"
+                                    Style="cursor: pointer"/>&nbsp;
                                 <asp:Button ID="btnUpdateC" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateC_Click"
-                                    OnClientClick="return IsConfirm('C')" Style="cursor: pointer" />&nbsp;</div>
+                                    OnClientClick="return IsConfirm('C')" Style="cursor: pointer" />&nbsp;
+                            </div>
                         </td>
                     </tr>
                     <tr class="trOdd">
@@ -716,7 +720,7 @@
                     </tr>
                     <tr>
                         <td colspan="3">
-                            <cc1:CustGridView ID="grvUserView" runat="server" Width="100%" OnRowEditing="grvUserView_RowEditing"
+                            <cc1:CustGridView ID="grvUserView" runat="server" Width="100%" OnRowCommand="grvUserView_RowSelecting"
                                 DataKeyNames="id" BorderStyle="Solid" CellSpacing="1" CellPadding="0" BorderWidth="0px"
                                 PagerID="gpList" AllowPaging="False" AllowSorting="True" OnRowDataBound="grvUserView_RowDataBound">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
@@ -741,7 +745,7 @@
                                     <asp:TemplateField>
                                         <itemstyle width="10%" horizontalalign="Center"></itemstyle>
                                         <itemtemplate>
-<cc1:CustButton id="btnSure" class="smallButton" runat="server" ShowID="06_06020101_023" Width="64px" __designer:wfdid="w2" CommandArgument='<%# Bind("SNo") %>' CommandName="edit"></cc1:CustButton> 
+<cc1:CustButton id="btnSure" class="smallButton" runat="server" ShowID="06_06020101_023" Width="64px" __designer:wfdid="w2" CommandArgument='<%# Bind("SNo") %>' CommandName="select"></cc1:CustButton> 
 </itemtemplate>
                                     </asp:TemplateField>
                                     <asp:TemplateField Visible="False">
@@ -1223,6 +1227,71 @@
                         </tr>
                     </table>
                 </asp:Panel>
+                <%-- 發工單通知客服 --%>
+                <asp:ImageButton ID="AddButtonS" Style="display: none" runat="server" />
+                <ajaxToolkit:ModalPopupExtender ID="ModalPopupExtenderS" runat="server" TargetControlID="AddButtonS"
+                    PopupControlID="PanS" BackgroundCssClass="modal" CancelControlID="btnCancelS"
+                    DropShadow="False" />
+                <asp:Panel ID="PanS" CssClass="workingArea" runat="server" Style="display: none;"
+                    Width="500px" Height="83px">
+                    <table border="0" cellpadding="0" cellspacing="1" style="width: 100%;">
+                        <tr class="itemTitle">
+                            <td colspan="4">
+                                <li id="li8">
+                                    <cc1:CustLabel ID="CustLabel28" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                        IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                        SetBreak="False" SetOmit="False" ShowID="06_06020101_089" StickHeight="False"></cc1:CustLabel></li>
+                            </td>
+                        </tr>
+                        <tr class="trOdd">
+                            <td style="width:20%" align="center">
+                                <cc1:CustLabel ID="CustLabel31" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                        IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                        SetBreak="False" SetOmit="False" ShowID="06_06020101_090" StickHeight="False"></cc1:CustLabel>
+                            </td>
+                            <td style="width:30%" align="center">
+                                <cc1:CustLabel ID="lblCardno_dispatch" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                        IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                        SetBreak="False" SetOmit="False" ShowID="" StickHeight="False"></cc1:CustLabel>
+                            </td>
+                            <td style="width:20%" align="center">
+                                <cc1:CustLabel ID="CustLabel33" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                SetBreak="False" SetOmit="False" ShowID="06_06020101_007" StickHeight="False"></cc1:CustLabel>
+                            </td>
+                            <td style="width:30%" align="center">
+                                <cc1:CustLabel ID="lblAction_dispatch" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                SetBreak="False" SetOmit="False" StickHeight="False" ShowID=""></cc1:CustLabel>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="itemTitle">
+                                <cc1:CustCheckBox ID="cbRoleSSI" runat="server"  Checked="true" Enabled="false"></cc1:CustCheckBox>
+                                <cc1:CustLabel ID="CustLabel35" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                SetBreak="False" SetOmit="False" ShowID="06_06020101_091" StickHeight="False"></cc1:CustLabel>
+                            </td>
+                        </tr>
+                        <tr class="trOdd">
+                            <td colspan="1" align="center">
+                                <cc1:CustLabel ID="CustLabel37" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                SetBreak="False" SetOmit="False" ShowID="06_06020101_092" StickHeight="False"></cc1:CustLabel>
+                            </td>
+                            <td colspan="3">
+                                <asp:TextBox ID="txtRemark_dispatch" onkeydown="textCounter(this,200)" onkeyup="textCounter(this,200)" runat="server"
+                                Height="60px" Width="288px" TextMode="MultiLine"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr align="center" class="itemTitle">
+                            <td colspan="4" align="center">
+                                <asp:Button ID="btnSureS" runat="server" Text="確定" CssClass="smallButton" OnClick="btnSureS_Click"/>
+                                <asp:Button ID="btnCancelS" runat="server" Text="取消" CssClass="smallButton" />
+                            </td>
+                        </tr>
+                    </table>
+                </asp:Panel>
                 <asp:HiddenField ID="hidN" runat="server" />
                 <!--寄件人姓名-->
                 <asp:HiddenField ID="hidP" runat="server" />
@@ -1246,11 +1315,11 @@
 
                 <div id="divProgress" align="center" class="progress" style="position: absolute;
 
-                    top: 290px; width: 100%; filter: Alpha(opacity=80); text-align: center;">
+                    top: 290px; width: 100%; filter: Alpha(opacity=80); text-align: center; z-index:10003;">
 
                     <div id="divProgress2" align="center" class="progress" style="background-color: White;
 
-                        width: 50%; margin: 0px auto;">
+                        width: 50%; margin: 0px auto; z-index:10004;">
 
                         <br />
 
