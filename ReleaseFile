@@ -1,12 +1,4 @@
-\Web.Config
 \bin\CardFlow.dll
-\bin\TIBCO.EMS.dll
-\Common\XML\PageAction.Config
-\Common\XML\Show.xml
-\Page\P060201000001_NewWorkOrder.aspx
-\Page\P060201000002_NewWorkOrder.aspx
-\Page\P060202000001_NewWorkOrder.aspx
-\Page\P060202000002_NewWorkOrder.aspx
-\Page\P060202000003_NewWorkOrder.aspx
-\Page\P060516000001.aspx
-
+\Page\P060201000002.aspx
+\Page\P060202000002.aspx
+\Page\P060202000003.aspx

@@ -1334,7 +1334,8 @@ public partial class P06020101_NewWorkOrder : PageBase
         CardDataChange.Trandate = m_Trandate;
         CardDataChange.indate1 = this.lblIndate1.Text;
         CardDataChange.id = m_Id;
-        #region 更新無法製卡備註
+        CardDataChange.OutputFlg = "Y";
+        #region 使用update更新無法製卡備註(目前不使用)
         //取備註資料
         DataTable dtCardDataChange = new DataTable();
         SqlHelper sqlhelp = new SqlHelper();
@@ -1356,9 +1357,11 @@ public partial class P06020101_NewWorkOrder : PageBase
             else
             {
                 sno = dtCardDataChange.Rows[0]["Sno"].ToString();
-                SqlHelper updateCondition = new SqlHelper();
-                updateCondition.AddCondition(Entity_CardDataChange.M_Sno, Operator.Equal, DataTypeUtils.String, sno);
-                blnResult = BRM_CardDataChange.update(CardDataChange, updateCondition.GetFilterCondition(), ref strMsgID, "UpdDate", "UpdTime", "UpdUser", "CNote");
+                CardDataChange.ParentSno = dtCardDataChange.Rows[0]["ParentSno"].ToString();
+                CardDataChange.OldWay = dtCardDataChange.Rows[0]["OldWay"].ToString();
+                CardDataChange.NewWay = dtCardDataChange.Rows[0]["NewWay"].ToString();
+                CardDataChange.NoteCaptions = dtCardDataChange.Rows[0]["NoteCaptions"].ToString();
+                blnResult = BRM_CardDataChange.Insert(CardDataChange, ref strMsgID);
             }
         }
         #endregion
