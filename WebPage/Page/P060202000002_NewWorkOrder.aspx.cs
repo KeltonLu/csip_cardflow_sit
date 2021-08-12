@@ -964,18 +964,20 @@ public partial class Page_P060202000002_NewWorkOrder : PageBase
             {
                 if (resultRspCode != "-1")
                 {
-                    jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
-                    Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
-                    Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
+                    jsBuilder.RegScript(this.Page, string.Format("alert('ESB電文發送失敗：{0}；錯誤代碼：{1}')", resultErrorMsg, resultErrorCode));
+                    Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}；Message：{3}", esborderup.StatusCode, resultRspCode, resultErrorCode, resultErrorMsg), LogState.Error, LogLayer.UI);
                     return;
+                }
+                if (resultRspCode == "-1")
+                {
+                    jsBuilder.RegScript(this.Page, "alert('ESB 電文發送成功')");
+                    Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；CallESB SUCCESS；CardFlow_Default_CallEMFS SUCCESS", esborderup.StatusCode, resultRspCode), LogState.Info, LogLayer.UI);
                 }
             }
             else
             {
-                resultErrorMsg = "ESB電文連線失敗!!";
-                jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
-                Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
-                Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
+                jsBuilder.RegScript(this.Page, string.Format("alert('ESB電文發送失敗：{0}；錯誤代碼：{1}')", resultErrorMsg, resultErrorCode));
+                Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}；Message：{3}", esborderup.StatusCode, resultRspCode, resultErrorCode, resultErrorMsg), LogState.Error, LogLayer.UI);
                 return;
             }
             #endregion
