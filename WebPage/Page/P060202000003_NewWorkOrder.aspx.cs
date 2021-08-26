@@ -404,7 +404,14 @@ public partial class P060202000003_NewWorkOrder : PageBase
             jsBuilder.RegScript(this.UpdatePanel1, "alert('" + MessageHelper.GetMessage("06_02030000_007") + "')");
             return;
         }
-
+        category_tr.Visible = false; // 20210826 Ares Stanley 調整新卡新戶/新卡舊戶欄位顯示
+        if (!string.IsNullOrEmpty(this.ddlAction.SelectedValue) && this.ddlAction.SelectedValue.ToString() == "1") //卡片類別為新卡
+        {
+            category_tr.Visible = true;
+            this.category_Title.ForeColor = System.Drawing.Color.Red;
+            this.newCardnewAccount.Text = BaseHelper.GetShowText("06_02020003_031"); //新卡新戶
+            this.newCardoldAccount.Text = BaseHelper.GetShowText("06_02020003_032"); //新卡舊戶
+        }
         if (this.hidStatus.Value.Equals(""))
         {
             this.hidStatus.Value = "A";
@@ -418,14 +425,7 @@ public partial class P060202000003_NewWorkOrder : PageBase
             }
             InitControls("Add");
             m_Status = "N";
-            category_tr.Visible = false;
-            if (!string.IsNullOrEmpty(this.ddlAction.SelectedValue) && this.ddlAction.SelectedValue.ToString() == "1") //卡片類別為新卡
-            {
-                category_tr.Visible = true;
-                this.category_Title.ForeColor = System.Drawing.Color.Red;
-                this.newCardnewAccount.Text = BaseHelper.GetShowText("06_02020003_031"); //新卡新戶
-                this.newCardoldAccount.Text = BaseHelper.GetShowText("06_02020003_032"); //新卡舊戶
-            }
+
             this.ModalPopupExtenderA.Show();
             ClientScript.RegisterStartupScript(ClientScript.GetType(), "UpdateC", "$('#btnUpKind').trigger('click');");
             return;
@@ -589,7 +589,7 @@ public partial class P060202000003_NewWorkOrder : PageBase
         CardDataChanges.id = m_Id;
         CardDataChanges.CardNo = m_CardNo;
         CardDataChanges.action = m_Action;
-        CardDataChanges.Trandate = m_Trandate != "" ? m_Trandate : "";
+        CardDataChanges.Trandate = ""; // 20210826 Ares Stanely 調整Trandate為空, 避免0101無法update
         //CardDataChanges.indate1 = indate1;
         //CardDataChanges.Trandate = GetNewTranDate(m_Action, m_Id, m_CardNo);
         switch (strChangeData)
