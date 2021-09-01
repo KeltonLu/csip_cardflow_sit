@@ -15,6 +15,7 @@ Solutions/PrecompiledWeb/*
 
 WebPage/JobLog
 WebPage/Log
+WebPage/Logxml
 
 WebPage/Bin/CSIPCommonModel.BaseItem.dll
 WebPage/Bin/CSIPCommonModel.BaseItem.pdb
