@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Text;
 using Framework.Data.OM;
@@ -14,10 +14,10 @@ namespace BusinessRules
     public class BRM_CardStockInfo : BRBase<Entity_CardStockInfo>
     {
         /// <summary>
-        /// ¥\¯à»¡©ú:¬d¸ß¦Û¨ú¥d¤ù¸ê®Æ
-        /// §@    ªÌ:linda
-        /// ³Ğ«Ø®É¶¡:2010/06/22
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:æŸ¥è©¢è‡ªå–å¡ç‰‡è³‡æ–™
+        /// ä½œ    è€…:linda
+        /// å‰µå»ºæ™‚é–“:2010/06/22
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -29,27 +29,27 @@ namespace BusinessRules
                 strMerchDateSQL = strMerchDateSQL.Substring(0, 4) + "/" + strMerchDateSQL.Substring(4, 2) + "/" + strMerchDateSQL.Substring(6, 2);
 
                 string sql = @"SELECT * FROM(";
-                //¦Û¨ú
+                //è‡ªå–
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'')  as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and (indate1=@strMerchDateSQL or (indate1<@strMerchDateSQL and isnull(IntoStore_Status,'0')='0'))";
-                sql += " and cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 if (strFactory != "0")
                 {
                     sql += " and Merch_Code=@Merch_Code";
                 }
                 sql += " union";
-                //¦Û¨ú+ºò«æ»s¥d
+                //è‡ªå–+ç·Šæ€¥è£½å¡
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and Urgency_Flg='1' and (indate1='" + strMerchDate + "' or (indate1<'" + strMerchDate + "'and isnull(IntoStore_Status,'0')='0'))";
-                sql += " and cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 if (strFactory !="0")
                 {
                     sql += " and Merch_Code=@Merch_Code";
                 }
                 sql += " union";
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå–
                 sql += " select base.custname,base.id,base.cardno,base.indate1,base.IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date "; 
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";  
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and ((InformMerchDate<@InformMerchDate and isnull(IntoStore_Status,'0')<>'1') or ";
                 sql += " (InformMerchDate=@InformMerchDate and (isnull(IntoStore_Status,'0')<>'1' or (IntoStore_Status='1' and IntoStore_Date>=back.ImportDate))))";
@@ -58,11 +58,11 @@ namespace BusinessRules
                     sql += " and base.Merch_Code=@Merch_Code";
                 }
                 sql += " union";
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú ¥B¬° ¦Û¨ú->¶l±H¥X®w->°h¥ó->¦Û¨ú ªº±¡ªp
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå– ä¸”ç‚º è‡ªå–->éƒµå¯„å‡ºåº«->é€€ä»¶->è‡ªå– çš„æƒ…æ³
                 sql += " select base.custname,base.id,base.cardno,base.indate1,'' as IntoStore_Date,base.action,base.trandate,'' as OutStore_Date "; 
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base ";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate ";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0' and (InformMerchDate=@InformMerchDate or InformMerchDate<@InformMerchDate)  and IntoStore_Status='1' and IntoStore_Date<back.ImportDate";
                 if (strFactory != "0")
                 {
@@ -97,10 +97,10 @@ namespace BusinessRules
             }
         }
         /// <summary>
-        /// ¥\¯à»¡©ú:¬d¸ß¦Û¨ú¥d¤ù¸ê®Æ
-        /// §@    ªÌ:linda
-        /// ³Ğ«Ø®É¶¡:2010/06/22
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:æŸ¥è©¢è‡ªå–å¡ç‰‡è³‡æ–™
+        /// ä½œ    è€…:linda
+        /// å‰µå»ºæ™‚é–“:2010/06/22
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -118,24 +118,24 @@ namespace BusinessRules
                 string strFetchDateSQL2 = DateTime.Parse(strFetchDate).AddDays(-14).ToString("yyyy/MM/dd");
 
                 string sql = @"SELECT * FROM(";
-                //¦Û¨ú
+                //è‡ªå–
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and isnull(Urgency_Flg,'')<>'1' and indate1<= @strFetchDateSQL1 and IntoStore_Status='1'";
-                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//±Æ°£¡u¤w¥X®w¡B¥B¥X®w¤é¤w¤éµ²¡vªº¸ê®Æ
-                sql += " and cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//æ’é™¤ã€Œå·²å‡ºåº«ã€ä¸”å‡ºåº«æ—¥å·²æ—¥çµã€çš„è³‡æ–™
+                sql += " and cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " union";
-                //¦Û¨ú+ºò«æ»s¥d
+                //è‡ªå–+ç·Šæ€¥è£½å¡
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo where kind='1' and Urgency_Flg='1' and indate1<= @strFetchDateSQL2 and IntoStore_Status='1'";
-                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//±Æ°£¡u¤w¥X®w¡B¥B¥X®w¤é¤w¤éµ²¡vªº¸ê®Æ
-                sql += " and cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//æ’é™¤ã€Œå·²å‡ºåº«ã€ä¸”å‡ºåº«æ—¥å·²æ—¥çµã€çš„è³‡æ–™
+                sql += " and cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " union";
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå–
                 sql += " select base.custname,base.id,base.cardno,base.indate1,IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base ";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate ";
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and InformMerchDate <= @strFetchDateSQL2 and IntoStore_Status='1' and IntoStore_Date>=back.ImportDate";
-                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//±Æ°£¡u¤w¥X®w¡B¥B¥X®w¤é¤w¤éµ²¡vªº¸ê®Æ
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and(isnull(OutStore_Status,'0')='0' or isnull(OutStore_Date,'') >(select top 1 DailyCloseDate from dbo.tbl_Card_DailyClose order  by DailyCloseDate desc))";//æ’é™¤ã€Œå·²å‡ºåº«ã€ä¸”å‡ºåº«æ—¥å·²æ—¥çµã€çš„è³‡æ–™
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
 
                 sql += ")U ";
                 sql += "ORDER BY U.IntoStore_Date DESC,U.id";
@@ -165,10 +165,10 @@ namespace BusinessRules
         }
 
         /// <summary>
-        /// ¥\¯à»¡©ú:¬d¸ß¦Û¨ú¥d¤ù¸ê®Æ
-        /// §@    ªÌ:linda
-        /// ³Ğ«Ø®É¶¡:2010/06/22
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:æŸ¥è©¢è‡ªå–å¡ç‰‡è³‡æ–™
+        /// ä½œ    è€…:linda
+        /// å‰µå»ºæ™‚é–“:2010/06/22
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -188,7 +188,7 @@ namespace BusinessRules
                 string sql = @"SELECT * FROM(";
 
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and IntoStore_Date between @strFromDate and @strToDate";
                 
                 if (!strId.Equals(string.Empty))
@@ -199,12 +199,12 @@ namespace BusinessRules
                 {
                     sql += " and base.cardno=@cardno";
                 }
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå–
                 sql += " union";
                 sql += " select base.custname,base.id,base.cardno,base.indate1,base.IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date>=back.ImportDate";
                 sql += " and IntoStore_Date between @strFromDate and @strToDate";
@@ -217,12 +217,12 @@ namespace BusinessRules
                 {
                     sql += " and base.cardno=@cardno";
                 }
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú ¥B¬° ¦Û¨ú->¶l±H¥X®w->°h¥ó->¦Û¨ú ªº±¡ªp
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå– ä¸”ç‚º è‡ªå–->éƒµå¯„å‡ºåº«->é€€ä»¶->è‡ªå– çš„æƒ…æ³
                 sql += " union";
                 sql += " select base.custname,base.id,base.cardno,base.indate1,'' as IntoStore_Date,base.action,base.trandate,'' as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date<back.ImportDate";
                 sql += " and IntoStore_Date between @strFromDate and @strToDate";
@@ -265,10 +265,10 @@ namespace BusinessRules
             }
         }
         /// <summary>
-        /// ¥\¯à»¡©ú:¤J®w¾Ş§@-§ó·s¥d¤ù°ò¥»«H®§¡B·s¼W®w¦s«H®§
-        /// §@    ªÌ:linda
-        /// ³Ğ«Ø®É¶¡:2010/06/23
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:å…¥åº«æ“ä½œ-æ›´æ–°å¡ç‰‡åŸºæœ¬ä¿¡æ¯ã€æ–°å¢åº«å­˜ä¿¡æ¯
+        /// ä½œ    è€…:linda
+        /// å‰µå»ºæ™‚é–“:2010/06/23
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -277,7 +277,7 @@ namespace BusinessRules
             try
             {
 
-                // ±M®×¥N¸¹:20200031-CSIP EOS ¥\¯à»¡©ú:³B²z¸ê¦w-CSIP EOS §@ªÌ:Ares Luke ³Ğ«Ø®É¶¡:2020/08/19
+                // å°ˆæ¡ˆä»£è™Ÿ:20200031-CSIP EOS åŠŸèƒ½èªªæ˜:è™•ç†è³‡å®‰-CSIP EOS ä½œè€…:Ares Luke å‰µå»ºæ™‚é–“:2020/08/19
                 string sql = @"Update dbo.tbl_Card_BaseInfo";
                 sql += " Set IntoStore_Status='1',IntoStore_Date=convert(nvarchar(10),getdate(),111),OutStore_Status='0',OutStore_Date=''";
                 sql += " Where action= @strAction and id = @strId and cardno= @strCardNo and trandate= @strTrandate";
@@ -309,10 +309,10 @@ namespace BusinessRules
         }
 
         /// <summary>
-        /// ¥\¯à»¡©ú:¥X®w¾Ş§@-§ó·s¥d¤ù°ò¥»«H®§¡B§R°£®w¦s«H®§
-        /// §@    ªÌ:linda
-        /// ³Ğ«Ø®É¶¡:2010/06/23
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:å‡ºåº«æ“ä½œ-æ›´æ–°å¡ç‰‡åŸºæœ¬ä¿¡æ¯ã€åˆªé™¤åº«å­˜ä¿¡æ¯
+        /// ä½œ    è€…:linda
+        /// å‰µå»ºæ™‚é–“:2010/06/23
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -320,7 +320,7 @@ namespace BusinessRules
         {
             try
             {
-                // ±M®×¥N¸¹:20200031-CSIP EOS ¥\¯à»¡©ú:³B²z¸ê¦w-CSIP EOS §@ªÌ:Ares Luke ³Ğ«Ø®É¶¡:2020/08/19
+                // å°ˆæ¡ˆä»£è™Ÿ:20200031-CSIP EOS åŠŸèƒ½èªªæ˜:è™•ç†è³‡å®‰-CSIP EOS ä½œè€…:Ares Luke å‰µå»ºæ™‚é–“:2020/08/19
                 string sql = @"Update dbo.tbl_Card_BaseInfo";
                 sql += " Set IntoStore_Status='0',IntoStore_Date='',OutStore_Status='0',OutStore_Date=''";
                 sql += " Where action= @strAction  and id= @strId and cardno= @strCardNo and trandate= @strTrandate";
@@ -352,10 +352,10 @@ namespace BusinessRules
         }
 
         /// <summary>
-        /// ¥\¯à»¡©ú:§ó·s¤@µ§®w¦s¸ê®Æ
-        /// §@    ªÌ:Linda
-        /// ³Ğ«Ø®É¶¡:2010/06/25
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:æ›´æ–°ä¸€ç­†åº«å­˜è³‡æ–™
+        /// ä½œ    è€…:Linda
+        /// å‰µå»ºæ™‚é–“:2010/06/25
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="Back"></param>
         /// <param name="strCondition"></param>
@@ -385,10 +385,10 @@ namespace BusinessRules
             }
         }
         /// <summary>
-        /// ¥\¯à»¡©ú:¥d¤ù®w¦s«H®§¬d¸ß¥d¤ù±¾¸¹¸¹½XBy CardNo,IntoStore_Date
-        /// §@    ªÌ:Linda
-        /// ³Ğ«Ø®É¶¡:2010/12/30
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:å¡ç‰‡åº«å­˜ä¿¡æ¯æŸ¥è©¢å¡ç‰‡æ›è™Ÿè™Ÿç¢¼By CardNo,IntoStore_Date
+        /// ä½œ    è€…:Linda
+        /// å‰µå»ºæ™‚é–“:2010/12/30
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="strCardNo"></param>
         /// <param name="strIntoStoreDate"></param>
@@ -397,7 +397,7 @@ namespace BusinessRules
         {
             try
             {
-                // ±M®×¥N¸¹:20200031-CSIP EOS ¥\¯à»¡©ú:³B²z¸ê¦w-CSIP EOS §@ªÌ:Ares Luke ³Ğ«Ø®É¶¡:2020/08/19
+                // å°ˆæ¡ˆä»£è™Ÿ:20200031-CSIP EOS åŠŸèƒ½èªªæ˜:è™•ç†è³‡å®‰-CSIP EOS ä½œè€…:Ares Luke å‰µå»ºæ™‚é–“:2020/08/19
                 string sql = @"select mailno from tbl_Card_StockInfo where cardno = @strCardNo and IntoStore_Date = @strIntoStoreDate ";
                 SqlCommand sqlcmd = new SqlCommand {CommandType = CommandType.Text, CommandText = sql};
                 sqlcmd.Parameters.Add(new SqlParameter("@strCardNo", strCardNo));
