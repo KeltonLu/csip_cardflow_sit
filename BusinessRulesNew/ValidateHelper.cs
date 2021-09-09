@@ -1,8 +1,8 @@
-//******************************************************************
-//*  ¥\¯à»¡©ú¡G­¶­±¼Æ¾Ú¦Xªk©ÊÅçÃÒ¤½¦@¨ç¼Æ
-//*  §@    ªÌ¡GSimba Liu
-//*  ³Ğ«Ø¤é´Á¡G2010/04/09
-//*  ­×§ï°O¿ı¡G
+ï»¿//******************************************************************
+//*  åŠŸèƒ½èªªæ˜ï¼šé é¢æ•¸æ“šåˆæ³•æ€§é©—è­‰å…¬å…±å‡½æ•¸
+//*  ä½œ    è€…ï¼šSimba Liu
+//*  å‰µå»ºæ—¥æœŸï¼š2010/04/09
+//*  ä¿®æ”¹è¨˜éŒ„ï¼š
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -12,13 +12,13 @@ public class ValidateHelper
 {
 
     /// <summary>
-    /// ¥\¯à»¡©ú:§PÂ_¤é´Áªº®æ¦¡©M°_¨´¤é¬O§_¦X²z
-    /// §@    ªÌ:Simba Liu
-    /// ³Ğ«Ø®É¶¡:2010/04/09
-    /// ­×§ï°O¿ı:
+    /// åŠŸèƒ½èªªæ˜:åˆ¤æ–·æ—¥æœŸçš„æ ¼å¼å’Œèµ·è¿„æ—¥æ˜¯å¦åˆç†
+    /// ä½œ    è€…:Simba Liu
+    /// å‰µå»ºæ™‚é–“:2010/04/09
+    /// ä¿®æ”¹è¨˜éŒ„:
     /// </summary>
-    /// <param name="txtFrom">°_¤é</param>
-    /// <param name="txtTo">¨´¤é</param>
+    /// <param name="txtFrom">èµ·æ—¥</param>
+    /// <param name="txtTo">è¿„æ—¥</param>
     /// <param name="title">strMsgID</param>
     /// <returns></returns>
     public static bool IsValidDate(string txtFrom, string txtTo, ref string strMsgID)
@@ -45,10 +45,10 @@ public class ValidateHelper
 
 
     /// <summary>
-    /// ¥\¯à»¡©ú:¤p¼ÆÅçÃÒ
-    /// §@    ªÌ:Simba Liu
-    /// ³Ğ«Ø®É¶¡:2010/04/09
-    /// ­×§ï°O¿ı:
+    /// åŠŸèƒ½èªªæ˜:å°æ•¸é©—è­‰
+    /// ä½œ    è€…:Simba Liu
+    /// å‰µå»ºæ™‚é–“:2010/04/09
+    /// ä¿®æ”¹è¨˜éŒ„:
     /// </summary>
     /// <param name="strVal"></param>
     /// <returns></returns>
@@ -74,10 +74,10 @@ public class ValidateHelper
     }
 
     /// <summary>
-    /// ¥\¯à»¡©ú:¤¤¤å¦r²ÅÅçÃÒ
-    /// §@    ªÌ:Simba Liu
-    /// ³Ğ«Ø®É¶¡:2010/04/09
-    /// ­×§ï°O¿ı:2020/12/21_Ares_Stanley-­×§ï¤¤¤å¦rÅçÃÒ±ø¥ó
+    /// åŠŸèƒ½èªªæ˜:ä¸­æ–‡å­—ç¬¦é©—è­‰
+    /// ä½œ    è€…:Simba Liu
+    /// å‰µå»ºæ™‚é–“:2010/04/09
+    /// ä¿®æ”¹è¨˜éŒ„:2020/12/21_Ares_Stanley-ä¿®æ”¹ä¸­æ–‡å­—é©—è­‰æ¢ä»¶
     /// </summary>
     /// <param name="strChinese"></param>
     /// <returns></returns>
@@ -103,10 +103,10 @@ public class ValidateHelper
     }
 
     /// <summary>
-    /// ¥\¯à»¡©ú:¼Æ¦rÅçÃÒ
-    /// §@    ªÌ:Simba Liu
-    /// ³Ğ«Ø®É¶¡:2010/04/09
-    /// ­×§ï°O¿ı:
+    /// åŠŸèƒ½èªªæ˜:æ•¸å­—é©—è­‰
+    /// ä½œ    è€…:Simba Liu
+    /// å‰µå»ºæ™‚é–“:2010/04/09
+    /// ä¿®æ”¹è¨˜éŒ„:
     /// </summary>
     /// <param name="strChinese"></param>
     /// <returns></returns>
