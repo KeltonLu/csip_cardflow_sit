@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using EntityLayer;
 using System.Data.SqlClient;
 using System.Data;
@@ -9,10 +9,10 @@ namespace BusinessRulesNew
     public class BRM_CardStockInfo : BRBase<Entity_CardStockInfo>
     {
         /// <summary>
-        /// ¥\¯à»¡©ú:¬d¸ß¦Û¨ú¥d¤ù¸ê®Æ(¦Û¨ú¹O´Á§ï­­±¾)
-        /// §@    ªÌ:
-        /// ³Ğ«Ø®É¶¡:2016/01/28
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:æŸ¥è©¢è‡ªå–å¡ç‰‡è³‡æ–™(è‡ªå–é€¾æœŸæ”¹é™æ›)
+        /// ä½œ    è€…:
+        /// å‰µå»ºæ™‚é–“:2016/01/28
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
@@ -23,8 +23,8 @@ namespace BusinessRulesNew
                 string sql = @"SELECT * FROM(";
 
                 sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";
-                sql += " and base.cardtype<>'900'"; //¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
-                sql += " and base.selfpick_type = '4'";  //¦Û¨ú¹O´Á§ï­­±¾
+                sql += " and base.cardtype<>'900'"; //æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
+                sql += " and base.selfpick_type = '4'";  //è‡ªå–é€¾æœŸæ”¹é™æ›
                 if (!strId.Equals(string.Empty))
                 {
                     sql += " and base.id=@id";
@@ -33,15 +33,15 @@ namespace BusinessRulesNew
                 {
                     sql += " and base.cardno=@cardno";
                 }
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå–
                 sql += " union";
                 sql += " select base.custname,base.id,base.cardno,base.indate1,base.IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date>=back.ImportDate";
-                sql += " and base.selfpick_type = '4'";  //¦Û¨ú¹O´Á§ï­­±¾
+                sql += " and base.selfpick_type = '4'";  //è‡ªå–é€¾æœŸæ”¹é™æ›
                 if (!strId.Equals(string.Empty))
                 {
                     sql += " and base.id=@id";
@@ -50,15 +50,15 @@ namespace BusinessRulesNew
                 {
                     sql += " and base.cardno=@cardno";
                 }
-                //¨ä¥L¨ú¥d¤è¦¡+°h¥ó§ï¦Û¨ú ¥B¬° ¦Û¨ú->¶l±H¥X®w->°h¥ó->¦Û¨ú ªº±¡ªp
+                //å…¶ä»–å–å¡æ–¹å¼+é€€ä»¶æ”¹è‡ªå– ä¸”ç‚º è‡ªå–->éƒµå¯„å‡ºåº«->é€€ä»¶->è‡ªå– çš„æƒ…æ³
                 sql += " union";
                 sql += " select base.custname,base.id,base.cardno,base.indate1,'' as IntoStore_Date,base.action,base.trandate,'' as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
-                sql += " and base.cardtype<>'900'";//¦¹ºØ¥d¤ù¬°¯S®í³B²z Bug234
+                sql += " and base.cardtype<>'900'";//æ­¤ç¨®å¡ç‰‡ç‚ºç‰¹æ®Šè™•ç† Bug234
                 sql += " and isnull(base.kind,'')<>'1' and back.Enditem='0'";
                 sql += " and IntoStore_Date<back.ImportDate";
-                sql += " and base.selfpick_type = '4'";  //¦Û¨ú¹O´Á§ï­­±¾
+                sql += " and base.selfpick_type = '4'";  //è‡ªå–é€¾æœŸæ”¹é™æ›
                 if (!strId.Equals(string.Empty))
                 {
                     sql += " and base.id=@id";
@@ -97,10 +97,10 @@ namespace BusinessRulesNew
         }
         
         /// <summary>
-        /// ¥\¯à»¡©ú:¥X®w¾Ş§@-§ó·s¥d¤ù°ò¥»«H®§¡B§R°£®w¦s«H®§(¦Û¨ú¹O´Á§ï­­±¾)
-        /// §@    ªÌ:
-        /// ³Ğ«Ø®É¶¡:2016/01/28
-        /// ­×§ï°O¿ı:
+        /// åŠŸèƒ½èªªæ˜:å‡ºåº«æ“ä½œ-æ›´æ–°å¡ç‰‡åŸºæœ¬ä¿¡æ¯ã€åˆªé™¤åº«å­˜ä¿¡æ¯(è‡ªå–é€¾æœŸæ”¹é™æ›)
+        /// ä½œ    è€…:
+        /// å‰µå»ºæ™‚é–“:2016/01/28
+        /// ä¿®æ”¹è¨˜éŒ„:
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
