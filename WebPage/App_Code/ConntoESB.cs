@@ -127,8 +127,9 @@ public class ConntoESB
                             //此狀況無法取得下行電文，StatusCode/RspCode/ErrorCode空值為正常
                             esbObj.ConnStatus = "F";
                             msgNull = true;
-                            strResult = "ESB連線錯誤";
-                            Logging.Log("電文TimeOut：\r\n", LogLayer.UI);
+                            strResult = string.Format("CSIP 接收ESB 訊息無回應， 超過 timeout 設定:   {0}   秒", ESBTimeout);
+                            esbObj.ErrorMessage = strResult;
+                            Logging.Log(string.Format("CSIP 接收ESB 訊息無回應， 超過 timeout 設定:   {0}   秒", ESBTimeout), LogLayer.UI);
                         }
                         else
                         {
@@ -145,7 +146,7 @@ public class ConntoESB
                                     //連線成功，紀錄RTN
                                     SaveESBLog(strResult, "RTN");
                                     break;
-                        }
+                                }
                                 else
                                 {
                                     esbObj.ConnStatus = "F";
@@ -174,17 +175,22 @@ public class ConntoESB
          }
     }
 
-        /// <summary>
-        /// 紀錄ESB上下行電文
-        /// </summary>
-        /// <param name="strESBSerializ">ESB電文內容</param>
-        /// <param name="strNameCheckType">REQ、RTN</param>
-        public static void SaveESBLog(string strESBSerializ, string strNameCheckType)
-        {
-            string strMsg = "\r\n[" + DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss:fff") + "] ---------------- " + strNameCheckType + " --------------------------\r\n";
-            strMsg = strMsg + strESBSerializ;
-            Logging.Log(strMsg, "Htg", LogState.Info);
-        }
+    /// <summary>
+    /// 紀錄ESB上下行電文
+    /// </summary>
+    /// <param name="strESBSerializ">ESB電文內容</param>
+    /// <param name="strNameCheckType">REQ、RTN</param>
+    public static void SaveESBLog(string strESBSerializ, string strNameCheckType)
+    {
+        string strMsg = string.Empty;
+        // 添加日期
+        strMsg = "\r\n[" + DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss:fff") + "] ---------------- " + strNameCheckType + " --------------------------\r\n";
+        // 調整斷行符號避免斷行失效
+        strMsg += strESBSerializ.Replace("\r\n", "$S").Replace("\n", "$S").Replace("$S", "\r\n");
+        // 替換inputXML標籤符號
+        strMsg = strMsg.Replace("&lt;", "<").Replace("&gt;", ">").Replace("><", ">\r\n<");
+        Logging.Log(strMsg, "ESB", LogState.Info);
+    }
 
     public static string getTagValue(string xmlSource, string tagName)
     {
