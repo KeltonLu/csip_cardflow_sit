@@ -21,11 +21,6 @@ using Framework.Common.Utility;
 //20161108 (U) by Tank
 using Framework.Data;
 using System.Data.SqlClient;
-//20210601_Ares_Stanley
-using System.IO; 
-using TIBCO.EMS;
-using ESBOrderUp;
-
 
 public partial class Page_P060202000002 : PageBase
 {
@@ -111,12 +106,6 @@ public partial class Page_P060202000002 : PageBase
         get { return ViewState["m_SNoG"] as string; }
         set { ViewState["m_SNoG"] = value; }
     }
-    #endregion
-
-    #region LogPath
-    //2021/04/07_Ares_Stanley-增加ESB LOG路徑
-    private string logPath_ESB = "NameCheckInfoLog";
-    private string logPath_ESB_TG = "HtgNameCheckInfoLog";
     #endregion
 
     /// <summary>
@@ -735,65 +724,19 @@ public partial class Page_P060202000002 : PageBase
         Response.Redirect("P060202000001.aspx");
     }
 
-    ///// <summary>
-    ///// 功能說明:更新備注
-    ///// 作    者:HAO CHEN
-    ///// 創建時間:2010/06/24
-    ///// 修改記錄:
-    ///// </summary>
-    ///// <param name="sender"></param>
-    ///// <param name="e"></param>
-    //protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
-    //{
-    //    string strMsgID = string.Empty;
-    //    CustButton btnSure = grvUserView.Rows[e.NewEditIndex].Cells[2].FindControl("btnSure") as CustButton;
-    //    TextBox txtcNote = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("txtcNote") as TextBox;
-    //    if (txtcNote == null || string.IsNullOrEmpty(txtcNote.Text.Trim()))
-    //    {
-    //        //*備註不通過
-    //        MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_000");
-    //        return;
-    //    }
-    //    if (btnSure != null && txtcNote != null)
-    //    {
-    //        Entity_CardDataChange CardDataChange = new Entity_CardDataChange();
-    //        //*修改異動單備註
-    //        CardDataChange.Sno = int.Parse(btnSure.CommandArgument.ToString());
-    //        CardDataChange.CNote = txtcNote.Text.Trim();
-    //        SqlHelper sqlhelp = new SqlHelper();
-    //        sqlhelp.AddCondition(Entity_CardDataChange.M_Sno, Operator.Equal, DataTypeUtils.Integer, CardDataChange.Sno.ToString());
-
-    //        string strUpUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
-    //        string strLogMsg = BaseHelper.GetShowText("06_02020000_000") + "：" + BaseHelper.GetShowText("06_06020003_010");
-    //        BRM_Log.Insert(strUpUser, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), strLogMsg, "U");
-
-    //        if (BRM_CardDataChange.update(CardDataChange, sqlhelp.GetFilterCondition(), ref strMsgID, "CNote"))
-    //        {
-    //            MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_001");
-    //            BindData();
-    //        }
-    //        else
-    //        {
-    //            MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_002");
-    //        }
-    //    }
-    //}
     /// <summary>
     /// 功能說明:更新備注
     /// 作    者:HAO CHEN
     /// 創建時間:2010/06/24
-    /// 修改記錄:20210701_Ares_Stanley-更新方始由Editing改為Selecting避免文字顯示欄位變成可編輯
+    /// 修改記錄:
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    protected void grvUserView_RowSelecting(object sender, GridViewCommandEventArgs e)
+    protected void grvUserView_RowEditing(object sender, GridViewEditEventArgs e)
     {
         string strMsgID = string.Empty;
-        Button btn = (Button)e.CommandSource;
-        GridViewRow row = btn.NamingContainer as GridViewRow;
-        Int32 idx = row.RowIndex;
-        CustButton btnSure = grvUserView.Rows[idx].Cells[2].FindControl("btnSure") as CustButton;
-        TextBox txtcNote = grvUserView.Rows[idx].Cells[1].FindControl("txtcNote") as TextBox;
+        CustButton btnSure = grvUserView.Rows[e.NewEditIndex].Cells[2].FindControl("btnSure") as CustButton;
+        TextBox txtcNote = grvUserView.Rows[e.NewEditIndex].Cells[1].FindControl("txtcNote") as TextBox;
         if (txtcNote == null || string.IsNullOrEmpty(txtcNote.Text.Trim()))
         {
             //*備註不通過
@@ -842,7 +785,7 @@ public partial class Page_P060202000002 : PageBase
     /// 功能說明:修改地址(1,2,3)
     /// 作    者:HAO CHEN
     /// 創建時間:2010/06/24
-    /// 修改記錄:2020/12/15_Ares_Stanley-修改CallEMFS_SUCCESS LOG層級; 2021/06/_Ares_Stanley-新增工單
+    /// 修改記錄:2020/12/15_Ares_Stanley-修改CallEMFS_SUCCESS LOG層級
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -852,16 +795,6 @@ public partial class Page_P060202000002 : PageBase
         Entity_CardDataChange CardDataChange = new Entity_CardDataChange();
         bool blnResult = true;
         string strUserName = string.Empty;
-        //檢查類別是否有填寫
-        if (this.category_tr.Visible == true)
-        {
-            if (this.newCardnewAccount.Checked == false && this.newCardoldAccount.Checked == false)
-            {
-                jsBuilder.RegScript(this.Page, "alert('類別為必填欄位！')");
-                this.ModalPopupExtenderA.Show();
-                return;
-            }
-        }        
         BRM_User.GetUserName(((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, ref strUserName);
 
         //*新增異動單
@@ -874,111 +807,47 @@ public partial class Page_P060202000002 : PageBase
         CardDataChange.indate1 = lblIndate1.Text.Trim();
         CardDataChange.CardNo = m_CardNo;
         CardDataChange.Trandate = m_Trandate;
+
         //max add 悠遊Debit 需求修改
         //20161108 (U) by Tank, 調整判斷信用卡方式
         //if (null != m_Action && m_Action.Equals("1") && !lblCardtype.Text.Equals("000") && !lblCardtype.Text.Equals("013") && !lblCardtype.Text.Equals("018") && !lblCardtype.Text.Equals("370") && !lblCardtype.Text.Equals("035") && !lblCardtype.Text.Equals("570") && !lblCardtype.Text.Equals("039") && !lblCardtype.Text.Equals("040") && !lblCardtype.Text.Equals("038") && !lblCardtype.Text.Equals("037"))
         if (null != m_Action && m_Action.Equals("1") && funCheckCreditCard(lblCardtype.Text))
         {
-            #region 舊工單
-            ////*異動取卡方式為保留
-            ////* 發送二代電訊單給徵信
-            ////* 1調用web-service將異動后的地址經二代電訊單傳送給徵信覆核
-            //CallEMFS.E00520 CallEmfs = new CallEMFS.E00520();
-            ////CallEmfs.UserId = "Z00006660";                                         //* 從Session中讀取 Test
-            //CallEmfs.UserId = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;  //* 從Session中讀取UserID
-            //CallEmfs.CaseType = UtilHelper.GetAppSettings("CallEMFSType");    //*案件類型
-            //CallEmfs.CardType = "新卡";                                              //* ACTION
-            //CallEmfs.CustLevel = UtilHelper.GetAppSettings("CallEMFSLevel");  //*案件級別
-            //CallEmfs.CustId = m_Id;                                                  //* 歸戶ID
-            //CallEmfs.CustName = lblname1.Text.Trim();                                //* 歸戶姓名
-            //CallEmfs.TelH = txtTel.Text.Trim();                                      //* 歸戶電話
-            //CallEmfs.CardList = m_CardNo;                                            //*卡號
-            //CallEmfs.ChangeAddressYN = true;
-            //CallEmfs.OthZipCode = BaseHelper.ToDBC(this.lblNewzipAjax.Text.Trim());  //*郵遞區號半碼
-            //CallEmfs.OthAddress1 = this.CustAdd1.strAddress;
-            //CallEmfs.OthAddress2 = this.txtAdd2Ajax.Text.Trim();
-            //CallEmfs.OthAddress3 = this.txtAdd3Ajax.Text.Trim();
-            //CallEmfs.SourceSystem = "CardImport";
-            //CallEmfs.Memo = this.txtCNoteA.Text.Trim();
+            //*異動取卡方式為保留
+            //* 發送二代電訊單給徵信
+            //* 1調用web-service將異動后的地址經二代電訊單傳送給徵信覆核
+            CallEMFS.E00520 CallEmfs = new CallEMFS.E00520();
+            //CallEmfs.UserId = "Z00006660";                                         //* 從Session中讀取 Test
+            CallEmfs.UserId = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;  //* 從Session中讀取UserID
+            CallEmfs.CaseType = UtilHelper.GetAppSettings("CallEMFSType");    //*案件類型
+            CallEmfs.CardType = "新卡";                                              //* ACTION
+            CallEmfs.CustLevel = UtilHelper.GetAppSettings("CallEMFSLevel");  //*案件級別
+            CallEmfs.CustId = m_Id;                                                  //* 歸戶ID
+            CallEmfs.CustName = lblname1.Text.Trim();                                //* 歸戶姓名
+            CallEmfs.TelH = txtTel.Text.Trim();                                      //* 歸戶電話
+            CallEmfs.CardList = m_CardNo;                                            //*卡號
+            CallEmfs.ChangeAddressYN = true;
+            CallEmfs.OthZipCode = BaseHelper.ToDBC(this.lblNewzipAjax.Text.Trim());  //*郵遞區號半碼
+            CallEmfs.OthAddress1 = this.CustAdd1.strAddress;
+            CallEmfs.OthAddress2 = this.txtAdd2Ajax.Text.Trim();
+            CallEmfs.OthAddress3 = this.txtAdd3Ajax.Text.Trim();
+            CallEmfs.SourceSystem = "CardImport";
+            CallEmfs.Memo = this.txtCNoteA.Text.Trim();
 
-            //CallEMFS.CreateProcess CreateEmfs = new CallEMFS.CreateProcess();
+            CallEMFS.CreateProcess CreateEmfs = new CallEMFS.CreateProcess();
 
-            ////如果要測試，就要把下面這段電訊單註記起來
-            //string strMsgbox = CreateEmfs.CreateProcessE00520(CallEmfs);
-            //if (!string.IsNullOrEmpty(strMsgbox))
-            //{
-            //    jsBuilder.RegScript(this.Page, "alert('" + strMsgbox + "')");
-            //    Logging.Log(DateTime.Now.ToString() + "Fail：" + strMsgbox, LogState.Error, LogLayer.UI);
-            //}
-            //else
-            //{
-            //    Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Info, LogLayer.UI);
-            //}
-            //如果要測試，就要把上面這段電訊單註記起來  END
-            #endregion 舊工單
-            #region 20210601_Ares_Stanley新工單
-            #region params
-            string strResult = string.Empty;
-            string caseNo = string.Empty;
-            string resultErrorMsg = string.Empty;
-            string resultRspCode = string.Empty;
-            string resultErrorCode = string.Empty;
-
-            //變更取卡方式電文參數
-            ESBOrderUpClass esborderup = new ESBOrderUpClass(Session);
-            esborderup.CDM_C0701_CHANGECARDADDR = "1"; //是否為改卡單地址 0:否/1:是
-            esborderup.CDM_C0701_PID = m_Id; //身分證字號
-            esborderup.CDM_C0701_NAME = this.lblname1.Text.Trim(); //姓名
-            esborderup.CDM_C0701_CELLPHONE = this.txtTel.Text.Trim(); //CellPhone
-            esborderup.CDM_C0701_CONTACTREMARK = this.txtCNoteA.Text.Trim();//聯絡人備註
-            esborderup.CDM_C0701_CARDNO = m_CardNo; //卡號
-            esborderup.CDM_C0701_POSTALAREA = BaseHelper.ToDBC(this.lblNewzipAjax.Text.Trim()); //郵遞區號*改卡單地址為必填*
-            esborderup.CDM_C0701_ADDR1 = this.CustAdd1.strAddress; //地址1*改卡單地址為必填*
-            esborderup.CDM_C0701_ADDR2 = this.txtAdd2Ajax.Text.Trim(); //地址2*改卡單地址為必填*
-            esborderup.CDM_C0701_ADDR3 = this.txtAdd3Ajax.Text.Trim(); //地址3
-            //卡片類別_0:新卡新戶/_1:新卡舊戶/_2:掛毀補/_3:年度換卡/_4:卡退回
-            esborderup.DICT_CUSTOMWORD_ID = this.newCardnewAccount.Checked == true ? UtilHelper.GetAppSettings("DICT_CUSTOMWORD_ID_0") : this.newCardoldAccount.Checked == true ? UtilHelper.GetAppSettings("DICT_CUSTOMWORD_ID_1") : "";
-            //原取卡方式
-            string takeWayOri = string.Empty;
-            GetKindName("2", m_Kind, ref takeWayOri);
-            string takeWayNew = string.Empty;
-            GetKindName("2", "6", ref takeWayNew);
-            esborderup.ORIG_GETCARDTYPE_ID = !string.IsNullOrEmpty(takeWayOri)?takeWayOri.Substring(0,1):""; //原取卡方式
-            esborderup.NEW_GETCARDTYPE_ID = !string.IsNullOrEmpty(takeWayNew)?takeWayNew.Substring(0,1):""; //新取卡方式
-            #endregion params
-
-
-            strResult = ConntoESB.ConnESB(esborderup, "1");
-                   
-            //當線路1 連線失敗 ,再換線路2
-            if (esborderup.ConnStatus == "F")
-                strResult = ConntoESB.ConnESB(esborderup, "2");
-
-            //取資料
-            caseNo = esborderup.CaseNo;
-            resultErrorMsg = esborderup.ErrorMessage;
-            resultRspCode = esborderup.RspCode;
-            resultErrorCode = esborderup.ErrorCode;
-
-            if (esborderup.ConnStatus == "S")
+            //如果要測試，就要把下面這段電訊單註記起來
+            string strMsgbox = CreateEmfs.CreateProcessE00520(CallEmfs);
+            if (!string.IsNullOrEmpty(strMsgbox))
             {
-                if (resultRspCode != "-1")
-                {
-                    jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
-                    Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
-                    Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
-                    return;
-                }
+                jsBuilder.RegScript(this.Page, "alert('" + strMsgbox + "')");
+                Logging.Log(DateTime.Now.ToString() + "Fail：" + strMsgbox, LogState.Error, LogLayer.UI);
             }
             else
             {
-                resultErrorMsg = "ESB電文連線失敗!!";
-                jsBuilder.RegScript(this.Page, "alert('" + resultErrorMsg + "')");
-                Logging.Log(DateTime.Now.ToString() + "Fail：" + resultErrorMsg, LogState.Error, LogLayer.UI);
-                Logging.Log(String.Format("StatusCode：{0}；RspCode：{1}；ErrorCode：{2}", esborderup.StatusCode, resultRspCode, resultErrorCode), LogState.Error, LogLayer.UI);
-                return;
+                Logging.Log(DateTime.Now.ToString() + "：CallEMFS SUCCESS", LogState.Info, LogLayer.UI);
             }
-            #endregion
+            //如果要測試，就要把上面這段電訊單註記起來  END
 
             CardDataChange.NewWay = "6";
 
@@ -988,8 +857,7 @@ public partial class Page_P060202000002 : PageBase
             string takWay = string.Empty;
             GetKindName("2", m_Kind, ref takWay);
 
-            //CardDataChange.CNote = this.txtCNoteC.Text.Trim();//*備註
-            CardDataChange.CNote = this.txtCNoteA.Text.Trim() + string.Format(" 類別：{0}，工單編號：{1}",this.newCardnewAccount.Checked?"新卡新戶":this.newCardoldAccount.Checked?"新卡舊戶":"",  caseNo);//*備註
+            CardDataChange.CNote = this.txtCNoteC.Text.Trim();//*備註
 
             CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_02020000_008", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), takWay, takWayNew + "  (新卡改址)");//*異動記錄說明
             CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
@@ -997,11 +865,7 @@ public partial class Page_P060202000002 : PageBase
             //CardDataChange.Type_Flg = "A";
             CardDataChange.OutputFlg = "N";
             CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
-            CardDataChange.CardNo = m_CardNo;
-            CardDataChange.action = m_Action;
-            CardDataChange.Trandate = m_Trandate;
-            CardDataChange.indate1 = this.lblIndate1.Text;
-            CardDataChange.id = m_Id;
+
 
             //新卡改址時，如果有未轉出的取卡方式異動則做退單處理。
             SqlHelper sqlhelp = new SqlHelper();
@@ -1298,14 +1162,6 @@ public partial class Page_P060202000002 : PageBase
     {
         InitControls();
         m_Status = "N";
-        category_tr.Visible = false;
-        if (!string.IsNullOrEmpty(this.lblAction.Text) && this.lblAction.Text.Substring(0, 1) == "1" && !string.IsNullOrEmpty(this.lblCardtype.Text) && funCheckCreditCard(this.lblCardtype.Text)) //卡片類別為新卡且為信用卡
-        {
-            category_tr.Visible = true;
-            category.ForeColor = System.Drawing.Color.Red;
-            this.newCardnewAccount.Text = BaseHelper.GetShowText("06_06020101_087"); //新卡新戶
-            this.newCardoldAccount.Text = BaseHelper.GetShowText("06_06020101_088"); //新卡舊戶
-        }        
         this.ModalPopupExtenderA.Show();
     }
 
