@@ -21,12 +21,12 @@
     <script language="javascript" type="text/javascript">
     function visabledrop()
     {
-       document.getElementById("DropDownList1").style.display="none";
-    }
+            document.getElementById("DropDownList1").style.display = "none";
+        }
     function unvisabledrop()
     {
-       document.getElementById("DropDownList1").style.display="";
-    }
+            document.getElementById("DropDownList1").style.display = "";
+        }
     </script>
 
 </head>
@@ -116,15 +116,16 @@
                     </tr>
                     <tr class="trEven">
                         <td align="right" style="width: 15%; height: 25px;">
-                            <cc1:CustLabel ID="CustLabel4" runat="server" FractionalDigit="2" IsColon="True"
+                            <cc1:CustLabel ID="CustLabel3" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_007" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                                SetOmit="False" StickHeight="False" ShowID="06_06020102_005" CurAlign="left"
+                                CurSymbol="£">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%; height: 25px;">
-                            <cc1:DatePicker ID="txtIndate1" runat="server" Width="150">
+                            <cc1:DatePicker ID="txtTrandate" runat="server" Width="150">
                             </cc1:DatePicker>
-                        </td>
+                            *</td>
                         <td align="right" style="width: 15%; height: 25px;">
                             <cc1:CustLabel ID="CustLabel13" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
@@ -143,7 +144,7 @@
                             </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
-                            <cc1:DatePicker ID="txtMaildate" runat="server" Width="150">
+                            <cc1:DatePicker ID="txtIndate1" runat="server" Width="150">
                             </cc1:DatePicker>
                         </td>
                         <td align="right" style="width: 15%">
