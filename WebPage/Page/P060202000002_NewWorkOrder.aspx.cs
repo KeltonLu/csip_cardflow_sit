@@ -5,7 +5,8 @@
 //*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
-//20161108 (U) by Tank, 調整判斷信用卡方式
+//20161108 (U) by Tank,   調整判斷信用卡方式
+//20210913 (U) by 陳永銘, 長姓名需求開發
 
 using System;
 using System.Data;
@@ -207,8 +208,35 @@ public partial class Page_P060202000002_NewWorkOrder : PageBase
             SearchDataChange("NewName", ref blnIsName, strSourceName, ref strResultName, ref strSnoN);
             m_SNoN = strSnoN;
             this.hidN.Value = blnIsName.ToString();
-            this.lblname1.Text = strSourceName; //*寄件人姓名
-            this.lblname2.Text = strResultName; //*寄件人姓名
+            //this.lblname1.Text = strSourceName; //*寄件人姓名
+            //this.lblname2.Text = strResultName; //*寄件人姓名
+
+            //2021/01/05 陳永銘 新增標籤:收件人姓名(隱藏)
+            this.lblname1_Hide.Text = strSourceName;
+
+            string strResultName2 = string.Empty;
+            string strResultName_Roma = string.Empty;
+            string strSourceName_Roma = row["custname_roma"].ToString();//歸戶姓名_羅馬拼音
+            SearchDataChange2("NewName_Roma", ref blnIsName, strSourceName, ref strResultName_Roma, ref strResultName2, ref strSnoN);
+            this.lblname1_Roma_Hide.Text = strSourceName_Roma;          //收件人姓名_羅馬拼音(隱藏)
+
+            //2021/01/05 陳永銘 修改標籤:文字超過第六個或含有羅馬拼音以...顯示並增加文字提示 BEGIN
+            this.lblname1.Text = strSourceName;//*收件人姓名
+            if (strSourceName.Length >= 5 || strSourceName_Roma != string.Empty)
+            {
+                int length = strSourceName.Length >= 5 ? 5 : strSourceName.Length;
+                this.lblname1.Text = strSourceName.Substring(0, length) + "...";                 //*收件人姓名
+                this.lblname1.ToolTip = strSourceName + Environment.NewLine + strSourceName_Roma;//收件人姓名換行羅馬拼音
+            }
+
+            this.lblname2.Text = strResultName;//*新收件人姓名
+            if (strResultName.Length >= 5 || strResultName_Roma != string.Empty)
+            {
+                int length = strResultName.Length >= 5 ? 5 : strResultName.Length;
+                this.lblname2.Text = strResultName.Substring(0, length) + "...";            //*新收件人姓名
+                this.lblname2.ToolTip = strResultName + Environment.NewLine + strResultName_Roma;//新收件人姓名換行羅馬拼音
+            }
+            //2021/01/05 陳永銘 修改標籤:文字超過第六個或含有羅馬拼音以...顯示並增加文字提示 END
 
             if (null != row["Trandate"] && !string.IsNullOrEmpty(row["Trandate"].ToString()))
             {

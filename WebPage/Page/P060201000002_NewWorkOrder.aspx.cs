@@ -4,6 +4,7 @@
 //*  創建日期：2010/04/09
 //*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
+//* 陳永銘 2021/09/13 新增長姓名
 //*******************************************************************
 using System;
 using System.Data;
@@ -236,9 +237,44 @@ public partial class P06020101_NewWorkOrder : PageBase
             SearchDataChange("NewName", ref blnIsName, strSourceName, ref strResultName, ref strResultName2, ref strSnoN);
             m_SNoN = strSnoN;
             this.hidN.Value = blnIsName.ToString();
-            this.lblname1.Text = strSourceName; //*收件人姓名
-            this.lblName1Ajax.Text = strSourceName;
-            this.lblname2.Text = strResultName;
+            //this.lblname1.Text = strSourceName; //*收件人姓名
+            //this.lblName1Ajax.Text = strSourceName;
+            //this.lblname2.Text = strResultName;
+            
+            //2020/12/30 陳永銘 新增標籤:收件人姓名(隱藏)
+            this.lblname1_Hide.Text = strSourceName;
+
+            string strResultName_Roma = string.Empty;
+            string strSourceName_Roma = row["custname_roma"].ToString();//歸戶姓名_羅馬拼音
+            SearchDataChange("NewName_Roma", ref blnIsName, strSourceName, ref strResultName_Roma, ref strResultName2, ref strSnoN);
+            this.lblname1_Roma_Hide.Text = strSourceName_Roma;          //收件人姓名_羅馬拼音(隱藏)
+
+            //2020/12/30 陳永銘 修改標籤:文字超過第六個或含有羅馬拼音以...顯示並增加文字提示 BEGIN
+            this.lblname1.Text = strSourceName;//*收件人姓名
+            if (strSourceName.Length >= 5 || strSourceName_Roma != string.Empty)
+            {
+                int length = strSourceName.Length >= 5 ? 5 : strSourceName.Length;
+                this.lblname1.Text = strSourceName.Substring(0, length) + "...";                 //*收件人姓名
+                this.lblname1.ToolTip = strSourceName + Environment.NewLine + strSourceName_Roma;//收件人姓名換行羅馬拼音
+            }
+
+            this.lblname2.Text = strResultName;//*新收件人姓名
+            if (strResultName.Length >= 5 || strResultName_Roma != string.Empty)
+            {
+                int length = strResultName.Length >= 5 ? 5 : strResultName.Length;
+                this.lblname2.Text = strResultName.Substring(0, length) + "...";            //*新收件人姓名
+                this.lblname2.ToolTip = strResultName + Environment.NewLine + strResultName_Roma;//新收件人姓名換行羅馬拼音
+            }
+
+            this.lblName1Ajax.Text = strSourceName;//*原收件人姓名
+            if (strSourceName.Length >= 5 || strSourceName_Roma != string.Empty)
+            {
+                int length = strSourceName.Length >= 5 ? 5 : strSourceName.Length;
+                this.lblName1Ajax.Text = strSourceName.Substring(0, length) + "...";                 //*原收件人姓名
+                this.lblName1Ajax.ToolTip = strSourceName + Environment.NewLine + strSourceName_Roma;//原收件人姓名換行羅馬拼音
+            }
+            //2020/12/30 陳永銘 修改標籤:文字超過第六個或含有羅馬拼音以...顯示並增加文字提示 END
+
             if (!strResultName2.Equals(string.Empty))
             {
                 this.lblname1.Text = strResultName2;
@@ -841,13 +877,35 @@ public partial class P06020101_NewWorkOrder : PageBase
         {
             CardDataChange.id = m_Id;
         }
+
+        //2020/01/05 陳永銘 新增欄位檢核:新收件人姓名_羅馬拼音(全形轉半形)
+        if (!string.IsNullOrEmpty(this.txtName1Ajax_Roma.Text.Trim()))
+        {
+            string txtName1AjaxRoma = string.Empty;
+            if (!ValidateHelper.ValidRoma(this.txtName1Ajax_Roma.Text.Trim(), ref txtName1AjaxRoma))
+            {
+                txtName1Ajax_Roma.Focus();
+                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020102_017") + "')");
+                return;
+            }
+            this.txtName1Ajax_Roma.Text = txtName1AjaxRoma;
+        }
+
         CardDataChange.indate1 = lblIndate1.Text.Trim();
         CardDataChange.CardNo = m_CardNo;
         CardDataChange.Trandate = m_Trandate;
-        CardDataChange.OldName = this.lblName1Ajax.Text.Trim();
+        //CardDataChange.OldName = this.lblName1Ajax.Text.Trim();
         CardDataChange.NewName = this.txtName1Ajax.Text.Trim();
+        //2020/12/30 陳永銘 新增欄位:羅馬拼音 BEGIN
+        CardDataChange.OldName = this.lblname1_Hide.Text;                 //舊姓名
+        CardDataChange.OldName_Roma = this.lblname1_Roma_Hide.Text.Trim();//舊姓名_羅馬拼音
+        CardDataChange.NewName_Roma = this.txtName1Ajax_Roma.Text.Trim(); //新姓名_羅馬拼音
+        string oldNameRoma = CardDataChange.OldName_Roma == "" ? "空白" : CardDataChange.OldName_Roma;
+        string newNameRoma = CardDataChange.NewName_Roma == "" ? "空白" : CardDataChange.NewName_Roma;
+        CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_009", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "收件人姓名", this.lblname1_Hide.Text.Trim(), this.txtName1Ajax.Text.Trim(), strUserName, "羅馬拼音", oldNameRoma, newNameRoma);//*異動記錄說明
+        //2020/12/30 陳永銘 新增欄位:羅馬拼音 END
         CardDataChange.CNote = this.txtCNoteN.Text.Trim();//*備註
-        CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "收件人姓名", this.lblName1Ajax.Text.Trim(), this.txtName1Ajax.Text.Trim(), strUserName);//*異動記錄說明
+        //CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "收件人姓名", this.lblName1Ajax.Text.Trim(), this.txtName1Ajax.Text.Trim(), strUserName);//*異動記錄說明
         CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
         CardDataChange.UpdTime = DateTime.Now.ToString("HH:mm");
         CardDataChange.BaseFlg = "1";
@@ -1725,6 +1783,8 @@ public partial class P06020101_NewWorkOrder : PageBase
         this.txtAdd3Ajax.Text = string.Empty;
         this.txtMonlimitAjax.Text = string.Empty;
         this.txtMailnoAjax.Text = string.Empty;
+        //2020/12/30 陳永銘 新增欄位:新收件人姓名_羅馬拼音
+        this.txtName1Ajax_Roma.Text = string.Empty;
 
         this.txtCNoteN.Text = string.Empty;
         this.txtCNoteP.Text = string.Empty;

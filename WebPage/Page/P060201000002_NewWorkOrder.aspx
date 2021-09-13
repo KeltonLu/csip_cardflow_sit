@@ -435,10 +435,16 @@
                             <div align="left" style="float: left; padding-top: 2; padding-bottom: 2; height: 100%;">
                                 <cc1:CustLabel ID="lblname1" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                     IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
-                                    SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel><br />
+                                    SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel>
+                                <%--2020/12/30 陳永銘 新增標籤:收件人姓名(隱藏) BEGIN--%>
+                                <cc1:CustLabel ID="lblname1_Hide" runat="server" Visible="false"></cc1:CustLabel><br />
+                                <%--2020/12/30 陳永銘 新增標籤:收件人姓名(隱藏) END--%>
                                 <cc1:CustLabel ID="lblname2" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                     IsColon="False" ForeColor="red" IsCurrency="False" NeedDateFormat="False" NumBreak="0"
                                     NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel>
+                                <%--2020/12/30 陳永銘 新增標籤:收件人姓名_羅馬拼音(隱藏) BEGIN--%>
+                                <cc1:CustLabel ID="lblname1_Roma_Hide" runat="server" Visible="false"></cc1:CustLabel>
+                                <%--2020/12/30 陳永銘 新增標籤:收件人姓名_羅馬拼音(隱藏) END--%>
                             </div>
                             <div align="right">
                                 <asp:Button ID="btnUpdateN" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateN_Click"
@@ -844,8 +850,9 @@
                 <ajaxToolkit:ModalPopupExtender ID="ModalPopupExtenderN" runat="server" TargetControlID="AddButtonN"
                     PopupControlID="PanN" BackgroundCssClass="modal" CancelControlID="btnCancelN"
                     BehaviorID="BehaviorIDN" DropShadow="False" />
+                <%--2020/12/30 陳永銘 修改收件人姓名:修改欄位寬度,高度--%>
                 <asp:Panel ID="PanN" CssClass="workingArea" runat="server" Style="display: none;"
-                    Width="336px" Height="83px">
+                    Width="500px" Height="120px">
                     <table border="0" cellpadding="0" cellspacing="1" style="width: 122%;">
                         <tr class="itemTitle">
                             <td colspan="2">
@@ -870,9 +877,21 @@
                                 <cc1:CustLabel ID="CustLabel36" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                     IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
                                     SetBreak="False" SetOmit="False" ShowID="06_06020101_043" StickHeight="False"></cc1:CustLabel></td>
+                            <%--2020/12/30 陳永銘 新收件人姓名:新增欄位寬度--%>
                             <td align="left" style="width: 50%;">
-                                <cc1:CustTextBox ID="txtName1Ajax" runat="server"></cc1:CustTextBox></td>
+                                <cc1:CustTextBox ID="txtName1Ajax" runat="server" Width="94%"></cc1:CustTextBox></td>
                         </tr>
+                        <%--2020/12/30 陳永銘 新增欄位:新收件人姓名_羅馬拼音 BEGIN--%>
+                        <tr class="trEven">
+                            <td align="right" style="width: 50%;">
+                                <cc1:CustLabel ID="CustLabel39" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                    IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
+                                    SetBreak="False" SetOmit="False" ShowID="06_06020101_086" StickHeight="False">
+                                </cc1:CustLabel></td>
+                            <td align="left" style="width: 50%;">
+                                <cc1:CustTextBox ID="txtName1Ajax_Roma" runat="server" Width="94%" MaxLength="50"></cc1:CustTextBox></td>
+                        </tr>
+                        <%--2020/12/30 陳永銘 新增欄位:新收件人姓名_羅馬拼音 END--%>
                         <tr class="trOdd">
                             <td align="right" style="width: 50%;">
                                 <cc1:CustLabel ID="CustLabel40" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
