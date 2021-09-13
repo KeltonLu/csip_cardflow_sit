@@ -196,7 +196,7 @@ public partial class P060205000003 : System.Web.UI.Page
                 string strRadCheckFlg0205 = Session["RadCheckFlg0205"].ToString().Trim();
                 string strFetchDate0205 = Session["FetchDate0205"].ToString().Trim();
                 string strMerchDate0205 = Session["MerchDate0205"].ToString().Trim();
-                string strMerch0205 = Session["Merch0205"].ToString().Trim();                
+                string strMerch0205 = Session["Merch0205"].ToString().Trim();
                 string strId0205 = Session["Id0205"].ToString().Trim();
                 string strCardNo0205 = Session["CardNo0205"].ToString().Trim();
                 string strFromDate0205 = Session["FromDate0205"].ToString().Trim();
@@ -281,12 +281,12 @@ public partial class P060205000003 : System.Web.UI.Page
             CardDataChange.CNote = txtcNote.Text.Trim();
             SqlHelper sqlhelp = new SqlHelper();
             sqlhelp.AddCondition(Entity_CardDataChange.M_Sno, Operator.Equal, DataTypeUtils.Integer, CardDataChange.Sno.ToString());
-            
+
             string strUpUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
             string strLogMsg = BaseHelper.GetShowText("06_06020101_035") + "：" + BaseHelper.GetShowText("06_06020101_023");
             BRM_Log.Insert(strUpUser, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), strLogMsg, "U");
-            
-            
+
+
             if (BRM_CardDataChange.update(CardDataChange, sqlhelp.GetFilterCondition(), ref strMsgID, "CNote"))
             {
                 MessageHelper.ShowMessage(UpdatePanel1, "06_06020104_001");
@@ -371,7 +371,7 @@ public partial class P060205000003 : System.Web.UI.Page
         //CardBaseInfo.OutStore_Status = "1";
         //CardBaseInfo.OutStore_Date = DateTime.Now.ToString("yyyy/MM/dd");
         //修改領卡方式後，若再回來修改其他資料(地址、取卡方式、掛號號碼)，要把領卡方式、領卡日期清空 BUG120
-        CardBaseInfo.SelfPick_Type = ""; 
+        CardBaseInfo.SelfPick_Type = "";
         CardBaseInfo.SelfPick_Date = "";
 
         SqlHelper sqlhelp1 = new SqlHelper();
@@ -398,7 +398,7 @@ public partial class P060205000003 : System.Web.UI.Page
         //    sqlhelp2.AddCondition(Entity_CardStockInfo.M_cardno, Operator.Equal, DataTypeUtils.String, CardStockInfo.cardno);
         //    blnCardStockInfo = BRM_CardStockInfo.update(CardStockInfo, sqlhelp2.GetFilterCondition(), ref strMsgID, "OutStore_Status", "OutStore_Date");
         //}
-        
+
         //if (blnCardBaseInfoResult && blnCardStockInfo)
         //{        
         if (blnCardBaseInfoResult)
@@ -461,7 +461,7 @@ public partial class P060205000003 : System.Web.UI.Page
             {
                 CardDataChange.NoteCaptions = CardDataChange.NoteCaptions.Replace('(', ' ').Replace(')', ' ').Replace(" ", "") + "(" + strUserName + ")";
             }
-            
+
             CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
             CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
             CardDataChange.OutputFlg = "N";
@@ -580,8 +580,8 @@ public partial class P060205000003 : System.Web.UI.Page
             CardDataChange.Trandate = m_Trandate;
             CardDataChange.OldSelfPickType = m_SelfPickType;//*領卡方式只能寫入Code
             CardDataChange.NewWay = strSelfPickAjax;
-            
-            CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "領卡方式", m_SelfPickName,this.dropSelfPickAjax.SelectedItem.Text, strUserName);//*異動記錄說明
+
+            CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "領卡方式", m_SelfPickName, this.dropSelfPickAjax.SelectedItem.Text, strUserName);//*異動記錄說明
 
             CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
             CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
@@ -625,7 +625,7 @@ public partial class P060205000003 : System.Web.UI.Page
 
         string strUserName = string.Empty;
         BRM_User.GetUserName(((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, ref strUserName);
-        
+
         Entity_CardBaseInfo CardBaseInfo = new Entity_CardBaseInfo();
         CardBaseInfo.action = m_Action;
         if (!string.IsNullOrEmpty(m_Id))
@@ -649,7 +649,7 @@ public partial class P060205000003 : System.Web.UI.Page
         }
         sqlhelp1.AddCondition(Entity_CardBaseInfo.M_cardno, Operator.Equal, DataTypeUtils.String, CardBaseInfo.cardno);
         sqlhelp1.AddCondition(Entity_CardBaseInfo.M_trandate, Operator.Equal, DataTypeUtils.String, CardBaseInfo.trandate);
-        blnCardBaseInfoResult = BRM_TCardBaseInfo.Update(CardBaseInfo, sqlhelp1.GetFilterCondition(), ref strMsgID, "kind", "OutStore_Status", "OutStore_Date","SelfPick_Type","SelfPick_Date");
+        blnCardBaseInfoResult = BRM_TCardBaseInfo.Update(CardBaseInfo, sqlhelp1.GetFilterCondition(), ref strMsgID, "kind", "OutStore_Status", "OutStore_Date", "SelfPick_Type", "SelfPick_Date");
 
         if (blnCardBaseInfoResult)
         {
@@ -698,7 +698,7 @@ public partial class P060205000003 : System.Web.UI.Page
             CardDataChange.Trandate = m_Trandate;
             CardDataChange.OldWay = m_Kind;//*取卡方式只能寫入Code
             CardDataChange.NewWay = this.dropKindAjax.SelectedValue;
-            CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "取卡方式", this.lblKindAjax.Text.ToString().Trim(), this.dropKindAjax.SelectedItem.Text,strUserName);//*異動記錄說明
+            CardDataChange.NoteCaptions = MessageHelper.GetMessage("06_06020104_003", ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id, DateTime.Now.ToString("yyyy/MM/dd"), "取卡方式", this.lblKindAjax.Text.ToString().Trim(), this.dropKindAjax.SelectedItem.Text, strUserName);//*異動記錄說明
             CardDataChange.UpdDate = DateTime.Now.ToString("yyyy/MM/dd");
             CardDataChange.UpdUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
             CardDataChange.OutputFlg = "N";
@@ -848,12 +848,12 @@ public partial class P060205000003 : System.Web.UI.Page
     /// <param name="e"></param>
     protected void btnUpdateM_Click(object sender, EventArgs e)
     {
-        DataTable dtMailNo =new DataTable();
+        DataTable dtMailNo = new DataTable();
         InitControls();
-        if(BRM_CardStockInfo.SearchMailNo(ref dtMailNo,m_CardNo,m_IntoStoreDate))
+        if (BRM_CardStockInfo.SearchMailNo(ref dtMailNo, m_CardNo, m_IntoStoreDate))
         {
-            this.txtMailNo.Text=dtMailNo.Rows[0][0].ToString().Trim();
-        }        
+            this.txtMailNo.Text = dtMailNo.Rows[0][0].ToString().Trim();
+        }
 
         this.ModalPopupExtenderM.Show();
     }
@@ -922,7 +922,7 @@ public partial class P060205000003 : System.Web.UI.Page
     //    }
     //}
 
-  
+
     /// <summary>
     /// 功能說明:BindData
     /// 作    者:Simba Liu
@@ -994,6 +994,15 @@ public partial class P060205000003 : System.Web.UI.Page
                 this.lblId.Text = row["Id"].ToString(); //*身分證字號
             }
             this.lblname1.Text = row["custname"].ToString();  //*寄件人姓名
+            //2020/12/14 陳永銘 滑鼠指標停留顯示文字
+            string name = this.lblname1.Text.Trim();
+            string name_roma = row["custname_roma"].ToString().Trim();
+            if (name.Length >= 5 || name_roma != string.Empty)
+            {
+                int length = name.Length >= 5 ? 5 : name.Length;
+                this.lblname1.Text = name.Substring(0, length) + "...";
+                this.lblname1.ToolTip = name + Environment.NewLine + name_roma;
+            }
             this.lblTrandate.Text = row["Trandate"].ToString(); //*轉檔日
             this.lblIndate1.Text = row["Indate1"].ToString(); //*製卡日
             this.lblMaildate.Text = row["Maildate"].ToString(); //*　郵寄日
@@ -1002,7 +1011,7 @@ public partial class P060205000003 : System.Web.UI.Page
 
             //*郵遞區號
             string strSourceZip = row["Zip"].ToString();
-            this.lblZip.Text = strSourceZip; 
+            this.lblZip.Text = strSourceZip;
             this.lblOldzipAjax.Text = strSourceZip;
 
             //*地址一
@@ -1073,7 +1082,7 @@ public partial class P060205000003 : System.Web.UI.Page
             {
                 strUrgencyFlg = row["Urgency_Flg"].ToString();
             }
-            
+
             //SearchDataChange("UrgencyFlg", ref blUrgencyFlg, strUrgencyFlg, ref strResultUrgency, ref strSnoUrg);
 
             //if (!string.IsNullOrEmpty(strResultUrgency))
@@ -1142,7 +1151,7 @@ public partial class P060205000003 : System.Web.UI.Page
         sqlhelp.AddCondition(Entity_CardBaseInfo.M_trandate, Operator.Like, DataTypeUtils.String, m_Trandate);
         if (BRM_TCardBaseInfo.SearchByCardNo(sqlhelp.GetFilterCondition(), ref dtCardBaseInfo, ref strMsgID))
         {
-            MergeTable(ref  dtCardBaseInfo);
+            MergeTable(ref dtCardBaseInfo);
             m_dtCardBaseInfo = dtCardBaseInfo;
         }
     }
@@ -1194,7 +1203,7 @@ public partial class P060205000003 : System.Web.UI.Page
         }
         sqlhelp.AddCondition(Entity_CardDataChange.M_CardNo, Operator.Equal, DataTypeUtils.String, m_CardNo);
         sqlhelp.AddCondition(Entity_CardDataChange.M_Trandate, Operator.Equal, DataTypeUtils.String, m_Trandate);
-        
+
         if (BRM_CardDataChange.SearchByChange(sqlhelp.GetFilterCondition(), ref dtCardDataChange, ref strMsgID, strField))
         {
             //*如有未轉出作業單則用最近的一筆資料替代
@@ -1254,7 +1263,7 @@ public partial class P060205000003 : System.Web.UI.Page
                     switch (intbackinfo)
                     {
                         case 0:
-                            pnlBackInfo1.Visible=true;
+                            pnlBackInfo1.Visible = true;
                             this.lblbackdate.Text = dtCardBackInfo.Rows[0]["Backdate"].ToString();                   //退件時間
                             this.lblreason.Text = GetBackName(dtCardBackInfo.Rows[0]["Reason"].ToString());           //退件原因
                             this.lblm_date.Text = dtCardBackInfo.Rows[0]["Enddate"].ToString();                      //處理日期
@@ -1337,7 +1346,7 @@ public partial class P060205000003 : System.Web.UI.Page
     {
         string strMsgID = string.Empty;
         DataTable dtKindName = new DataTable();
-       
+
         //*取卡方式顯示Code+Name
         if (CSIPCommonModel.BusinessRules.BRM_PROPERTY_KEY.GetEnableProperty("06", strPropertyKey, ref dtKindName))
         {

@@ -18,8 +18,8 @@ using Framework.Data.OM.Collections;
 
 namespace EntityLayer
 {
-    
-    
+
+
     /// <summary>
     /// tbl_Card_BackInfo
     /// </summary>
@@ -924,8 +924,48 @@ namespace EntityLayer
                 this._Endtime = value;
             }
         }
+
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
+        // 歸戶姓名_羅馬拼音
+        private string _CustName_Roma;
+        public static string M_CustName_Roma = "CustName_Roma";
+        /// <summary>
+        /// CustName_Roma
+        /// </summary>
+        [AttributeField("CustName_Roma", "System.String", false, false, false, "String")]
+        public string CustName_Roma
+        {
+            get
+            {
+                return this._CustName_Roma;
+            }
+            set
+            {
+                this._CustName_Roma = value;
+            }
+        }
+
+        // 新姓名_羅馬拼音
+        private string _NewName_Roma;
+        public static string M_NewName_Roma = "NewName_Roma";
+        /// <summary>
+        /// name1_roma
+        /// </summary>
+        [AttributeField("NewName_Roma", "System.String", false, false, false, "String")]
+        public string NewName_Roma
+        {
+            get
+            {
+                return this._NewName_Roma;
+            }
+            set
+            {
+                this._NewName_Roma = value;
+            }
+        }
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
     }
-    
+
     /// <summary>
     /// tbl_Card_BackInfo
     /// </summary>

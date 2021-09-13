@@ -2,7 +2,8 @@
 //*  功能說明：尚未退回轉出的異動作業單
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：
+//*  修改記錄：2020/12/30 陳永銘
+//*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -73,7 +74,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(Entity_CardDataChange CardDataChange, string strCondition, ref string strMsgID, params  string[] FiledSpit)
+        public static bool update(Entity_CardDataChange CardDataChange, string strCondition, ref string strMsgID, params string[] FiledSpit)
         {
             try
             {
@@ -109,7 +110,7 @@ namespace BusinessRules
         /// <param name="TCardBaseInfo"></param>
         /// <param name="strCondition"></param>
         /// <returns></returns>
-        public static bool update(Entity_CardDataChange CardDataChange, string strCondition, params  string[] FiledSpit)
+        public static bool update(Entity_CardDataChange CardDataChange, string strCondition, params string[] FiledSpit)
         {
             try
             {
@@ -196,7 +197,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool Search(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool Search(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -268,7 +269,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchFor0203(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID, bool isReport)
+        public static bool SearchFor0203(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID, bool isReport)
         {
             try
             {
@@ -335,9 +336,9 @@ namespace BusinessRules
             SqlParameter parmTrandate = new SqlParameter();
 
             string strUpdDate = string.Empty;
-            string strUpdDateTime=string.Empty;
-            string strNowDate=DateTime.Now.ToString("yyyy/MM/dd");
-//            string strNowDateTime=DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd")+"15:00";
+            string strUpdDateTime = string.Empty;
+            string strNowDate = DateTime.Now.ToString("yyyy/MM/dd");
+            //string strNowDateTime=DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd")+"15:00";
             string strNowDateTime = DateTime.ParseExact(BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("yyyy/MM/dd") + "15:00";
 
             string strAction = string.Empty;
@@ -550,11 +551,12 @@ namespace BusinessRules
         /// 作    者:Simba Liu
         /// 創建時間:2010/05/19
         /// 修改記錄:
+        /// 2021/01/21 陳永銘 增加羅馬拼音
         /// </summary>
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchCardDataChange(ref  DataTable dtCardDataChange)
+        public static bool SearchCardDataChange(ref DataTable dtCardDataChange)
         {
             try
             {
@@ -562,6 +564,9 @@ namespace BusinessRules
                                         T2.id,--身分證字號
                                         T2.custName,--客戶姓名
                                         T1.NewName,--新姓名
+                                        T2.custname_roma,--客戶姓名_羅馬拼音
+                                        T1.NewName_Roma,--新姓名_羅馬拼音
+                                        T1.OldName_Roma,--舊姓名_羅馬拼音
                                         T2.CardNo,--卡號
                                         T1.NewMonlimit,--新額度
                                         T2.Kind as oldway,--原取卡方式 改為取baseinfo
@@ -586,7 +591,7 @@ namespace BusinessRules
                                         T1.OldAdd1,
                                         T1.OldAdd2,
                                         T1.OldAdd3,
-                                        T1.OldMailDate 
+                                        T1.OldMailDate
                                         FROM (select * from tbl_Card_DataChange where isnull(OutputFlg,'')='N'
                                         and isnull(SourceType,'') not in('1','2','3')) T1 left join
                                         tbl_Card_BaseInfo T2
@@ -623,7 +628,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtCardDataChange"></param>
         /// <returns></returns>
-        public static bool SearchByCardNo(string strCondition, ref  DataTable dtCardDataChange, ref string strMsgID)
+        public static bool SearchByCardNo(string strCondition, ref DataTable dtCardDataChange, ref string strMsgID)
         {
             try
             {
@@ -682,7 +687,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtCardDataChange"></param>
         /// <returns></returns>
-        public static bool CheckByChange(string strCondition, ref  DataTable dtCardDataChange)
+        public static bool CheckByChange(string strCondition, ref DataTable dtCardDataChange)
         {
             try
             {
@@ -731,7 +736,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtCardDataChange"></param>
         /// <returns></returns>
-        public static bool SearchByChange(string strCondition, ref  DataTable dtCardDataChange, ref string strMsgID, string strField)
+        public static bool SearchByChange(string strCondition, ref DataTable dtCardDataChange, ref string strMsgID, string strField)
         {
             try
             {
@@ -742,6 +747,10 @@ namespace BusinessRules
                 sbSql.Append(",[newmailno],[OldZip],[OldAdd1],[OldAdd2],[OldAdd3],[NewZip],[NewAdd1],[NewAdd2]");
                 sbSql.Append(",[NewAdd3],[CNote],[photo],[UpdUser],[UpdDate],[UpMark],[NoteCaptions],[CloseFlg]");
                 sbSql.Append(",[MerchCode],[UrgencyFlg],[OutputFlg],[OutputDate],[OutputFileName],[SourceType],[BaseFlg]");
+                //2020/12/30 陳永銘 新增欄位:羅馬拼音 BEGIN
+                //舊姓名_羅馬拼音,新姓名_羅馬拼音
+                sbSql.Append(",[OldName_Roma],[NewName_Roma]");
+                //2020/12/30 陳永銘 新增欄位:羅馬拼音 END
                 sbSql.Append(" FROM [tbl_Card_DataChange] where OutputFlg='N' and isnull(SourceType,'') not in ('1','2','3')");
 
                 if (strField != "")

@@ -7,6 +7,7 @@
 //     變更將會遺失。
 // </auto-generated>
 //------------------------------------------------------------------------------
+//*  修改記錄：2020/12/30  陳永銘
 
 using System;
 using System.Collections.Generic;
@@ -1085,6 +1086,46 @@ namespace EntityLayer
                 this._FilePath = value;
             }
         }
+
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
+        // 舊姓名_羅馬拼音
+        private string _OldName_Roma;
+        public static string M_OldName_Roma = "OldName_Roma";
+        /// <summary>
+        /// OldName_Roma
+        /// </summary>
+        [AttributeField("OldName_Roma", "System.String", false, false, false, "String")]
+        public string OldName_Roma
+        {
+            get
+            {
+                return this._OldName_Roma;
+            }
+            set
+            {
+                this._OldName_Roma = value;
+            }
+        }
+
+        // 新姓名_羅馬拼音
+        private string _NewName_Roma;
+        public static string M_NewName_Roma = "NewName_Roma";
+        /// <summary>
+        /// NewName_Roma
+        /// </summary>
+        [AttributeField("NewName_Roma", "System.String", false, false, false, "String")]
+        public string NewName_Roma
+        {
+            get
+            {
+                return this._NewName_Roma;
+            }
+            set
+            {
+                this._NewName_Roma = value;
+            }
+        }
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
     }
 
     /// <summary>

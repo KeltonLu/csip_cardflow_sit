@@ -2,9 +2,10 @@
 //*  功能說明：頁面數據合法性驗證公共函數
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：
+//*  修改記錄：2020/12/30 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
+using Microsoft.VisualBasic;
 using System;
 using System.Text.RegularExpressions;
 
@@ -127,6 +128,57 @@ public class ValidateHelper
                 return false;
             }
         }
+    }
+
+    /// <summary>
+    /// 功能說明:檢驗是否為指定的羅馬拼音字元或符號
+    /// 作    者:陳永銘
+    /// 創建時間:2020/12/30
+    /// 修改記錄:
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static bool ValidRoma(string input)
+    {
+        bool result = true;
+        char[] valArr = "　ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＺＹａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ．：’‧˙".ToCharArray();
+        char[] chars = input.ToCharArray();
+
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (Array.IndexOf(valArr, chars[i]) == -1)
+            {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 功能說明:檢驗是否為指定的羅馬拼音字元或符號
+    /// 作    者:陳永銘
+    /// 創建時間:2020/12/30
+    /// 修改記錄:2021/01/05 陳永銘 全形轉半形
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="output"></param>
+    /// <returns></returns>
+    public static bool ValidRoma(string input, ref string output)
+    {
+        char[] valArr = "　ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＺＹａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ．：’‧˙".ToCharArray();
+        char[] chars = Strings.StrConv(input, VbStrConv.Wide, 1028).ToCharArray();
+
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (Array.IndexOf(valArr, chars[i]) == -1)
+            {
+                return false;
+            }
+        }
+        output = new string(chars);
+
+        return true;
     }
 
 }

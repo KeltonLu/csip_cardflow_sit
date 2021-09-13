@@ -87,9 +87,10 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
                     <tr>
                         <td colspan="20">
+                            <%--2021/01/11 陳永銘 新增事件:OnRowDataBound/EnableModelValidation/CustName_Roma--%>
                             <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
                                 PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
-                                BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing" DataKeyNames="cardno">
+                                BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing" DataKeyNames="cardno" OnRowDataBound="grvUserView_RowDataBound" EnableModelValidation="True">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
                                 <SelectedRowStyle CssClass="Grid_SelectedItem" />
                                 <HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -104,7 +105,10 @@
                                         </itemtemplate>
                                     </asp:TemplateField>
                                     <asp:BoundField DataField="CustName">
-                                        <itemstyle width="10%" horizontalalign="Left" wrap="True" />
+                                        <ItemStyle Width="10%" HorizontalAlign="Left" Wrap="True" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="CustName_Roma">
+                                        <ItemStyle Width="10%" HorizontalAlign="Left" Wrap="True" />
                                     </asp:BoundField>
                                     <asp:BoundField DataField="cardtypeS">
                                         <itemstyle width="10%" horizontalalign="Left" wrap="True" />

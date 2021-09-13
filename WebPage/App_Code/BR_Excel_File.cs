@@ -45,6 +45,7 @@ SELECT u.ImportDate,
        u.indate1,
        u.id,
        u.CustName,
+       u.CustName_Roma,
        u.CardNo,
        u.blockcode,
        CASE
@@ -287,7 +288,7 @@ ORDER BY maildate DESC
     #region SearchExport0510
 
     private const string SearchExport0510 = @"
-select id,custname,cardno,kktime, indate1,UpdDate,CNote 
+select id,custname,custname_roma,cardno,kktime, indate1,UpdDate,CNote 
 from tbl_HoldCard 
 order by convert(int,kktime) DESC
 ";
@@ -656,6 +657,7 @@ else
     private const string SearchExport0518_1 = @"
         select a.serial_no,
                a.CustName,
+               a.CustName_Roma,
                a.id,
                isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
                (case
@@ -707,6 +709,7 @@ else
     private const string SearchExport0518_2 = @"
             select a.serial_no,
                    a.CustName,
+                   a.CustName_Roma,
                    a.id,
                    isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
                    (case
@@ -757,6 +760,7 @@ else
     private const string SearchExport0518_3 = @"
                 select a.serial_no,
                        a.CustName,
+                       a.CustName_Roma,
                        a.id,
                        isnull((Select CardTypeName From tbl_CardType where CardType = a.cardtype), '信用卡') cardtype,
                        (case
@@ -882,7 +886,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id) as no,
               '信用卡')                                        as action,
        indate1,
        custname,
+       custname_roma,
        name1,
+       name1_roma,
        cardno,
        '□自取/□代取',
        '',
@@ -901,7 +907,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id) as no,
               '信用卡')                                        as action,
        indate1,
        custname,
+       custname_roma,
        name1,
+       name1_roma,
        cardno,
        '□自取/□代取',
        '',
@@ -920,7 +928,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id) as no,
               '信用卡')                                             as action,
        base.indate1,
        base.custname,
+       base.custname_roma,
        base.name1,
+       base.name1_roma,
        base.cardno,
        '□自取/□代取',
        '',
@@ -947,7 +957,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id) as no,
               '信用卡')                                             as action,
        base.indate1,
        base.custname,
+       base.custname_roma,
        base.name1,
+       base.name1_roma,
        base.cardno,
        '□自取/□代取',
        '',
@@ -978,7 +990,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id)                     
        isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
        indate1,
        custname,
+       custname_roma,
        name1,
+       name1_roma,
        cardno,
        '□自取/□代取',
        '',
@@ -1000,7 +1014,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id)                     
        isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
        indate1,
        custname,
+       custname_roma,
        name1,
+       name1_roma,
        cardno,
        '□自取/□代取',
        '',
@@ -1022,7 +1038,9 @@ select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, base.id)                
        isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,
        base.indate1,
        base.custname,
+       base.custname_roma,
        base.name1,
+       base.name1_roma,
        base.cardno,
        '□自取/□代取',
        '',

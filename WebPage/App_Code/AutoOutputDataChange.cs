@@ -2,7 +2,7 @@
 //*  功能說明：自動化異動資料通知
 //*  作    者：Simba Liu
 //*  創建日期：2010/05/19
-//*  修改記錄：
+//*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 //20190315 (U) by Nash, 姓名欄位改為姓名全名
@@ -98,6 +98,9 @@ public class AutoOutputDataChange : Quartz.IJob
             dtOutData.Columns.Add("Indate1");   //製卡日
             dtOutData.Columns.Add("ID");        //身份證字號
             dtOutData.Columns.Add("NewName");   //新用戶名
+            //2021/01/21 陳永銘 增加羅馬拼音 BEGIN
+            dtOutData.Columns.Add("NewName_Roma");   //新用戶名_羅馬拼音
+            //2021/01/21 陳永銘 增加羅馬拼音 END
             dtOutData.Columns.Add("CardNo");    //卡號
             dtOutData.Columns.Add("Newmonlimit"); //新額度
             dtOutData.Columns.Add("Oldway");      //原取卡方式
@@ -256,12 +259,17 @@ public class AutoOutputDataChange : Quartz.IJob
                                     //strName = drOutPut[m]["NewName"].ToString().Substring(1, drOutPut[m]["NewName"].ToString().Length - 1);
                                     //strFileContent += JobHelper.SetStrngValue(strFname + strName, 20);//*姓名
                                     strName = drOutPut[m]["NewName"].ToString().Substring(0, drOutPut[m]["NewName"].ToString().Length);
-                                    strFileContent += JobHelper.SetStrngValue(strName, 20);//*姓名
+                                    //2021/01/21 陳永銘 修改字串長度
+                                    strFileContent += JobHelper.SetStrngValue(strName, 100);//*姓名
                                 }
                                 else
                                 {
-                                    strFileContent += JobHelper.SetStrngValue(" ", 20);//*姓名
+                                    //2021/01/21 陳永銘 修改字串長度
+                                    strFileContent += JobHelper.SetStrngValue(" ", 100);//*姓名
                                 }
+
+                                //2021/01/21 陳永銘 增加羅馬拼音
+                                strFileContent += JobHelper.SetStrngValue(drOutPut[m]["NewName_Roma"].ToString(), 100);//*姓名_羅馬拼音
 
                                 strFileContent += JobHelper.SetStrngValue(drOutPut[m]["CardNo"].ToString(), 19);//*卡號
                                 strFileContent += JobHelper.SetStrngValue(drOutPut[m]["Newmonlimit"].ToString(), 8);//*新額度
@@ -597,6 +605,12 @@ public class AutoOutputDataChange : Quartz.IJob
                             dtDataChange.Rows.Remove(rowDataChange);
                             continue;
                         }
+                        //*2021/01/21 陳永銘 異動姓名_羅馬拼音
+                        if (!string.IsNullOrEmpty(rowDataChange["NewName_Roma"].ToString()) && !string.IsNullOrEmpty(rowDataChange["OldName_Roma"].ToString()) && rowDataChange["NewName_Roma"].ToString().Equals(rowDataChange["OldName_Roma"].ToString()))
+                        {
+                            dtDataChange.Rows.Remove(rowDataChange);
+                            continue;
+                        }
                         //*異動額度
                         if (!string.IsNullOrEmpty(rowDataChange["Newmonlimit"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldmonlimit"].ToString()) && rowDataChange["Newmonlimit"].ToString().Equals(rowDataChange["Oldmonlimit"].ToString()))
                         {
@@ -632,7 +646,7 @@ public class AutoOutputDataChange : Quartz.IJob
                         }
                         //*異動取卡方式
 
-                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) && 
+                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) &&
                              rowDataChange["Newway"].ToString().Equals(rowDataChange["Oldway"].ToString())) &&
                             (rowDataChange["Urgency_Flg"].ToString() == rowDataChange["NewUrgencyFlg"].ToString()))
                         {
@@ -696,6 +710,10 @@ public class AutoOutputDataChange : Quartz.IJob
             UCrow["Indate1"] = BaseHelper.ObjToString(drUnCard["indate1"]); //製卡日
             UCrow["ID"] = BaseHelper.ObjToString(drUnCard["id"]);//身份證字號
             UCrow["NewName"] = BaseHelper.ObjToString(drUnCard["CustName"]);//新用戶名
+
+            //2021/01/21 陳永銘 增加羅馬拼音
+            UCrow["NewName_Roma"] = BaseHelper.ObjToString(drUnCard["CustName_Roma"]);//新用戶名
+
             UCrow["CardNo"] = BaseHelper.ObjToString(drUnCard["CardNo"]); //卡號
             UCrow["Newmonlimit"] = ""; //新額度
             UCrow["Oldway"] = getKind(BaseHelper.ObjToString(drUnCard["Kind"])); //原取卡方式中文
@@ -730,6 +748,8 @@ public class AutoOutputDataChange : Quartz.IJob
             CCrow["Indate1"] = BaseHelper.ObjToString(drChangeCard["indate1"]); //製卡日
             CCrow["ID"] = BaseHelper.ObjToString(drChangeCard["ID"]);//身份證字號
             CCrow["NewName"] = BaseHelper.ObjToString(drChangeCard["custName"]);//新用戶名
+            //2021/01/21 陳永銘 增加羅馬拼音
+            CCrow["NewName_Roma"] = BaseHelper.ObjToString(drChangeCard["custName_roma"]);//新用戶名
             CCrow["CardNo"] = BaseHelper.ObjToString(drChangeCard["CardNo"]); //卡號
             CCrow["Newmonlimit"] = ""; //新額度
             CCrow["Oldway"] = getKind(BaseHelper.ObjToString(drChangeCard["Kind"])); //原取卡方式中文
@@ -821,7 +841,11 @@ public class AutoOutputDataChange : Quartz.IJob
         foreach (DataRow drTempData in drDataCard)
         {
             string strNewName = BaseHelper.ObjToString(drTempData["NewName"]);
+            string strNewName_Roma = BaseHelper.ObjToString(drTempData["NewName_Roma"]);
+
+            //2021/01/21 陳永銘 增加羅馬拼音
             string strCustName = BaseHelper.ObjToString(drTempData["custName"]);
+            string strCustName_Roma = BaseHelper.ObjToString(drTempData["custName_roma"]);
 
             string strMonlimit = BaseHelper.ObjToString(drTempData["NewMonlimit"]); //新額度
             string strNewway = BaseHelper.ObjToString(drTempData["newway"]);   //新取卡方式
@@ -839,6 +863,15 @@ public class AutoOutputDataChange : Quartz.IJob
             else
             {
                 CCrow["NewName"] = strCustName;//用戶名
+            }
+            //2021/01/21 陳永銘 增加羅馬拼音
+            if (!string.IsNullOrEmpty(strNewName_Roma))
+            {
+                CCrow["NewName_Roma"] = strNewName_Roma;//新用戶名_羅馬拼音
+            }
+            else
+            {
+                CCrow["NewName_Roma"] = strCustName_Roma;//用戶名_羅馬拼音
             }
 
             if (!string.IsNullOrEmpty(strMonlimit))
@@ -1384,6 +1417,14 @@ public class AutoOutputDataChange : Quartz.IJob
             {
                 BaseInfo.custname = drDetail["NewName"].ToString().Trim();
                 UpdateColName.Add("custname");
+            }
+
+            //2021/01/21 陳永銘 增加羅馬拼音
+            //*姓名_羅馬拼音
+            if (!String.IsNullOrEmpty(drDetail["NewName_Roma"].ToString().Trim()) && !drDetail["NewName_Roma"].ToString().Equals("NULL"))
+            {
+                BaseInfo.custname_roma = drDetail["NewName_Roma"].ToString().Trim();
+                UpdateColName.Add("custname_roma");
             }
 
             //*新額度

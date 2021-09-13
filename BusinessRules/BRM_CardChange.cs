@@ -2,7 +2,7 @@
 //*  功能說明：綜合資料處理業務邏輯層
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：
+//*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -20,7 +20,7 @@ namespace BusinessRules
     public class BRM_CardChange : BRBase<Entity_CardChange>
     {
 
-        
+
 
         /// <summary>
         /// 功能說明:更新一筆綜合資料
@@ -32,7 +32,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(Entity_CardChange CardChange, string strCondition, ref string strMsgID, params  string[] FiledSpit)
+        public static bool update(Entity_CardChange CardChange, string strCondition, ref string strMsgID, params string[] FiledSpit)
         {
             try
             {
@@ -68,11 +68,11 @@ namespace BusinessRules
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchCardChange(ref  DataTable dtChangeCard)
+        public static bool SearchCardChange(ref DataTable dtChangeCard)
         {
             try
-            {
-                string sql = @"SELECT   distinct T2.indate1,T2.ID,T2.custName,T2.photo,T2.Action,T1.CardNo,T2.Kind,T2.mailno,
+            {   //2021/01/21 陳永銘 增加羅馬拼音
+                string sql = @"SELECT   distinct T2.indate1,T2.ID,T2.custName,T2.custname_roma,T2.photo,T2.Action,T1.CardNo,T2.Kind,T2.mailno,
                                         T1.blockcode, T1.ImportDate, T1.ImportFileName,T1.Sno,T2.Merch_Code,T1.ImportDate,T1.trandate  
                                         FROM tbl_CardChange T1, tbl_Card_BaseInfo T2
                                         Where T2.Action='5' and T1.Trandate=T2.Trandate and T1.CardNo=T2.CardNo 
@@ -168,6 +168,6 @@ namespace BusinessRules
                 return false;
             }
         }
-        
+
     }
 }

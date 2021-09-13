@@ -15,6 +15,7 @@ using Framework.Common.Message;
 using Framework.Common.Logging;
 using Framework.Common.JavaScript;
 using Framework.Common.Utility;
+using System.Web.UI.WebControls;
 
 public partial class P060518000001 : PageBase
 {
@@ -40,14 +41,17 @@ public partial class P060518000001 : PageBase
         //* 設置查詢結果GridView的列頭標題
         this.grvUserView.Columns[0].HeaderText = BaseHelper.GetShowText("06_06051800_005");
         this.grvUserView.Columns[1].HeaderText = BaseHelper.GetShowText("06_06051800_006");
-        this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_06051800_007");
-        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06051800_008");
-        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06051800_009");
-        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_06051800_010");
-        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06051800_011");
-        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_06051800_012");
-        this.grvUserView.Columns[8].HeaderText = BaseHelper.GetShowText("06_06051800_013");
-        this.grvUserView.Columns[9].HeaderText = BaseHelper.GetShowText("06_06051800_014");
+        // 2020/02/02 增加羅馬拼音 陳永銘
+        this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_05020000_013");
+
+        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06051800_007");
+        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06051800_008");
+        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_06051800_009");
+        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06051800_010");
+        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_06051800_011");
+        this.grvUserView.Columns[8].HeaderText = BaseHelper.GetShowText("06_06051800_012");
+        this.grvUserView.Columns[9].HeaderText = BaseHelper.GetShowText("06_06051800_013");
+        this.grvUserView.Columns[10].HeaderText = BaseHelper.GetShowText("06_06051800_014");
 
         //* 設置一頁顯示最大筆數
         this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
@@ -78,6 +82,11 @@ public partial class P060518000001 : PageBase
                     this.grvUserView.Visible = true;
                     this.grvUserView.DataSource = dt;
                     this.grvUserView.DataBind();
+                    // 2020/02/02 無查詢資料則隱藏欄位 陳永銘
+                    if (count == 0)
+                    {
+                        this.grvUserView.Columns[2].Visible = false;
+                    }
                     jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051800_004"));
                 }
                 //* 查詢不成功
@@ -211,6 +220,31 @@ public partial class P060518000001 : PageBase
             {
                 Logging.Log(exp, LogLayer.BusinessRule);
                 MessageHelper.ShowMessage(this, "06_06051800_001");
+            }
+        }
+    }
+
+    //20220131 陳永銘 收件者姓名替換
+    protected void grvUserView_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        string name = e.Row.Cells[1].Text.Replace("&nbsp;", "").Trim();
+        string name_roma = e.Row.Cells[2].Text.Replace("&nbsp;", "").Trim();
+
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[2].Visible = false;
+        }
+
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            e.Row.Cells[2].Visible = false;
+
+            if (name.Length >= 5 || name_roma != string.Empty)
+            {
+                int length = name.Length >= 5 ? 5 : name.Length;
+                e.Row.Cells[1].Text = name.Substring(0, length) + "...";
+                name += Environment.NewLine + name_roma;
+                e.Row.Cells[1].Attributes.Add("title", name);
             }
         }
     }

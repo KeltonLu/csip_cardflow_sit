@@ -2,7 +2,7 @@
 //*  功能說明：無法制卡資料業務邏輯層
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：
+//*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -31,7 +31,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(Entity_UnableCard UnableCard, string strCondition, ref string strMsgID, params  string[] FiledSpit)
+        public static bool update(Entity_UnableCard UnableCard, string strCondition, ref string strMsgID, params string[] FiledSpit)
         {
             try
             {
@@ -63,16 +63,17 @@ namespace BusinessRules
         /// 作    者:Simba Liu
         /// 創建時間:2010/05/19
         /// 修改記錄:
+        /// 2021/01/21 陳永銘 增加羅馬拼音
         /// </summary>
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchUnableCard(ref  DataTable dtUnableCard)
+        public static bool SearchUnableCard(ref DataTable dtUnableCard)
         {
             try
             {
                 string sql = @"SELECT distinct T1.indate1, T2.id, T2.CustName,T2.photo,T1.Action,T1.CardNo, T2.Kind,
-                                T2.maildate, T2.mailno, T1.blockcode, T1.ImportDate,T2.Merch_Code, 
+                                T2.maildate, T2.mailno, T1.blockcode, T1.ImportDate,T2.Merch_Code, T2.CustName_Roma,
                                 T1.ImportFileName,T1.SNO,T1.ImportDate,T2.trandate 
                                 FROM  tbl_UnableCard T1,tbl_Card_BaseInfo T2
                                 Where T1.Action=T2.action and T1.indate1=T2.indate1 and T1.CardNo=T2.CardNo 

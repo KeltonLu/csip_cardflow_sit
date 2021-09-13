@@ -236,10 +236,16 @@
                         <td style="height: 25px; width: 35%;">
                             <cc1:CustLabel ID="lblname1" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                 IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
-                                SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel><br />
+                                SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel>
+                            <%--2021/01/05 陳永銘 新增標籤:收件人姓名(隱藏) BEGIN--%>
+                            <cc1:CustLabel ID="lblname1_Hide" runat="server" Visible="false"></cc1:CustLabel><br />
+                            <%--2021/01/05 陳永銘 新增標籤:收件人姓名(隱藏) END--%>
                             <cc1:CustLabel ID="lblname2" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                 IsColon="False" ForeColor="red" IsCurrency="False" NeedDateFormat="False" NumBreak="0"
                                 NumOmit="0" SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel>
+                            <%--2021/01/05 陳永銘 新增標籤:收件人姓名_羅馬拼音(隱藏) BEGIN--%>
+                            <cc1:CustLabel ID="lblname1_Roma_Hide" runat="server" Visible="false"></cc1:CustLabel>
+                            <%--2021/01/05 陳永銘 新增標籤:收件人姓名_羅馬拼音(隱藏) END--%>
                         </td>
                         <td style="height: 25px; width: 15%;" align="right">
                             <cc1:CustLabel ID="CustLabel16" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"

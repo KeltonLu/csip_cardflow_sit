@@ -326,6 +326,30 @@ namespace EntityLayer
                 this._FilePath = value;
             }
         }
+
+        //20210112陳永銘 新增羅馬拼音
+        private string _CustName_Roma;
+
+        /// <summary>
+        /// CustName_Roma
+        /// </summary>
+        public static string M_CustName_Roma = "CustName_Roma";
+
+        /// <summary>
+        /// CustName_Roma
+        /// </summary>
+        [AttributeField("CustName_Roma", "System.String", false, false, false, "String")]
+        public string CustName_Roma
+        {
+            get
+            {
+                return this._FilePath;
+            }
+            set
+            {
+                this._FilePath = value;
+            }
+        }
     }
 
     /// <summary>

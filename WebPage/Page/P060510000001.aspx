@@ -104,6 +104,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
                     <tr>
                         <td colspan="20">
+                            <%--20210113陳永銘 增加羅馬拼音 OnRowDataBound事件 custname_roma--%>
                             <cc1:CustGridView ID="grvCardView" runat="server" AllowSorting="True" AllowPaging="False"
                                 PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
                                 BorderStyle="Solid" DataKeyNames="cardno" OnRowDataBound="grvCardView_RowDataBound">
@@ -118,14 +119,17 @@
                                         <itemstyle width="10%" horizontalalign="Center" />
                                     </asp:BoundField>
                                     <asp:BoundField DataField="custname">
-                                        <itemstyle width="10%" horizontalalign="Left" wrap="True" />
+                                        <ItemStyle Width="10%" HorizontalAlign="Left" Wrap="True" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="custname_roma">
+                                        <ItemStyle Width="10%" HorizontalAlign="Left" Wrap="True" />
                                     </asp:BoundField>
                                     <asp:TemplateField>
-                                        <itemtemplate>
-<cc1:CustLinkButton id="lbcardno" runat="server" Text='<%# Bind("cardno") %>' __designer:wfdid="w1" OnClick="lbcardno_Click" >
-                                        </cc1:CustLinkButton> 
-</itemtemplate>
-                                        <itemstyle horizontalalign="Left" width="20%" />
+                                        <ItemTemplate>
+                                            <cc1:CustLinkButton ID="lbcardno" runat="server" Text='<%# Bind("cardno") %>' __designer:wfdid="w1" OnClick="lbcardno_Click">
+                                            </cc1:CustLinkButton>
+                                        </ItemTemplate>
+                                        <ItemStyle HorizontalAlign="Left" Width="20%" />
                                     </asp:TemplateField>
                                     <asp:BoundField DataField="kktime">
                                         <itemstyle width="10%" horizontalalign="Center" />

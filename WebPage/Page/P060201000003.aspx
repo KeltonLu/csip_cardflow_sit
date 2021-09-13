@@ -74,8 +74,10 @@
                                 CurSymbol="£"></cc1:CustLabel>
                         </td>
                         <td style="width: 35%; height: 25px;">
-                            <cc1:CustTextBox ID="txtCustname" MaxLength="5" runat="server" InputType="String"
-                                Width="150px"></cc1:CustTextBox>&nbsp; *</td>
+                            <%--2020/12/31 陳永銘 收件者姓名:修改欄位最大長度,寬度--%>
+                            <cc1:CustTextBox ID="txtCustname" MaxLength="50" runat="server" InputType="String"
+                                Width="90%">
+                            </cc1:CustTextBox>&nbsp; *</td>
                         <td align="right" style="width: 15%; height: 25px;">
                             <cc1:CustLabel ID="CustLabel11" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
@@ -88,15 +90,20 @@
                     </tr>
                     <tr class="trOdd">
                         <td align="right" style="width: 15%; height: 25px;">
-                            <cc1:CustLabel ID="CustLabel3" runat="server" FractionalDigit="2" IsColon="True"
+                            <%--2020/12/31 陳永銘 新增名稱:收件人姓名_羅馬拼音 BEGIN--%>
+                            <cc1:CustLabel ID="CustLabel22" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_005" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                                SetOmit="False" StickHeight="False" ShowID="06_06020102_024" CurAlign="left"
+                                CurSymbol="£">
+                            </cc1:CustLabel>
+                            <%--2020/12/31 陳永銘 新增名稱:收件人姓名_羅馬拼音 END--%>
                         </td>
                         <td style="width: 35%; height: 25px;">
-                            <cc1:DatePicker ID="txtTrandate" runat="server" Width="150">
-                            </cc1:DatePicker>
-                            &nbsp; *</td>
+                            <%--2020/12/31 陳永銘 新增欄位:收件人姓名_羅馬拼音 BEGIN--%>
+                            <cc1:CustTextBox ID="txtCustname_Roma" MaxLength="50" runat="server" InputType="String"
+                                Width="90%">
+                            </cc1:CustTextBox></td>
+                        <%--2020/12/31 陳永銘 新增欄位:收件人姓名_羅馬拼音 END--%>
                         <td align="right" style="width: 15%; height: 25px;">
                             <cc1:CustLabel ID="CustLabel12" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
@@ -130,10 +137,10 @@
                     </tr>
                     <tr class="trOdd">
                         <td align="right" style="width: 15%">
-                            <cc1:CustLabel ID="CustLabel5" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_009" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel4" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_007" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
                             <cc1:DatePicker ID="txtMaildate" runat="server" Width="150">
@@ -150,14 +157,15 @@
                     </tr>
                     <tr class="trEven">
                         <td align="right" style="width: 15%; height: 25px;">
-                            <cc1:CustLabel ID="CustLabel6" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_011" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel5" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_009" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
-                        <td style="width: 35%; height: 25px;">
-                            <cc1:CustTextBox ID="txtCardno" MaxLength="19" runat="server" InputType="String"
-                                Width="150px"></cc1:CustTextBox>&nbsp; *</td>
+                        <td style="width: 35%">
+                            <cc1:DatePicker ID="txtMaildate" runat="server" Width="150">
+                            </cc1:DatePicker>
+                        </td>
                         <td align="right" style="width: 15%; height: 25px;">
                             <cc1:CustLabel ID="CustLabel15" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
@@ -171,15 +179,14 @@
                     </tr>
                     <tr class="trOdd">
                         <td align="right" style="width: 15%; height: 25px;">
-                            <cc1:CustLabel ID="CustLabel7" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_013" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel6" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_011" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%; height: 25px;">
-                            <cc1:CustTextBox ID="txtExpdate" runat="server" InputType="String" MaxLength="4"
-                                MaxValue="" Width="38px"></cc1:CustTextBox>&nbsp; *
-                            <asp:Label ID="Label1" runat="server" ForeColor="#00C0C0" Text="輸入格式MMYY" Width="91px"></asp:Label></td>
+                            <cc1:CustTextBox ID="txtCardno" runat="server" InputType="String" MaxLength="19" Width="150px"></cc1:CustTextBox>
+                            *&nbsp;&nbsp; </td>
                         <td align="right" style="width: 15%; height: 25px;">
                             <cc1:CustLabel ID="CustLabel8" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
@@ -193,15 +200,14 @@
                     </tr>
                     <tr class="trEven">
                         <td align="right" style="width: 15%">
-                            <cc1:CustLabel ID="CustLabel9" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_015" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel7" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_013" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
-                            <cc1:CustLabel ID="lblZip" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
-                                IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
-                                SetBreak="False" SetOmit="False" StickHeight="False"></cc1:CustLabel>
+                            <cc1:CustTextBox ID="txtExpdate" runat="server" InputType="String" MaxLength="4" MaxValue="" Width="38px"></cc1:CustTextBox>&nbsp; *
+                            <asp:Label ID="Label1" runat="server" ForeColor="#00C0C0" Text="輸入格式MMYY" Width="91px"></asp:Label>
                         </td>
                         <td align="right" style="width: 15%">
                             <cc1:CustLabel ID="CustLabel16" runat="server" FractionalDigit="2" IsColon="True"
@@ -215,13 +221,16 @@
                     </tr>
                     <tr class="trOdd">
                         <td align="right" style="width: 15%">
-                            <cc1:CustLabel ID="CustLabel17" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_017" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel9" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_015" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
-                            &nbsp;<uc1:CustAddress ID="dropAdd1" runat="server" OnChangeValues="dropAdd1_ChangeValues" />
+                            <cc1:CustLabel ID="lblZip" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="False" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td align="right" style="width: 15%">
                             <cc1:CustLabel ID="CustLabel18" runat="server" FractionalDigit="2" IsColon="True"
@@ -236,14 +245,13 @@
                     </tr>
                     <tr class="trEven">
                         <td align="right" style="width: 15%">
-                            <cc1:CustLabel ID="CustLabel19" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_019" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel17" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_017" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
-                            <asp:TextBox ID="txtAdd2" runat="server" MaxLength="40" onkeydown="textCounter(this,40)"
-                                onkeyup="textCounter(this,40)" Width="220px"></asp:TextBox>
+                            <uc1:CustAddress ID="dropAdd1" runat="server" OnChangeValues="dropAdd1_ChangeValues" />
                             &nbsp;
                         </td>
                         <td align="right" style="width: 15%">
@@ -258,25 +266,28 @@
                     </tr>
                     <tr class="trOdd">
                         <td align="right" style="width: 15%">
-                            <cc1:CustLabel ID="CustLabel21" runat="server" FractionalDigit="2" IsColon="True"
-                                IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
-                                SetOmit="False" StickHeight="False" ShowID="06_06020102_021" CurAlign="left"
-                                CurSymbol="£"></cc1:CustLabel>
+                            <cc1:CustLabel ID="CustLabel19" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_019" StickHeight="False">
+                            </cc1:CustLabel>
                         </td>
                         <td style="width: 35%">
-                            <asp:TextBox ID="txtAdd3" runat="server" onkeydown="textCounter(this,40)" onkeyup="textCounter(this,40)"
-                                Width="220px" IsValRange="False"></asp:TextBox>
+                            <asp:TextBox ID="txtAdd2" runat="server" MaxLength="40" onkeydown="textCounter(this,40)" onkeyup="textCounter(this,40)" Width="220px"></asp:TextBox>
                             &nbsp;
                         </td>
                         <td align="right" style="width: 15%">
-                            &nbsp;</td>
+                            <cc1:CustLabel ID="CustLabel21" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
+                                IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
+                                SetOmit="False" ShowID="06_06020102_021" StickHeight="False">
+                            </cc1:CustLabel>
+                        </td>
                         <td style="width: 35%">
+                            <asp:TextBox ID="txtAdd3" runat="server" IsValRange="False" onkeydown="textCounter(this,40)" onkeyup="textCounter(this,40)" Width="220px"></asp:TextBox>
                             &nbsp;
                         </td>
                     </tr>
                     <tr align="center" class="itemTitle">
-                        <td colspan="4" align="center">
-                            &nbsp; &nbsp;&nbsp;
+                        <td colspan="4" align="center">&nbsp; &nbsp;&nbsp;
                             <cc1:CustButton ID="btnAdd" runat="server" class="smallButton" Style="width: 50px;"
                                 ShowID="06_06020102_022" OnClick="btnAdd_Click" />&nbsp;
                             <cc1:CustButton ID="btnCancel" runat="server" class="smallButton" Style="width: 50px;"

@@ -82,9 +82,9 @@ public partial class P060205000001 : PageBase
             }
             else
             {
-                rad020503.Checked = true;            
+                rad020503.Checked = true;
             }
-          
+
         }
         //Talas 20191003 SOC修改
         eAgentInfo = (EntityAGENT_INFO)this.Session["Agent"]; //*Session變數集合
@@ -94,7 +94,7 @@ public partial class P060205000001 : PageBase
     {
         bool bolStore = true;
         bool bolChecked = false;
-        string strEorMsg="";
+        string strEorMsg = "";
         try
         {
             for (int i = 0; i < this.grvUserView.Rows.Count; i++)
@@ -109,6 +109,8 @@ public partial class P060205000001 : PageBase
                     string strId = m_dtSelfPickInfo.Rows[i]["id"].ToString();
                     string strCardNo = m_dtSelfPickInfo.Rows[i]["cardno"].ToString();
                     string strCustname = m_dtSelfPickInfo.Rows[i]["custname"].ToString();
+                    //2021/02/01 陳永銘 增加羅馬拼音
+                    string strCustname_Roma = m_dtSelfPickInfo.Rows[i]["custname_roma"].ToString();
                     string strTrandate = m_dtSelfPickInfo.Rows[i]["trandate"].ToString();
                     string strIntoStoreDate = m_dtSelfPickInfo.Rows[i]["IntoStore_Date"].ToString();
 
@@ -127,7 +129,7 @@ public partial class P060205000001 : PageBase
                         }
 
                         //入庫
-                        if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname))
+                        if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname, strCustname_Roma))
                         {
                             bolStore = false;
                             strEorMsg += string.Format(MessageHelper.GetMessage("06_06020500_007"), strCardNo) + " ";
@@ -137,7 +139,7 @@ public partial class P060205000001 : PageBase
                     {
                         if (strIntoStoreDate.Equals(string.Empty))
                         {
-                            if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname))
+                            if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname, strCustname_Roma))
                             {
                                 bolStore = false;
                                 strEorMsg += string.Format(MessageHelper.GetMessage("06_06020500_007"), strCardNo) + " ";
@@ -473,13 +475,15 @@ public partial class P060205000001 : PageBase
     private void ShowControlsText()
     {
         //* 設置查詢結果GridView的列頭標題
+        //2020/12/14 陳永銘 新增羅馬拼音
         this.grvUserView.Columns[0].HeaderText = BaseHelper.GetShowText("06_06020500_009");
         this.grvUserView.Columns[1].HeaderText = BaseHelper.GetShowText("06_06020500_010");
-        this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_06020500_011");
-        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06020500_012");
-        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06020500_013");
-        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_06020500_014");
-        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06020500_015");
+        this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_05020000_013");
+        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06020500_011");
+        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06020500_012");
+        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_06020500_013");
+        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_06020500_014");
+        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_06020500_015");
 
         //* 設置一頁顯示最大筆數
         this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
@@ -495,7 +499,7 @@ public partial class P060205000001 : PageBase
     {
         int iTotalCount = 0;
         DataTable dtSelfPickInfo = new DataTable();
-        bool bolSelfPickInfo=false;
+        bool bolSelfPickInfo = false;
 
         try
         {
@@ -660,7 +664,7 @@ public partial class P060205000001 : PageBase
             introw = introw + 1;
             row["SerialNo"] = introw;
         }
-        
+
     }
 
     /// <summary>
@@ -741,14 +745,14 @@ public partial class P060205000001 : PageBase
     protected bool CheckData()
     {
         string strMsgID = string.Empty;
-        bool bolcheck=true;
+        bool bolcheck = true;
 
         if (this.rad020501.Checked)
         {
             if (this.dpMerchDate.Text == "")
             {
                 jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020500_001") + "');");
-                bolcheck=false;
+                bolcheck = false;
             }
         }
         if (this.rad020502.Checked)
@@ -850,6 +854,31 @@ public partial class P060205000001 : PageBase
             this.ddlFactory.DataBind();
             ListItem li = new ListItem(BaseHelper.GetShowText("06_06051900_009"), "0");
             ddlFactory.Items.Insert(0, li);
+        }
+    }
+
+    //2020/12/14 陳永銘 新增函式:姓名替換
+    protected void grvUserView_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        string name = e.Row.Cells[1].Text.Replace("&nbsp;", "").Trim();
+        string name_roma = e.Row.Cells[2].Text.Replace("&nbsp;", "").Trim();
+
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[2].Visible = false;
+        }
+
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            e.Row.Cells[2].Visible = false;
+
+            if (name.Length >= 5 || name_roma != string.Empty)
+            {
+                int length = name.Length >= 5 ? 5 : name.Length;
+                e.Row.Cells[1].Text = name.Substring(0, length) + "...";
+                name += Environment.NewLine + name_roma;
+                e.Row.Cells[1].Attributes.Add("title", name);
+            }
         }
     }
     #endregion

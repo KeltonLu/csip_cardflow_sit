@@ -76,9 +76,11 @@ public partial class P060502000001 : PageBase
         this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_05020000_007");
         this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_05020000_008");
         this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_05020000_009");
-        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_05020000_010");
-        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_05020000_011");
-        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_05020000_012");
+        //20220131 陳永銘 增加羅馬拼音
+        this.grvUserView.Columns[5].HeaderText = BaseHelper.GetShowText("06_05020000_013");
+        this.grvUserView.Columns[6].HeaderText = BaseHelper.GetShowText("06_05020000_010");
+        this.grvUserView.Columns[7].HeaderText = BaseHelper.GetShowText("06_05020000_011");
+        this.grvUserView.Columns[8].HeaderText = BaseHelper.GetShowText("06_05020000_012");
 
         //* 設置一頁顯示最大筆數
         this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
@@ -265,6 +267,31 @@ public partial class P060502000001 : PageBase
             {
                 Logging.Log(exp, LogLayer.BusinessRule);
                 MessageHelper.ShowMessage(this, "06_05020000_003");
+            }
+        }
+    }
+
+    //20220131 陳永銘 收件者姓名替換
+    protected void grvUserView_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[5].Visible = false;
+        }
+
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            string name = e.Row.Cells[4].Text.Replace("&nbsp;", "").Trim();
+            string name_roma = e.Row.Cells[5].Text.Replace("&nbsp;", "").Trim();
+
+            e.Row.Cells[5].Visible = false;
+
+            if (name.Length >= 5 || name_roma != string.Empty)
+            {
+                int length = name.Length >= 5 ? 5 : name.Length;
+                e.Row.Cells[4].Text = name.Substring(0, length) + "...";
+                name += Environment.NewLine + name_roma;
+                e.Row.Cells[4].Attributes.Add("title", name);
             }
         }
     }

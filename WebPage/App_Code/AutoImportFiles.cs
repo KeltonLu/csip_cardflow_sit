@@ -3,6 +3,7 @@
 //*  作    者：HAO CHEN
 //*  創建日期：2010/06/03
 //*  修改記錄：2013/07/08  莊詔翔
+//*  修改記錄：2020/12/30  陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -1542,6 +1543,10 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.custname = dtDetail.Rows[i]["CustName"].ToString();       //歸戶姓名
                     TCardBaseInfo.name1 = dtDetail.Rows[i]["Card1Name"].ToString();         //客戶姓名1
                     TCardBaseInfo.name2 = dtDetail.Rows[i]["Card2Name"].ToString();         //客戶姓名2
+                    // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
+                    TCardBaseInfo.custname_roma = dtDetail.Rows[i]["CustName_Roma"].ToString().Trim(); // 歸戶姓名_羅馬拼音
+                    TCardBaseInfo.name1_roma = dtDetail.Rows[i]["Card1Name_Roma"].ToString().Trim();   // 客戶姓名1_羅馬拼音
+                    // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
                     //TCardBaseInfo.trandate = dtDetail.Rows[i]["AffinityCode"].ToString(); //已設定
                     //TCardBaseInfo.card_file = dtDetail.Rows[i]["AffinityCode"].ToString();//已設定
                     TCardBaseInfo.disney_code = "";                                         //製卡檔無該欄位 --> 空白不填。
@@ -1678,6 +1683,10 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.custname = dtDetail.Rows[i]["CUST-NAME"].ToString().Trim();       //歸戶姓名
                     TCardBaseInfo.name1 = dtDetail.Rows[i]["CARD-1-NAME"].ToString().Trim();        //客戶姓名1
                     TCardBaseInfo.name2 = dtDetail.Rows[i]["CARD-2-NAME"].ToString().Trim();        //客戶姓名2
+                    // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
+                    TCardBaseInfo.custname_roma = dtDetail.Rows[i]["CUST-NAME-ROMA"].ToString().Trim(); // 歸戶姓名_羅馬拼音
+                    TCardBaseInfo.name1_roma = dtDetail.Rows[i]["CARD-1-NAME-ROMA"].ToString().Trim();  // 客戶姓名1_羅馬拼音
+                    // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
                     //TCardBaseInfo.trandate = dtDetail.Rows[i]["AffinityCode"].ToString();         //已設定
                     //TCardBaseInfo.card_file = dtDetail.Rows[i]["AffinityCode"].ToString();        //已設定
                     TCardBaseInfo.disney_code = "";                                                 //製卡檔無該欄位 --> 空白不填。

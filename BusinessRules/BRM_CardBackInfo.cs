@@ -233,7 +233,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtCardBackInfo"></param>
         /// <returns></returns>
-        public static bool SearchByCardNo(string strCondition, ref  DataTable dtCardBackInfo, ref string strMsgID)
+        public static bool SearchByCardNo(string strCondition, ref DataTable dtCardBackInfo, ref string strMsgID)
         {
             try
             {
@@ -466,16 +466,16 @@ namespace BusinessRules
             {
                 sqlCmd.Parameters.Clear();
                 sqlCmd.CommandType = CommandType.Text;
-               // sqlCmd.CommandText = UPD_0115_2;
+                // sqlCmd.CommandText = UPD_0115_2;
                 sqlCmd.CommandText = UPD_0115_2_2;
-                
+
 
                 SqlParameter parmBlockcode = new SqlParameter("@Blockcode", strBlockcode);
                 SqlParameter parmEnddate = new SqlParameter("@Enddate", DateTime.Now.ToString("yyyy/MM/dd"));
                 SqlParameter parmEnduid = new SqlParameter("@Enduid", "系統");
                 SqlParameter parmserial_no = new SqlParameter("@serial_no", strSerial_no);
                 SqlParameter parmClosedate = new SqlParameter("@Closedate", DateTime.Now.ToString("yyyy/MM/dd"));
-                
+
 
                 sqlCmd.Parameters.Add(parmBlockcode);
                 sqlCmd.Parameters.Add(parmEnddate);
@@ -514,10 +514,10 @@ namespace BusinessRules
                 SqlCommand sqlcmd = new SqlCommand();
                 sqlcmd.CommandType = CommandType.Text;
                 sqlcmd.CommandText = sql;
-            //改為抓工作日
-            //    SqlParameter parmBackdate = new SqlParameter("@Backdate", DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd"));
-            //    sqlcmd.Parameters.Add(parmBackdate);
-            //    SqlParameter parmExp_Date = new SqlParameter("@Exp_Date", DateTime.Now.AddDays(-21).ToString("yyyy/MM/dd"));
+                //改為抓工作日
+                //    SqlParameter parmBackdate = new SqlParameter("@Backdate", DateTime.Now.AddDays(-1).ToString("yyyy/MM/dd"));
+                //    sqlcmd.Parameters.Add(parmBackdate);
+                //    SqlParameter parmExp_Date = new SqlParameter("@Exp_Date", DateTime.Now.AddDays(-21).ToString("yyyy/MM/dd"));
 
                 SqlParameter parmBackdate = new SqlParameter("@Backdate", DateTime.ParseExact(BRWORK_DATE.ADD_WORKDAY("06", DateTime.Now.ToString("yyyyMMdd"), -1), "yyyyMMdd", null).ToString("yyyy/MM/dd"));
                 sqlcmd.Parameters.Add(parmBackdate);
@@ -649,7 +649,7 @@ namespace BusinessRules
         /// <param name="TCardBaseInfo"></param>
         /// <param name="strCondition"></param>
         /// <returns></returns>
-        public static bool Update(Entity_CardBackInfo CardBackInfo, string strCondition, params  string[] FiledSpit)
+        public static bool Update(Entity_CardBackInfo CardBackInfo, string strCondition, params string[] FiledSpit)
         {
             try
             {
@@ -685,14 +685,20 @@ namespace BusinessRules
             {
                 bool blnResult = true;
                 for (int i = 0; i < dtCardBackInfo.Rows.Count; i++)
-                {
+                {//陳永銘
                     SqlHelper sqlhelp = new SqlHelper();
                     Entity_CardBackInfo CardBackInfo = new Entity_CardBackInfo();
                     CardBackInfo.Mailno = dtCardBackInfo.Rows[i]["mailno"].ToString();
                     CardBackInfo.Maildate = DateTime.Now.ToString("yyyy/MM/dd");
                     CardBackInfo.serial_no = dtCardBackInfo.Rows[i]["serial_no"].ToString();
+
+                    CardBackInfo.NewName = dtCardBackInfo.Rows[i]["Name"].ToString();
+                    CardBackInfo.NewName_Roma = dtCardBackInfo.Rows[i]["Name_Roma"].ToString();
+
+
+
                     sqlhelp.AddCondition(Entity_CardBackInfo.M_serial_no, Operator.Equal, DataTypeUtils.String, CardBackInfo.serial_no);
-                    if (!Update(CardBackInfo, sqlhelp.GetFilterCondition(), "Mailno", "Maildate"))//*更新條件設置
+                    if (!Update(CardBackInfo, sqlhelp.GetFilterCondition(), "Mailno", "Maildate", "NewName", "NewName_Roma"))//*更新條件設置
                     {
                         blnResult = false;
                         break;
@@ -869,13 +875,17 @@ namespace BusinessRules
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchExportCardBackInfo(ref  DataTable dtExportCardBackInfo)
+        public static bool SearchExportCardBackInfo(ref DataTable dtExportCardBackInfo)
         {
             try
             {
                 string sql = @"SELECT back.serial_no, --流水號
                                         ISNULL(back.CustName,'') CustName,--姓名
                                         ISNULL(back.NewName,'') NewName,--新姓名
+
+                                        ISNULL(back.CustName_Roma,'') CustName_Roma,--姓名_羅馬拼音
+                                        ISNULL(back.NewName_Roma,'') NewName_Roma,--新姓名_羅馬拼音
+
                                         back.CardType,--類別
                                         back.Action,--卡別
                                         back.CardNo,--卡號
@@ -924,12 +934,12 @@ namespace BusinessRules
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
-        public static bool GetBackInfoFor0206(ref  DataTable dtBackInfo, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strBackStatus)
+        public static bool GetBackInfoFor0206(ref DataTable dtBackInfo, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strBackStatus)
         {
             try
             {
-
-                string sql = @"Select back.serial_no,back.CardNo,back.Id,back.Action,back.Trandate,back.CustName,back.cardtype,back.Backdate,back.Reason,base.Mailno,isnull(back.CardBackStatus,'0') as CardBackStatus,Enditem,isnull(back.Blockcode,'') as Blockcode,";
+                //2021/01/11 陳永銘 增加羅馬拼音
+                string sql = @"Select back.serial_no,back.CardNo,back.Id,back.Action,back.Trandate,back.CustName,back.CustName_Roma,back.cardtype,back.Backdate,back.Reason,base.Mailno,isnull(back.CardBackStatus,'0') as CardBackStatus,Enditem,isnull(back.Blockcode,'') as Blockcode,";
                 sql += " base.zip,base.add1,base.add2,base.add3";
                 sql += " From dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base ";
                 sql += " Where back.Id=base.id and back.CardNo=base.cardno and back.Action=base.action and back.Trandate=base.trandate";

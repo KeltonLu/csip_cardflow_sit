@@ -12,17 +12,17 @@ namespace BusinessRulesNew
         /// 功能說明:查詢自取卡片資料(自取逾期改限掛)
         /// 作    者:
         /// 創建時間:2016/01/28
-        /// 修改記錄:
+        /// 修改記錄:2020/12/14 陳永銘 新增custname_roma
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
-        public static bool GetSelfPickInfoPost(ref  DataTable dtSelfPickInfoPost, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strCardNo)
-        {            
+        public static bool GetSelfPickInfoPost(ref DataTable dtSelfPickInfoPost, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strCardNo)
+        {
             try
             {
                 string sql = @"SELECT * FROM(";
 
-                sql += " select custname,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";
+                sql += " select custname,custname_roma,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";
                 sql += " and base.cardtype<>'900'"; //此種卡片為特殊處理 Bug234
                 sql += " and base.selfpick_type = '4'";  //自取逾期改限掛
                 if (!strId.Equals(string.Empty))
@@ -35,7 +35,7 @@ namespace BusinessRulesNew
                 }
                 //其他取卡方式+退件改自取
                 sql += " union";
-                sql += " select base.custname,base.id,base.cardno,base.indate1,base.IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date ";
+                sql += " select base.custname,base.custname_roma,base.id,base.cardno,base.indate1,base.IntoStore_Date,base.action,base.trandate,isnull(base.OutStore_Date,'') as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
@@ -52,7 +52,7 @@ namespace BusinessRulesNew
                 }
                 //其他取卡方式+退件改自取 且為 自取->郵寄出庫->退件->自取 的情況
                 sql += " union";
-                sql += " select base.custname,base.id,base.cardno,base.indate1,'' as IntoStore_Date,base.action,base.trandate,'' as OutStore_Date ";
+                sql += " select base.custname,base.custname_roma,base.id,base.cardno,base.indate1,'' as IntoStore_Date,base.action,base.trandate,'' as OutStore_Date ";
                 sql += " from dbo.tbl_Card_BackInfo back,dbo.tbl_Card_BaseInfo base";
                 sql += " where back.action=base.action and back.id=base.id and back.cardno=base.cardno and back.trandate=base.trandate";
                 sql += " and base.cardtype<>'900'";//此種卡片為特殊處理 Bug234
@@ -95,7 +95,7 @@ namespace BusinessRulesNew
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 功能說明:出庫操作-更新卡片基本信息、刪除庫存信息(自取逾期改限掛)
         /// 作    者:
@@ -104,7 +104,7 @@ namespace BusinessRulesNew
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
-        public static bool OutStore(string strAction, string strId, string strCardNo, string strTrandate, string strCustname,string strIntoStoreDate)
+        public static bool OutStore(string strAction, string strId, string strCardNo, string strTrandate, string strCustname, string strIntoStoreDate)
         {
             try
             {

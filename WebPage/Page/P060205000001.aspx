@@ -171,10 +171,10 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" id="Table1">
                     <tr>
                         <td colspan="20">
-                                 <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
-                               PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0"
-                                CellSpacing="1" BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing" DataKeyNames="cardno"
-                                >
+                            <%--2020/12/14 陳永銘 新增事件:EnableModelValidation/OnRowDataBound/custname_roma--%>
+                            <cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
+                                PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0"
+                                CellSpacing="1" BorderStyle="Solid" OnRowEditing="grvUserView_RowEditing" DataKeyNames="cardno" EnableModelValidation="True" OnRowDataBound="grvUserView_RowDataBound">
                                 <RowStyle CssClass="Grid_Item" Wrap="True" />
                                 <SelectedRowStyle CssClass="Grid_SelectedItem" />
                                 <HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -186,10 +186,13 @@
                                         <itemstyle width="5%" horizontalalign="Center" />
                                     </asp:BoundField>
                                     <asp:BoundField DataField="custname">
-                                        <itemstyle width="15%" horizontalalign="Center" wrap="True" />
+                                        <ItemStyle Width="15%" HorizontalAlign="Center" Wrap="True" />
+                                    </asp:BoundField>
+                                    <asp:BoundField DataField="custname_roma">
+                                        <ItemStyle Width="15%" HorizontalAlign="Center" Wrap="True" />
                                     </asp:BoundField>
                                     <asp:BoundField DataField="id">
-                                        <itemstyle width="15%" horizontalalign="Center" />
+                                        <ItemStyle Width="15%" HorizontalAlign="Center" />
                                     </asp:BoundField>
                                     <asp:TemplateField>
                                         <itemstyle horizontalalign="Center" width="30%" />

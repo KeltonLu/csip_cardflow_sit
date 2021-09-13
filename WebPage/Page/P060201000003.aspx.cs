@@ -2,7 +2,7 @@
 //*  功能說明：綜合資料處理新增UI
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：
+//*  修改記錄：2020/12/31 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
 //*******************************************************************
 using System;
@@ -157,7 +157,9 @@ public partial class P060201000003 : PageBase
         CardBaseInfo.add2 = this.txtAdd2.Text.Trim();                       //*地址二
         CardBaseInfo.Merch_Code = this.dropMerch_Code.SelectedValue.Trim(); //*製卡商名稱
         CardBaseInfo.add3 = this.txtAdd3.Text.Trim();                       //*地址三
-        
+        //2020/12/31 陳永銘 新增欄位:收件人姓名_羅馬拼音                    
+        CardBaseInfo.custname_roma = this.txtCustname_Roma.Text.Trim();     //*收件人姓名_羅馬拼音
+
         string strUpUser = ((CSIPCommonModel.EntityLayer.EntityAGENT_INFO)Session["Agent"]).agent_id;
         string strLogMsg = BaseHelper.GetShowText("06_06020102_000");
         BRM_Log.Insert(strUpUser, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), strLogMsg, "A");
@@ -310,6 +312,28 @@ public partial class P060201000003 : PageBase
                 txtMailno.Focus();
                 return false;
             }
+        }
+        //2020/12/31 陳永銘 新增欄位檢核:收件人姓名_羅馬拼音
+        //if (!string.IsNullOrEmpty(this.txtCustname_Roma.Text.Trim()))
+        //{
+        //    if (!ValidateHelper.ValidRoma(this.txtCustname_Roma.Text.Trim()))
+        //    {
+        //        strMsgID = "06_06020102_017";
+        //        txtCustname_Roma.Focus();
+        //        return false;
+        //    }
+        //}
+
+        if (!string.IsNullOrEmpty(this.txtCustname_Roma.Text.Trim()))
+        {
+            string txtCustnameRoma = string.Empty;
+            if (!ValidateHelper.ValidRoma(this.txtCustname_Roma.Text.Trim(), ref txtCustnameRoma))
+            {
+                strMsgID = "06_06020102_017";
+                txtCustname_Roma.Focus();
+                return false;
+            }
+            this.txtCustname_Roma.Text = txtCustnameRoma;
         }
 
         return true;
