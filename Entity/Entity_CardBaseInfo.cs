@@ -7,6 +7,7 @@
 //     變更將會遺失。
 // </auto-generated>
 //------------------------------------------------------------------------------
+//*  修改記錄：2020/12/30  陳永銘
 
 using System;
 using System.Collections.Generic;
@@ -524,7 +525,7 @@ namespace EntityLayer
                 this._n_card = value;
             }
         }
-        
+
         /// <summary>
         /// maildate
         /// </summary>
@@ -540,7 +541,7 @@ namespace EntityLayer
                 this._maildate = value;
             }
         }
-        
+
         /// <summary>
         /// expdate
         /// </summary>
@@ -556,7 +557,7 @@ namespace EntityLayer
                 this._expdate = value;
             }
         }
-        
+
         /// <summary>
         /// expdate2
         /// </summary>
@@ -588,7 +589,7 @@ namespace EntityLayer
                 this._seq = value;
             }
         }
-        
+
         /// <summary>
         /// custname
         /// </summary>
@@ -604,7 +605,7 @@ namespace EntityLayer
                 this._custname = value;
             }
         }
-        
+
         /// <summary>
         /// name1
         /// </summary>
@@ -620,7 +621,7 @@ namespace EntityLayer
                 this._name1 = value;
             }
         }
-        
+
         /// <summary>
         /// name2
         /// </summary>
@@ -636,7 +637,7 @@ namespace EntityLayer
                 this._name2 = value;
             }
         }
-        
+
         /// <summary>
         /// trandate
         /// </summary>
@@ -652,7 +653,7 @@ namespace EntityLayer
                 this._trandate = value;
             }
         }
-        
+
         /// <summary>
         /// card_file
         /// </summary>
@@ -668,7 +669,7 @@ namespace EntityLayer
                 this._card_file = value;
             }
         }
-        
+
         /// <summary>
         /// disney_code
         /// </summary>
@@ -684,7 +685,7 @@ namespace EntityLayer
                 this._disney_code = value;
             }
         }
-        
+
         /// <summary>
         /// branch_id
         /// </summary>
@@ -700,7 +701,7 @@ namespace EntityLayer
                 this._branch_id = value;
             }
         }
-        
+
         /// <summary>
         /// Merch_Code
         /// </summary>
@@ -716,7 +717,7 @@ namespace EntityLayer
                 this._Merch_Code = value;
             }
         }
-        
+
         /// <summary>
         /// monlimit
         /// </summary>
@@ -732,7 +733,7 @@ namespace EntityLayer
                 this._monlimit = value;
             }
         }
-        
+
         /// <summary>
         /// is_LackCard
         /// </summary>
@@ -748,7 +749,7 @@ namespace EntityLayer
                 this._is_LackCard = value;
             }
         }
-        
+
         /// <summary>
         /// Urgency_Flg
         /// </summary>
@@ -764,7 +765,7 @@ namespace EntityLayer
                 this._Urgency_Flg = value;
             }
         }
-        
+
         /// <summary>
         /// IntoStore_Status
         /// </summary>
@@ -780,7 +781,7 @@ namespace EntityLayer
                 this._IntoStore_Status = value;
             }
         }
-        
+
         /// <summary>
         /// IntoStore_Date
         /// </summary>
@@ -796,7 +797,7 @@ namespace EntityLayer
                 this._IntoStore_Date = value;
             }
         }
-        
+
         /// <summary>
         /// OutStore_Status
         /// </summary>
@@ -812,7 +813,7 @@ namespace EntityLayer
                 this._OutStore_Status = value;
             }
         }
-        
+
         /// <summary>
         /// OutStore_Date
         /// </summary>
@@ -828,7 +829,7 @@ namespace EntityLayer
                 this._OutStore_Date = value;
             }
         }
-        
+
         /// <summary>
         /// SelfPick_Type
         /// </summary>
@@ -844,7 +845,7 @@ namespace EntityLayer
                 this._SelfPick_Type = value;
             }
         }
-        
+
         /// <summary>
         /// SelfPick_Date
         /// </summary>
@@ -875,8 +876,48 @@ namespace EntityLayer
                 this._OriginalDBflg = value;
             }
         }
+
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
+        // 歸戶姓名_羅馬拼音
+        private string _custname_roma;
+        public static string M_custname_roma = "custname_roma";
+        /// <summary>
+        /// custname_roma
+        /// </summary>
+        [AttributeField("custname_roma", "System.String", false, false, false, "String")]
+        public string custname_roma
+        {
+            get
+            {
+                return this._custname_roma;
+            }
+            set
+            {
+                this._custname_roma = value;
+            }
+        }
+
+        // 客戶姓名1_羅馬拼音
+        private string _name1_roma;
+        public static string M_name1_roma = "name1_roma";
+        /// <summary>
+        /// name1_roma
+        /// </summary>
+        [AttributeField("name1_roma", "System.String", false, false, false, "String")]
+        public string name1_roma
+        {
+            get
+            {
+                return this._name1_roma;
+            }
+            set
+            {
+                this._name1_roma = value;
+            }
+        }
+        // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
     }
-    
+
     /// <summary>
     /// tbl_Card_BaseInfo
     /// </summary>
