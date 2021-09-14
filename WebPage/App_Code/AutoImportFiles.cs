@@ -1542,7 +1542,7 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.seq = dtDetail.Rows[i]["SEQ"].ToString();                 //序號
                     TCardBaseInfo.custname = dtDetail.Rows[i]["CustName"].ToString();       //歸戶姓名
                     TCardBaseInfo.name1 = dtDetail.Rows[i]["Card1Name"].ToString();         //客戶姓名1
-                    TCardBaseInfo.name2 = dtDetail.Rows[i]["Card2Name"].ToString();         //客戶姓名2
+                    //TCardBaseInfo.name2 = dtDetail.Rows[i]["Card2Name"].ToString();         //客戶姓名2
                     // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
                     TCardBaseInfo.custname_roma = dtDetail.Rows[i]["CustName_Roma"].ToString().Trim(); // 歸戶姓名_羅馬拼音
                     TCardBaseInfo.name1_roma = dtDetail.Rows[i]["Card1Name_Roma"].ToString().Trim();   // 客戶姓名1_羅馬拼音
@@ -1682,7 +1682,7 @@ public class AutoImportFiles : Quartz.IJob
                     TCardBaseInfo.seq = dtDetail.Rows[i]["SEQ"].ToString().Trim();                  //序號
                     TCardBaseInfo.custname = dtDetail.Rows[i]["CUST-NAME"].ToString().Trim();       //歸戶姓名
                     TCardBaseInfo.name1 = dtDetail.Rows[i]["CARD-1-NAME"].ToString().Trim();        //客戶姓名1
-                    TCardBaseInfo.name2 = dtDetail.Rows[i]["CARD-2-NAME"].ToString().Trim();        //客戶姓名2
+                    //TCardBaseInfo.name2 = dtDetail.Rows[i]["CARD-2-NAME"].ToString().Trim();        //客戶姓名2
                     // 2020/12/30  陳永銘 新增欄位:羅馬拼音 BEGIN
                     TCardBaseInfo.custname_roma = dtDetail.Rows[i]["CUST-NAME-ROMA"].ToString().Trim(); // 歸戶姓名_羅馬拼音
                     TCardBaseInfo.name1_roma = dtDetail.Rows[i]["CARD-1-NAME-ROMA"].ToString().Trim();  // 客戶姓名1_羅馬拼音
