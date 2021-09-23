@@ -603,7 +603,7 @@ public partial class P06020101_NewWorkOrder : PageBase
     {
         DataTable dtCardBackInfo = new DataTable();
         string strMsgID = string.Empty;
-        SqlHelper sqlhelp = new SqlHelper();
+        SqlHelper sqlhelp = new SqlHelper(false); //20210923 調整sql不加UPPER by Ares Stanley
         sqlhelp.AddCondition(Entity_CardDataChange.M_action, Operator.Equal, DataTypeUtils.String, m_Action);
         if (!string.IsNullOrEmpty(m_Id))
         {

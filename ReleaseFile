@@ -1,8 +1,3 @@
-\bin\BusinessRules.dll
-\Web.Config
 \bin\CardFlow.dll
-\bin\TIBCO.EMS.dll
-\Common\XML\Show.xml
-\Page\P060201000002.aspx
-\Page\P060202000002.aspx
-\Page\P060202000003.aspx
+\Log.config
+
