@@ -1,3 +1,5 @@
 \bin\CardFlow.dll
 \Log.config
 \bin\Framework.Common.dll
+\bin\CSIPCommonModel.BusinessRules.dll
+\bin\CSIPCommonModel.BaseItem.dll
