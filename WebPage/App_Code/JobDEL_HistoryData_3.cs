@@ -170,7 +170,7 @@ public class JobDEL_HistoryData_3 : IJob
                 sql = new SqlCommand
                 {
                     CommandType = CommandType.Text,
-                    CommandText = "SELECT CONVERT(VARCHAR(10), DATEADD(day,-" + propertyDeleteDays + ",GETDATE()), 111)"
+                    CommandText = "SELECT CONVERT(VARCHAR, DATEADD(day,-" + propertyDeleteDays + ",GETDATE()), 111)"
                 };
                 var dh = new DataHelper("Connection_CSIP");
                 DataSet ds = dh.ExecuteDataSet(sql);
@@ -188,7 +188,7 @@ public class JobDEL_HistoryData_3 : IJob
                 sql = new SqlCommand
                 {
                     CommandType = CommandType.Text,
-                    CommandText = "SELECT COUNT(*) FROM " + propertyTableName + " WHERE CONVERT(VARCHAR(10), " + propertyColumName + ", 111) <= DATEADD( day,- " + propertyDeleteDays + ", GETDATE( ) )"
+                    CommandText = "SELECT COUNT(*) FROM " + propertyTableName + " WHERE CONVERT(VARCHAR, " + propertyColumName + ", 111) <= DATEADD( day,- " + propertyDeleteDays + ", GETDATE( ) )"
                 };
 
                 //計算筆數
@@ -206,7 +206,7 @@ public class JobDEL_HistoryData_3 : IJob
                     {
                         CommandType = CommandType.Text,
                         CommandText = "WITH DEL AS(SELECT TOP " + BatchNum +
-                                  " * FROM " + propertyTableName + " WHERE CONVERT(VARCHAR(10), " + propertyColumName + " ,111)<= DATEADD( day,- " + propertyDeleteDays + ", GETDATE( ) ))" +
+                                  " * FROM " + propertyTableName + " WHERE CONVERT(VARCHAR, " + propertyColumName + " ,111)<= DATEADD( day,- " + propertyDeleteDays + ", GETDATE( ) ))" +
                                   "DELETE DEL WHERE 1=1"
                     };
                     int count = 0;
