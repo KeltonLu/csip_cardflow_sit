@@ -139,11 +139,13 @@
                             <cc1:DatePicker ID="txtMaildate" runat="server" Width="150">
                             </cc1:DatePicker>
                         </td>
+                        <%-- 2021/10/06_Nash-配合RQ-2021-027903-000新增頁面Wording --%>
                         <td align="right" style="width: 15%">
                             <cc1:CustLabel ID="CustLabel14" runat="server" FractionalDigit="2" IsColon="True"
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
                                 SetOmit="False" StickHeight="False" ShowID="06_06020102_010" CurAlign="left"
                                 CurSymbol="£"></cc1:CustLabel>
+                        <BR>(簽帳金融卡單位為百)
                         </td>
                         <td style="width: 35%">
                             <cc1:CustTextBox ID="txtMonlimit" MaxLength="8" runat="server" InputType="Int" Width="150px"></cc1:CustTextBox></td>
