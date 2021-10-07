@@ -311,7 +311,14 @@ public class MainFrameInfo
         {
             if (!hc.LogonAuth(htInput, ref strMsg, strAuthOnLine))
             {
-                Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                if (strMsg.Contains("rc value=606") || strMsg.Contains("rc value=704"))
+                {
+                    Logging.Log(strMsg, LogState.Info, LogLayer.HTG);
+                }
+                else
+                {
+                    Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                }
                 return htOutput;
             }
             else
@@ -566,7 +573,14 @@ public class MainFrameInfo
         {
             if (!hc.LogonAuth(htInput, ref strMsg, strAuthOnLine))
             {
-                Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                if(strMsg.Contains("rc value=606") || strMsg.Contains("rc value=704"))
+                {
+                    Logging.Log(strMsg, LogState.Info, LogLayer.HTG);
+                }
+                else
+                {
+                    Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                }
                 return htOutput;
             }
             else
@@ -817,7 +831,14 @@ public class MainFrameInfo
         {
             if (!hc.LogonAuth(htInput, ref strMsg, strAuthOnLine))
             {
-                Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                if (strMsg.Contains("rc value=606") || strMsg.Contains("rc value=704"))
+                {
+                    Logging.Log(strMsg, LogState.Info, LogLayer.HTG);
+                }
+                else
+                {
+                    Logging.Log(strMsg, LogState.Error, LogLayer.HTG);
+                }
                 return strMsg;
             }
             else
