@@ -512,10 +512,11 @@
                                 <asp:Button ID="btnUpdateP" runat="server" Text="修改" CssClass="smallButton" OnClick="btnUpdateP_Click"
                                     OnClientClick="return IsConfirm('P')" Style="cursor: pointer" />&nbsp;</div>
                         </td>
+                        <%-- 2021/10/06_Nash-配合RQ-2021-027903-000新增頁面Wording --%>
                         <td style="height: 25px; width: 15%;" align="right">
                             <cc1:CustLabel ID="CustLabel19" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
                                 IsColon="True" IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0"
-                                SetBreak="False" SetOmit="False" ShowID="06_06020101_008" StickHeight="False"></cc1:CustLabel></td>
+                                SetBreak="False" SetOmit="False" ShowID="06_06020101_008" StickHeight="False"></cc1:CustLabel><BR>(簽帳金融卡單位為百)</td>
                         <td style="height: 25px; width: 35%;">
                             <div align="left" style="float: left; padding-top: 2; padding-bottom: 2; height: 100%;">
                                 <cc1:CustLabel ID="lblMonlimit" runat="server" CurAlign="left" CurSymbol="£" FractionalDigit="2"
