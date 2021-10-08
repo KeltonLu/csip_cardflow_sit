@@ -525,7 +525,7 @@ namespace EntityLayer
                 this._n_card = value;
             }
         }
-
+        
         /// <summary>
         /// maildate
         /// </summary>
@@ -541,7 +541,7 @@ namespace EntityLayer
                 this._maildate = value;
             }
         }
-
+        
         /// <summary>
         /// expdate
         /// </summary>
@@ -557,7 +557,7 @@ namespace EntityLayer
                 this._expdate = value;
             }
         }
-
+        
         /// <summary>
         /// expdate2
         /// </summary>
@@ -589,7 +589,7 @@ namespace EntityLayer
                 this._seq = value;
             }
         }
-
+        
         /// <summary>
         /// custname
         /// </summary>
@@ -605,7 +605,7 @@ namespace EntityLayer
                 this._custname = value;
             }
         }
-
+        
         /// <summary>
         /// name1
         /// </summary>
@@ -621,7 +621,7 @@ namespace EntityLayer
                 this._name1 = value;
             }
         }
-
+        
         /// <summary>
         /// name2
         /// </summary>
@@ -637,7 +637,7 @@ namespace EntityLayer
                 this._name2 = value;
             }
         }
-
+        
         /// <summary>
         /// trandate
         /// </summary>
@@ -653,7 +653,7 @@ namespace EntityLayer
                 this._trandate = value;
             }
         }
-
+        
         /// <summary>
         /// card_file
         /// </summary>
@@ -669,7 +669,7 @@ namespace EntityLayer
                 this._card_file = value;
             }
         }
-
+        
         /// <summary>
         /// disney_code
         /// </summary>
@@ -685,7 +685,7 @@ namespace EntityLayer
                 this._disney_code = value;
             }
         }
-
+        
         /// <summary>
         /// branch_id
         /// </summary>
@@ -701,7 +701,7 @@ namespace EntityLayer
                 this._branch_id = value;
             }
         }
-
+        
         /// <summary>
         /// Merch_Code
         /// </summary>
@@ -717,7 +717,7 @@ namespace EntityLayer
                 this._Merch_Code = value;
             }
         }
-
+        
         /// <summary>
         /// monlimit
         /// </summary>
@@ -733,7 +733,7 @@ namespace EntityLayer
                 this._monlimit = value;
             }
         }
-
+        
         /// <summary>
         /// is_LackCard
         /// </summary>
@@ -749,7 +749,7 @@ namespace EntityLayer
                 this._is_LackCard = value;
             }
         }
-
+        
         /// <summary>
         /// Urgency_Flg
         /// </summary>
@@ -765,7 +765,7 @@ namespace EntityLayer
                 this._Urgency_Flg = value;
             }
         }
-
+        
         /// <summary>
         /// IntoStore_Status
         /// </summary>
@@ -781,7 +781,7 @@ namespace EntityLayer
                 this._IntoStore_Status = value;
             }
         }
-
+        
         /// <summary>
         /// IntoStore_Date
         /// </summary>
@@ -797,7 +797,7 @@ namespace EntityLayer
                 this._IntoStore_Date = value;
             }
         }
-
+        
         /// <summary>
         /// OutStore_Status
         /// </summary>
@@ -813,7 +813,7 @@ namespace EntityLayer
                 this._OutStore_Status = value;
             }
         }
-
+        
         /// <summary>
         /// OutStore_Date
         /// </summary>
@@ -829,7 +829,7 @@ namespace EntityLayer
                 this._OutStore_Date = value;
             }
         }
-
+        
         /// <summary>
         /// SelfPick_Type
         /// </summary>
@@ -845,7 +845,7 @@ namespace EntityLayer
                 this._SelfPick_Type = value;
             }
         }
-
+        
         /// <summary>
         /// SelfPick_Date
         /// </summary>

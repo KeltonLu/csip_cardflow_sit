@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/04
 //*  修改記錄：2021/01/20 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 //20161108 (U) by Tank, 調整取CardType中文方式
 
@@ -41,9 +42,9 @@ public class AutoExportBackInfo : Quartz.IJob
     protected string strFileName;
     protected string strFtpIp;
     protected string strFtpUserName;
-    protected string strFtpPwd;
-    protected string strZipPwd;
-
+    protected string strFtpPwd;        
+    protected string strZipPwd; 
+          
     protected DataTable dtLocalFile;
     protected DataTable dtFileInfo;
     protected DataTable dtCardBackInfo;
@@ -179,7 +180,7 @@ public class AutoExportBackInfo : Quartz.IJob
                         // string serial_no_Newtemp="";
                         foreach (DataRow rowExport in dtExportCardBackInfo.Rows)
                         {
-                            //serial_no_Newtemp=JobHelper.SetStrngValue(rowExport["serial_no"].ToString().Trim(), 12);
+                         //   serial_no_Newtemp=JobHelper.SetStrngValue(rowExport["serial_no"].ToString().Trim(), 12);
                             strFileContent1 += JobHelper.SetStrngValue(rowExport["serial_no"].ToString().Trim(), 12);//*流水號
                             //* update in 2010/09/29 by SIT&UAT bug list.xls(149)
                             //strFileContent1 +=  JobHelper.SetStrngValue(rowExport["NewName"].ToString().Trim(),10);//*姓名
@@ -254,7 +255,7 @@ public class AutoExportBackInfo : Quartz.IJob
                             strFileContent1 += JobHelper.SetStrngValue(rowExport["EnditemName"].ToString().Trim(), 20);//*  處理方法
                             strFileContent1 += JobHelper.SetStrngValue("", 50);//*備註     
                             strFileContent1 += "\r\n";
-
+           
                         }
                         //max 修正收尾的多行
                         if (strFileContent1.Length > 2)
@@ -683,7 +684,7 @@ public class AutoExportBackInfo : Quartz.IJob
     /// <param name="dtPost"></param>
     public void MergeTable(ref DataTable dtExportCardBackInfo)
     {
-        string strMsgID = string.Empty;
+        string strMsgID = string.Empty;        
         dtExportCardBackInfo.Columns.Add("ActionName");
         dtExportCardBackInfo.Columns.Add("ReasonName");
         dtExportCardBackInfo.Columns.Add("EnditemName");
@@ -700,7 +701,7 @@ public class AutoExportBackInfo : Quartz.IJob
         sqlhelps.AddCondition(EntityLayer.EntityM_PROPERTY_CODE.M_PROPERTY_KEY, Operator.Equal, DataTypeUtils.String, "16");
         foreach (DataRow row in dtExportCardBackInfo.Rows)
         {
-
+            
             //*卡別顯示Name
             if (CSIPCommonModel.BusinessRules.BRM_PROPERTY_KEY.GetEnableProperty("06", "1", ref dtExportCardBackInfotype))
             {
@@ -801,7 +802,7 @@ public class AutoExportBackInfo : Quartz.IJob
 
         string strPurgeDateReq = DateTime.Now.AddMonths(3).ToString("MMdd");
 
-        htInput.Add("sessionId", strSessionId);
+        htInput.Add("sessionId", strSessionId); 
 
         htInput.Add("FUNCTION_CODE", "A");
         htInput.Add("SOURCE_CODE", "Z");//*交易來源別

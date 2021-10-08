@@ -4,6 +4,7 @@
 //*  創建日期：2010/04/09
 //*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(Entity_UnableCard UnableCard, string strCondition, ref string strMsgID, params string[] FiledSpit)
+        public static bool update(Entity_UnableCard UnableCard, string strCondition, ref string strMsgID, params  string[] FiledSpit)
         {
             try
             {
@@ -68,7 +69,7 @@ namespace BusinessRules
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchUnableCard(ref DataTable dtUnableCard)
+        public static bool SearchUnableCard(ref  DataTable dtUnableCard)
         {
             try
             {

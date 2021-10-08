@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/9
 //*  修改記錄：2021/01/13 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Data;
@@ -40,7 +41,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
     protected DateTime StartTime = DateTime.Now;//記錄job啟動時間;
     protected DateTime EndTime;
     protected StringBuilder sbFileInfo = new StringBuilder();
-
+    
     private DateTime _jobDate = DateTime.Now;
     #endregion
 
@@ -60,7 +61,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             JobHelper.strJobId = strJobId;
             JobHelper.SaveLog(strJobId + "JOB啟動", LogState.Info);
             //strJobId = "0118";
-
+            
             #region 判斷是否手動啟動排程
             if (context.JobDetail.JobDataMap["param"] != null)
             {
@@ -90,8 +91,8 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
                 }
             }
             #endregion
-
-
+            
+            
             #region 記錄job啟動時間
             StartTime = DateTime.Now;
             #endregion
@@ -580,8 +581,7 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
             LBatchLog.RETURN_MESSAGE = strMessage;
             BRM_LBatchLog.insert(LBatchLog);
         }
-        catch (Exception exp)
-        {
+        catch (Exception exp) {
             JobHelper.SaveLog(exp.Message);
         }
     }

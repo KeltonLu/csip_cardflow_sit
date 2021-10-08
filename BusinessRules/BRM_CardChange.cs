@@ -2,8 +2,9 @@
 //*  功能說明：綜合資料處理業務邏輯層
 //*  作    者：Simba Liu
 //*  創建日期：2010/04/09
-//*  修改記錄：2021/01/21 陳永銘
+//*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace BusinessRules
     public class BRM_CardChange : BRBase<Entity_CardChange>
     {
 
-
+        
 
         /// <summary>
         /// 功能說明:更新一筆綜合資料
@@ -32,7 +33,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(Entity_CardChange CardChange, string strCondition, ref string strMsgID, params string[] FiledSpit)
+        public static bool update(Entity_CardChange CardChange, string strCondition, ref string strMsgID, params  string[] FiledSpit)
         {
             try
             {
@@ -68,10 +69,10 @@ namespace BusinessRules
         /// <param name="dtFileInfo"></param>
         /// <param name="strJobId"></param>
         /// <returns></returns>
-        public static bool SearchCardChange(ref DataTable dtChangeCard)
+        public static bool SearchCardChange(ref  DataTable dtChangeCard)
         {
             try
-            {   //2021/01/21 陳永銘 增加羅馬拼音
+            {   //20210120 (U)by Joe, 增加羅馬拼音
                 string sql = @"SELECT   distinct T2.indate1,T2.ID,T2.custName,T2.custname_roma,T2.photo,T2.Action,T1.CardNo,T2.Kind,T2.mailno,
                                         T1.blockcode, T1.ImportDate, T1.ImportFileName,T1.Sno,T2.Merch_Code,T1.ImportDate,T1.trandate  
                                         FROM tbl_CardChange T1, tbl_Card_BaseInfo T2
@@ -168,6 +169,6 @@ namespace BusinessRules
                 return false;
             }
         }
-
+        
     }
 }

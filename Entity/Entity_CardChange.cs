@@ -7,7 +7,7 @@
 //     變更將會遺失。
 // </auto-generated>
 //------------------------------------------------------------------------------
-
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 using System;
 using System.Collections.Generic;
 using System.Text;

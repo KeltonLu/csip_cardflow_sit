@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/24
 //*  修改記錄：2021/01/05 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 //20161108 (U) by Tank, 調整判斷信用卡方式
 
@@ -317,7 +318,7 @@ public partial class Page_P060202000002 : PageBase
                 this.btnUpdateA.Enabled = false;
                 this.btnUpdateC.Enabled = false;
             }
-            // SearchDataChange("Newadd2", ref blnIsAdd2, strSourceAdd2, ref strResultAdd2, ref strSno);
+           // SearchDataChange("Newadd2", ref blnIsAdd2, strSourceAdd2, ref strResultAdd2, ref strSno);
             this.lblAdd2.Text = strSourceAdd2;
             this.lblAdd2New.Text = strResultAdd2;
             this.lblAdd2Ajax.Text = strSourceAdd2;
@@ -339,7 +340,7 @@ public partial class Page_P060202000002 : PageBase
                 this.btnUpdateA.Enabled = false;
                 this.btnUpdateC.Enabled = false;
             }
-            //  SearchDataChange("Newadd3", ref blnIsAdd3, strSourceAdd3, ref strResultAdd3, ref strSnos);
+          //  SearchDataChange("Newadd3", ref blnIsAdd3, strSourceAdd3, ref strResultAdd3, ref strSnos);
             this.lblAdd3.Text = strSourceAdd3;
             this.lblAdd3New.Text = strResultAdd3;
             this.lblAdd3Ajax.Text = strSourceAdd3;
@@ -636,7 +637,7 @@ public partial class Page_P060202000002 : PageBase
         sqlhelp.AddCondition(Entity_CardBaseInfo.M_trandate, Operator.Like, DataTypeUtils.String, m_Trandate);
         if (BRM_TCardBaseInfo.SearchByCardNo(sqlhelp.GetFilterCondition(), ref dtCardBaseInfo, ref strMsgID))
         {
-            MergeTable(ref dtCardBaseInfo);
+            MergeTable(ref  dtCardBaseInfo);
             m_dtCardBaseInfo = dtCardBaseInfo;
         }
     }
@@ -987,14 +988,12 @@ public partial class Page_P060202000002 : PageBase
         }
         if (null != CardDataChange.NoteCaptions && !string.IsNullOrEmpty(CardDataChange.NoteCaptions))
         {
-            if (this.hidC.Value.Equals("True"))
-            {
-                CardDataChange.NoteCaptions = CardDataChange.NoteCaptions.Replace('(', ' ').Replace(')', ' ').Replace(" ", "") + "(" + strUserName + ")  (踢退前異動)";
-            }
-            else
-            {
-                CardDataChange.NoteCaptions = CardDataChange.NoteCaptions.Replace('(', ' ').Replace(')', ' ').Replace(" ", "") + "(" + strUserName + ")";
-            }
+         if (this.hidC.Value.Equals("True"))
+         {
+             CardDataChange.NoteCaptions = CardDataChange.NoteCaptions.Replace('(', ' ').Replace(')', ' ').Replace(" ", "") + "(" + strUserName + ")  (踢退前異動)";
+          }else{
+             CardDataChange.NoteCaptions = CardDataChange.NoteCaptions.Replace('(', ' ').Replace(')', ' ').Replace(" ", "") + "(" + strUserName + ")";
+         }
         }
 
 

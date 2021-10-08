@@ -5,6 +5,7 @@
 //*  修改記錄：
 
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 
 using System;
@@ -41,7 +42,7 @@ public partial class P060518000001 : PageBase
         //* 設置查詢結果GridView的列頭標題
         this.grvUserView.Columns[0].HeaderText = BaseHelper.GetShowText("06_06051800_005");
         this.grvUserView.Columns[1].HeaderText = BaseHelper.GetShowText("06_06051800_006");
-        // 2020/02/02 增加羅馬拼音 陳永銘
+        // 2021/02/02 增加羅馬拼音 陳永銘
         this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_05020000_013");
 
         this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06051800_007");
@@ -82,7 +83,7 @@ public partial class P060518000001 : PageBase
                     this.grvUserView.Visible = true;
                     this.grvUserView.DataSource = dt;
                     this.grvUserView.DataBind();
-                    // 2020/02/02 無查詢資料則隱藏欄位 陳永銘
+                    // 2021/02/02 無查詢資料則隱藏欄位 陳永銘
                     if (count == 0)
                     {
                         this.grvUserView.Columns[2].Visible = false;
@@ -224,7 +225,7 @@ public partial class P060518000001 : PageBase
         }
     }
 
-    //20220131 陳永銘 收件者姓名替換
+    //20210131 陳永銘 收件者姓名替換
     protected void grvUserView_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         string name = e.Row.Cells[1].Text.Replace("&nbsp;", "").Trim();

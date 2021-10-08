@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/04
 //*  修改記錄：2021/01/11 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 //20161108 (U) by Tank, 調整取CardType中文方式
 
@@ -63,7 +64,7 @@ public partial class Page_P060206000001 : PageBase
     #endregion
 
     #region Event
-
+    
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -87,7 +88,7 @@ public partial class Page_P060206000001 : PageBase
                 grvUserView.Visible = true;
                 gpList.CurrentPageIndex = Convert.ToInt16(RedirectHelper.GetDecryptString(Request.QueryString["PageIndex0206"].ToString().Trim()));
                 BindGridView();
-            }
+            } 
         }
         //Talas 20191003 SOC修改
         eAgentInfo = (EntityAGENT_INFO)this.Session["Agent"]; //*Session變數集合
@@ -98,7 +99,7 @@ public partial class Page_P060206000001 : PageBase
     {
         if (this.dropEnditem.SelectedValue.ToString() == "1" || this.dropEnditem.SelectedValue.ToString() == "2" || this.dropEnditem.SelectedValue.ToString() == "3" || this.dropEnditem.SelectedValue.ToString() == "4")
         {
-            if (m_AddChange == "11")
+            if (m_AddChange=="11")
             {
                 this.InitpnlAddChange();
                 CustAdd1_ChangeValues();
@@ -131,10 +132,10 @@ public partial class Page_P060206000001 : PageBase
         this.pnlAddSource7.Visible = false;
         this.pnlAddSource8.Visible = false;
 
-        string strCustName = string.Empty;
-        string strAdd1 = string.Empty;
-        string strAdd2 = string.Empty;
-        string strAdd3 = string.Empty;
+        string strCustName=string.Empty;
+        string strAdd1=string.Empty;
+        string strAdd2=string.Empty;
+        string strAdd3=string.Empty;
 
         m_AddChange = "11";
 
@@ -146,9 +147,9 @@ public partial class Page_P060206000001 : PageBase
                 if (chkFlg.Checked)
                 {
                     intcheck = intcheck + 1;
-                    if (m_dtCardBackInfo.Rows[i]["CardBackStatus"].ToString() != "0" && hidSearchAdd.Value == "0")//已處理且沒有提示過（或客戶選擇不處理的）
+                    if (m_dtCardBackInfo.Rows[i]["CardBackStatus"].ToString()!="0"&&hidSearchAdd.Value=="0")//已處理且沒有提示過（或客戶選擇不處理的）
                     {
-                        jsBuilder.RegScript(this.Page, "if (confirm('" + MessageHelper.GetMessage("06_06020600_012") + "')){document.getElementById('hidSearchAdd').value = '1';}else{document.getElementById('hidSearchAdd').value = '0';}");
+                        jsBuilder.RegScript(this.Page,"if (confirm('" + MessageHelper.GetMessage("06_06020600_012") + "')){document.getElementById('hidSearchAdd').value = '1';}else{document.getElementById('hidSearchAdd').value = '0';}");
                         return;
                     }
                 }
@@ -187,12 +188,12 @@ public partial class Page_P060206000001 : PageBase
                                 if (m_dtCardBackInfo.Rows[i]["cardtypeS"].ToString() == "信用卡")
                                 {
                                     this.CustLabel5.Text = BaseHelper.GetShowText("06_06020600_005");
-                                    this.CustLabel7.Text = BaseHelper.GetShowText("06_06020600_006");
+                                    this.CustLabel7.Text = BaseHelper.GetShowText("06_06020600_006"); 
                                 }
                                 else
                                 {
                                     this.CustLabel5.Text = BaseHelper.GetShowText("06_06020600_024");
-                                    this.CustLabel7.Text = BaseHelper.GetShowText("06_06020600_025");
+                                    this.CustLabel7.Text = BaseHelper.GetShowText("06_06020600_025"); 
                                 }
                                 this.lblCardNo1.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd1.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
@@ -239,7 +240,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo3.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd3.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName3.Text = strCustName;
-                                this.lblMFAdd3.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd3.Text = strAdd1+ strAdd2 + strAdd3;
                                 this.pnlAddSource3.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -260,7 +261,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo4.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd4.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName4.Text = strCustName;
-                                this.lblMFAdd4.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd4.Text = strAdd1 + strAdd2+ strAdd3;
                                 this.pnlAddSource4.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -281,7 +282,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo5.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd5.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName5.Text = strCustName;
-                                this.lblMFAdd5.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd5.Text = strAdd1+ strAdd2 + strAdd3;
                                 this.pnlAddSource5.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -302,7 +303,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo6.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd6.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName6.Text = strCustName;
-                                this.lblMFAdd6.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd6.Text = strAdd1+ strAdd2 + strAdd3;
                                 this.pnlAddSource6.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -323,7 +324,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo7.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd7.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName7.Text = strCustName;
-                                this.lblMFAdd7.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd7.Text = strAdd1+ strAdd2 + strAdd3;
                                 this.pnlAddSource7.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -344,7 +345,7 @@ public partial class Page_P060206000001 : PageBase
                                 this.lblCardNo8.Text = m_dtCardBackInfo.Rows[i]["cardno"].ToString();
                                 this.lblBackAdd8.Text = BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add1"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add2"].ToString().Trim()) + BaseHelper.ToSBC(m_dtCardBackInfo.Rows[i]["add3"].ToString().Trim());
                                 this.lblMFName8.Text = strCustName;
-                                this.lblMFAdd8.Text = strAdd1 + strAdd2 + strAdd3;
+                                this.lblMFAdd8.Text = strAdd1+ strAdd2 + strAdd3;
                                 this.pnlAddSource8.Visible = true;
                                 if ((this.lblMFAdd1.Text != strAdd1 + strAdd2 + strAdd3) || (lblMFName1.Text != strCustName))
                                 {
@@ -623,7 +624,7 @@ public partial class Page_P060206000001 : PageBase
                                 jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06020600_004"));
                                 PanelVisibleFalse();
                                 BindGridView();
-
+                                
                             }
                             else
                             {
@@ -922,7 +923,7 @@ public partial class Page_P060206000001 : PageBase
             //}
             row["cardtypeS"] = GetCardTypeName(row["cardtype"].ToString().Trim());
 
-
+            
             //*退件原因顯示
             if (CSIPCommonModel.BusinessRules.BRM_PROPERTY_KEY.GetEnableProperty("06", "5", ref dtReason))
             {
@@ -936,7 +937,7 @@ public partial class Page_P060206000001 : PageBase
                     row["ReasonS"] = row["Reason"].ToString();
                 }
             }
-
+            
             //*處理狀態
             if (CSIPCommonModel.BusinessRules.BRM_PROPERTY_KEY.GetEnableProperty("06", "26", ref dtCardBackStatus))
             {
@@ -1068,7 +1069,7 @@ public partial class Page_P060206000001 : PageBase
             Hashtable ht0670500 = new Hashtable();   //* 067050電文查詢結果
 
             //* 067050電文欄位:客戶姓名,客戶地址1,客戶地址2,客戶地址3
-            string[] aryJCEHCol = new string[] { "FIRST_NAME", "ADDRS_LINE_01", "ADDRS_LINE_02", "ADDRS_LINE_03" };
+            string[] aryJCEHCol = new string[] {"FIRST_NAME", "ADDRS_LINE_01", "ADDRS_LINE_02", "ADDRS_LINE_03"};
 
             htInput.Add("CUST_ID_NO", this.txtId.Text.Trim());
             //ht0670500 = MainFrameInfo.GetMainframeDataVD(htInput, "067050", ref strMsg, false,aryJCEHCol);
@@ -1108,7 +1109,7 @@ public partial class Page_P060206000001 : PageBase
         }
     }
 
-    /// <summary>
+        /// <summary>
     /// 身分證輸入欄位是否正確
     /// </summary>
     /// <param name="strMsgID">返回的錯誤ID</param>
@@ -1138,7 +1139,7 @@ public partial class Page_P060206000001 : PageBase
         }
     }
 
-    #endregion
+#endregion
 
     //20161108 (U) by Tank, 取CardType中文
     protected string GetCardTypeName(string strCardType)

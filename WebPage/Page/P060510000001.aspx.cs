@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/23
 //*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Data;
@@ -52,7 +53,7 @@ public partial class P060510000001 : PageBase
 
                 this.txtBackdateStart.Text = strIndate1FromDate0510;
                 this.txtBackdateEnd.Text = strIndate1ToDate0510;
-                this.txtClosedateStart.Text = strFromDate0510;
+                this.txtClosedateStart.Text=strFromDate0510;
                 this.txtClosedateEnd.Text = strToDate0510;
                 gpList.CurrentPageIndex = Convert.ToInt16(RedirectHelper.GetDecryptString(Request.QueryString["PageIndex0510"].ToString().Trim()));
                 BindGridView(strIndate1FromDate0510, strIndate1ToDate0510, strFromDate0510, strToDate0510);
@@ -340,7 +341,7 @@ public partial class P060510000001 : PageBase
                 this.grvCardView.DataBind();
             }
         }
-        catch (Exception exp)
+        catch(Exception exp)
         {
             Logging.Log(exp, LogLayer.UI);
             jsBuilder.RegScript(this.UpdatePanel1, BaseHelper.ClientMsgShow("06_06051000_000"));
@@ -363,7 +364,7 @@ public partial class P060510000001 : PageBase
         try
         {
             //* 查詢不成功
-            if (!BRM_Report.SearchHoldCard(GetFilterCondition(strIndate1FromDate, strIndate1ToDate, strFromDate, strToDate), ref dtCardBaseInfo, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID))
+            if (!BRM_Report.SearchHoldCard(GetFilterCondition(strIndate1FromDate,strIndate1ToDate,strFromDate,strToDate), ref dtCardBaseInfo, this.gpList.CurrentPageIndex, this.gpList.PageSize, ref iTotalCount, ref strMsgID))
             {
                 this.gpList.RecordCount = 0;
                 this.grvCardView.DataSource = null;
@@ -412,7 +413,7 @@ public partial class P060510000001 : PageBase
     {
         SqlHelper sqlhelp = new SqlHelper();
         sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_kind, Operator.Equal, DataTypeUtils.String, "6");
-
+        
         if (this.txtBackdateStart.Text.Trim() != "" && this.txtBackdateEnd.Text.Trim() == "")
         {
             sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_indate1, Operator.GreaterThanEqual, DataTypeUtils.String, this.txtBackdateStart.Text.Trim());
@@ -488,7 +489,7 @@ public partial class P060510000001 : PageBase
         }
 
 
-        if (string.IsNullOrEmpty(strFromDate) && !string.IsNullOrEmpty(strToDate))
+        if (string.IsNullOrEmpty(strFromDate)&& !string.IsNullOrEmpty(strToDate))
         {
             sqlhelp.AddCondition("c." + Entity_CardDataChange.M_UpdDate, Operator.LessThanEqual, DataTypeUtils.String, strToDate.Trim());
         }
@@ -498,7 +499,7 @@ public partial class P060510000001 : PageBase
             sqlhelp.AddCondition("c." + Entity_CardDataChange.M_UpdDate, Operator.GreaterThanEqual, DataTypeUtils.String, strFromDate.Trim());
             sqlhelp.AddCondition("c." + Entity_CardDataChange.M_UpdDate, Operator.LessThanEqual, DataTypeUtils.String, strToDate.Trim());
         }
-
+ 
         if (ddlFactory.SelectedIndex != 0)
         {
             sqlhelp.AddCondition("a." + Entity_CardBaseInfo.M_Merch_Code, Operator.Equal, DataTypeUtils.String, ddlFactory.SelectedValue);
@@ -532,7 +533,7 @@ public partial class P060510000001 : PageBase
                 {
                     row["kktime"] = "0";
                 }
-
+               
             }
         }
         catch (Exception exp)
@@ -553,10 +554,10 @@ public partial class P060510000001 : PageBase
     /// <param name="dtPost"></param>
     public void GetPrintData()
     {
-        DataTable dtHoldCard = new DataTable();
+       DataTable dtHoldCard = new DataTable();
         try
         {
-            if (BRM_Report.SearchHoldCard(GetFilterCondition(), ref dtHoldCard))
+            if(BRM_Report.SearchHoldCard(GetFilterCondition(), ref dtHoldCard))
             {
                 if (dtHoldCard.Rows.Count > 0)
                 {

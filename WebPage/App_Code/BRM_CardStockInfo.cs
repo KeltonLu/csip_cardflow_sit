@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using EntityLayer;
 using System.Data.SqlClient;
 using System.Data;
@@ -16,10 +16,11 @@ namespace BusinessRulesNew
         /// </summary>
         /// <param name="dtLastCloseDate"></param>
         /// <returns></returns>
-        public static bool GetSelfPickInfoPost(ref DataTable dtSelfPickInfoPost, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strCardNo)
-        {
+        public static bool GetSelfPickInfoPost(ref  DataTable dtSelfPickInfoPost, int iPageIndex, int iPageSize, ref int iTotalCount, string strId, string strCardNo)
+        {            
             try
             {
+                //20210120 (U)by Joe, 增加羅馬拼音
                 string sql = @"SELECT * FROM(";
 
                 sql += " select custname,custname_roma,id,cardno,indate1,IntoStore_Date,action,trandate,isnull(OutStore_Date,'') as OutStore_Date from dbo.tbl_Card_BaseInfo base where (kind='1' or isnull(IntoStore_Date,'')<>'')";

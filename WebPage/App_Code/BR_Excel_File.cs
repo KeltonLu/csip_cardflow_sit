@@ -1,5 +1,6 @@
 ﻿/// <summary>
 /// 修改時間:2020/11/04_Ares_Stanley-移除Micriosoft Excel, 新增NPOI
+/// 修改時間:2021/01/20_Joe-RQ-2019-008159-003：配合長姓名作業修改
 /// </summary>
 using CSIPCommonModel.BusinessRules;
 using EntityLayer;
@@ -30,7 +31,7 @@ public class BR_Excel_File : BRBase<Entity_UnableCard>
     #region 各報表SQL語句
 
     #region SearchExport0502
-
+    //20210120 (U)by Joe, 增加羅馬拼音
     private const string SearchExport0502 = @"
 SELECT u.ImportDate,
        CASE
@@ -286,7 +287,7 @@ ORDER BY maildate DESC
     #endregion
 
     #region SearchExport0510
-
+    //20210120 (U)by Joe, 增加羅馬拼音
     private const string SearchExport0510 = @"
 select id,custname,custname_roma,cardno,kktime, indate1,UpdDate,CNote 
 from tbl_HoldCard 
@@ -653,6 +654,7 @@ else
     /// 功能說明:業務新增查詢需求功能SQL修改
     /// 作    者:Ares JaJa
     /// 修改時間:2020/08/17
+    /// 20210120 (U)by Joe, 增加羅馬拼音
     /// </summary>
     private const string SearchExport0518_1 = @"
         select a.serial_no,
@@ -705,6 +707,7 @@ else
     /// 功能說明:業務新增查詢需求功能SQL修改
     /// 作    者:Ares JaJa
     /// 修改時間:2020/08/17
+    /// 20210120 (U)by Joe, 增加羅馬拼音
     /// </summary>
     private const string SearchExport0518_2 = @"
             select a.serial_no,
@@ -756,6 +759,7 @@ else
     /// 功能說明:業務新增查詢需求功能SQL修改
     /// 作    者:Ares JaJa
     /// 修改時間:2020/08/17
+    /// 20210120 (U)by Joe, 增加羅馬拼音
     /// </summary>
     private const string SearchExport0518_3 = @"
                 select a.serial_no,
@@ -879,7 +883,7 @@ WHERE (tbl_Card_BaseInfo.cardno = @cardno)
     #endregion
 
     #region SearchExport020501
-
+    //20210120 (U)by Joe, 增加羅馬拼音
     private const string SearchExport020501 = @"
 select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id) as no,
        isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype),
@@ -984,7 +988,7 @@ where back.action = base.action
     #endregion
 
     #region SearchExport020502
-
+    //20210120 (U)by Joe, 增加羅馬拼音
     private const string SearchExport020502 = @"
 select ROW_NUMBER() over (ORDER BY IntoStore_Date DESC, id)                                  as no,
        isnull((Select CardTypeName From tbl_CardType where CardType = base.cardtype), '信用卡') as action,

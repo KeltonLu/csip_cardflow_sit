@@ -21,12 +21,12 @@
     <script language="javascript" type="text/javascript">
     function visabledrop()
     {
-            document.getElementById("DropDownList1").style.display = "none";
-        }
+       document.getElementById("DropDownList1").style.display="none";
+    }
     function unvisabledrop()
     {
-            document.getElementById("DropDownList1").style.display = "";
-        }
+       document.getElementById("DropDownList1").style.display="";
+    }
     </script>
 
 </head>

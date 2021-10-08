@@ -82,9 +82,9 @@ public partial class P060205000001 : PageBase
             }
             else
             {
-                rad020503.Checked = true;
+                rad020503.Checked = true;            
             }
-
+          
         }
         //Talas 20191003 SOC修改
         eAgentInfo = (EntityAGENT_INFO)this.Session["Agent"]; //*Session變數集合
@@ -94,7 +94,7 @@ public partial class P060205000001 : PageBase
     {
         bool bolStore = true;
         bool bolChecked = false;
-        string strEorMsg = "";
+        string strEorMsg="";
         try
         {
             for (int i = 0; i < this.grvUserView.Rows.Count; i++)
@@ -129,6 +129,7 @@ public partial class P060205000001 : PageBase
                         }
 
                         //入庫
+                        //2021/02/01 陳永銘 增加羅馬拼音
                         if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname, strCustname_Roma))
                         {
                             bolStore = false;
@@ -139,6 +140,7 @@ public partial class P060205000001 : PageBase
                     {
                         if (strIntoStoreDate.Equals(string.Empty))
                         {
+                            //2021/02/01 陳永銘 增加羅馬拼音
                             if (!BusinessRules.BRM_CardStockInfo.IntoStore(strAction, strId, strCardNo, strTrandate, strCustname, strCustname_Roma))
                             {
                                 bolStore = false;
@@ -499,7 +501,7 @@ public partial class P060205000001 : PageBase
     {
         int iTotalCount = 0;
         DataTable dtSelfPickInfo = new DataTable();
-        bool bolSelfPickInfo = false;
+        bool bolSelfPickInfo=false;
 
         try
         {
@@ -664,7 +666,7 @@ public partial class P060205000001 : PageBase
             introw = introw + 1;
             row["SerialNo"] = introw;
         }
-
+        
     }
 
     /// <summary>
@@ -745,14 +747,14 @@ public partial class P060205000001 : PageBase
     protected bool CheckData()
     {
         string strMsgID = string.Empty;
-        bool bolcheck = true;
+        bool bolcheck=true;
 
         if (this.rad020501.Checked)
         {
             if (this.dpMerchDate.Text == "")
             {
                 jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020500_001") + "');");
-                bolcheck = false;
+                bolcheck=false;
             }
         }
         if (this.rad020502.Checked)

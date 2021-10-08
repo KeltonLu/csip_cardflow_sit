@@ -4,6 +4,7 @@
 //*  創建日期：2010/04/09
 //*  修改記錄：2020/12/30 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Collections.Generic;
@@ -181,7 +182,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool Update(Entity_CardBaseInfo TCardBaseInfo, string strCondition, ref string strMsgID, params string[] FiledSpit)
+        public static bool Update(Entity_CardBaseInfo TCardBaseInfo, string strCondition, ref string strMsgID, params  string[] FiledSpit)
         {
             try
             {
@@ -217,7 +218,7 @@ namespace BusinessRules
         /// <param name="TCardBaseInfo"></param>
         /// <param name="strCondition"></param>
         /// <returns></returns>
-        public static bool Update(Entity_CardBaseInfo TCardBaseInfo, string strCondition, params string[] FiledSpit)
+        public static bool Update(Entity_CardBaseInfo TCardBaseInfo, string strCondition, params  string[] FiledSpit)
         {
             try
             {
@@ -281,7 +282,7 @@ namespace BusinessRules
                     sqlParmID.Value = dtDetail.Rows[i]["IDNO"].ToString().Trim();
                     sqlParmCardNo.Value = dtDetail.Rows[i]["CARDNO"].ToString().Trim().Replace("-", "");
                     sqlParmCARDTYPE.Value = dtDetail.Rows[i]["CARDTYPE"].ToString().Trim();
-                    sqlParmcardfile.Value = dtDetail.Rows[i]["cardfile"].ToString().Trim();
+                    sqlParmcardfile.Value = dtDetail.Rows[i]["cardfile"].ToString().Trim(); 
                     sqlCmd.Parameters.Add(sqlParmID);
                     sqlCmd.Parameters.Add(sqlParmCardNo);
                     sqlCmd.Parameters.Add(sqlParmCARDTYPE);
@@ -404,11 +405,11 @@ namespace BusinessRules
                 {
                     if (TCardBaseInfo.card_file.Substring(TCardBaseInfo.card_file.Length - 6, 2).Equals("-1"))
                     {
-                        strSql = "update tbl_Card_BaseInfo set indate1=@indate1 ,mailno=@mailno,maildate=@maildate where id = @id AND cardno = @cardno AND cardtype = @cardtype AND card_file = @card_file";
+                         strSql = "update tbl_Card_BaseInfo set indate1=@indate1 ,mailno=@mailno,maildate=@maildate where id = @id AND cardno = @cardno AND cardtype = @cardtype AND card_file = @card_file";
                     }
                     else
                     {
-                        strSql = "update tbl_Card_BaseInfo set mailno=@mailno,maildate=@maildate where id = @id AND cardno = @cardno AND cardtype = @cardtype AND card_file = @card_file";
+                         strSql = "update tbl_Card_BaseInfo set mailno=@mailno,maildate=@maildate where id = @id AND cardno = @cardno AND cardtype = @cardtype AND card_file = @card_file";
                     }
                 }
                 SqlCommand sqlCmd = new SqlCommand();
@@ -451,7 +452,7 @@ namespace BusinessRules
                 bool blnResult = true;
                 for (int i = 0; i < dtTCardBaseInfo.Rows.Count; i++)
                 {
-                    //  BRM_TCardBaseInfo.SaveLog("測試=" + i);
+                  //  BRM_TCardBaseInfo.SaveLog("測試=" + i);
 
                     SqlHelper sqlhelp = new SqlHelper();
                     Entity_CardBaseInfo TCardBaseInfo = new Entity_CardBaseInfo();
@@ -528,7 +529,7 @@ namespace BusinessRules
                     //TCardBaseInfo.name1 = dtTCardBaseInfo.Rows[i]["Name"].ToString();
 
                     TCardBaseInfo.mailno = dtTCardBaseInfo.Rows[i]["Newmailno"].ToString();
-                    TCardBaseInfo.maildate = dtTCardBaseInfo.Rows[i]["FactMailDate"].ToString().Replace('.', '/');
+                    TCardBaseInfo.maildate = dtTCardBaseInfo.Rows[i]["FactMailDate"].ToString().Replace('.','/');
                     //TCardBaseInfo.zip = dtTCardBaseInfo.Rows[i]["zip"].ToString();
                     //TCardBaseInfo.add1 = dtTCardBaseInfo.Rows[i]["add1"].ToString();
                     //TCardBaseInfo.add2 = dtTCardBaseInfo.Rows[i]["add2"].ToString();
@@ -579,7 +580,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool Search(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool Search(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -637,7 +638,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchByCardNo(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool SearchByCardNo(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -690,7 +691,7 @@ namespace BusinessRules
         /// </summary>
         /// <param name="dtEndCaseFlg"></param>
         /// <returns></returns>
-        public static bool SearchByCardNo(ref DataTable dtCardNo, string strCardNo)
+        public static bool SearchByCardNo(ref  DataTable dtCardNo, string strCardNo)
         {
             try
             {
@@ -734,7 +735,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtPost"></param>
         /// <returns></returns>
-        public static bool SearchByCardNo(string strCondition, ref DataTable dtCardBaseInfo, ref string strMsgID)
+        public static bool SearchByCardNo(string strCondition, ref  DataTable dtCardBaseInfo, ref string strMsgID)
         {
             try
             {
@@ -963,7 +964,7 @@ namespace BusinessRules
         /// </summary>
         /// <param name="Entity_CardBaseInfo">string strId,string strCardNo,string strAction</param>
         /// <returns>Exist true</returns>
-        public static bool IsExistByCard(string strId, string strCardNo, string strAction)
+        public static bool IsExistByCard(string strId,string strCardNo,string strAction)
         {
             SqlHelper Sql = new SqlHelper();
 
@@ -1098,7 +1099,7 @@ namespace BusinessRules
 
                 if (strCondition != "")
                 {
-                    //strCondition = strCondition.Remove(0, 4);
+//                    strCondition = strCondition.Remove(0, 4);
                     sql += " where " + strCondition;
                 }
 
@@ -1139,7 +1140,7 @@ namespace BusinessRules
         /// </summary>
         /// <param name="dtEndCaseFlg"></param>
         /// <returns></returns>
-        public static bool selectByCardChangeInfo(ref DataTable dtEndCaseFlg, string strCardNo)
+        public static bool selectByCardChangeInfo(ref  DataTable dtEndCaseFlg, string strCardNo)
         {
             try
             {
@@ -1172,7 +1173,7 @@ namespace BusinessRules
             }
         }
 
-        public static bool SelectByCardChangeInfo(ref DataTable dtBaseInfo, string strCardNo, string strTranDate)
+        public static bool SelectByCardChangeInfo(ref  DataTable dtBaseInfo, string strCardNo, string strTranDate)
         {
             try
             {
@@ -1184,7 +1185,7 @@ namespace BusinessRules
                 sqlcmd.Parameters.Add(new SqlParameter("@cardno", strCardNo));
                 sqlcmd.Parameters.Add(new SqlParameter("@trandate", strTranDate));
                 DataSet ds = BRM_TCardBaseInfo.SearchOnDataSet(sqlcmd);
-                if (ds != null)
+                if (ds!=null)
                 {
                     if (ds.Tables[0].Rows.Count > 0)
                     {
@@ -1390,7 +1391,7 @@ namespace BusinessRules
                         CardBackInfo.Action = dtDetail.Rows[i]["Action"].ToString();    //action
                         CardBackInfo.Trandate = dtTmp.Rows[0]["trandate"].ToString();   //轉當日
                         CardBackInfo.cardtype = dtTmp.Rows[0]["cardtype"].ToString();   //卡種
-                        CardBackInfo.Backdate = DateHelper.InsertTimeSpan(DateHelper.ConvertToAD(dtDetail.Rows[i]["Serial_no"].ToString().Substring(1, 7)));  //退件日期
+                        CardBackInfo.Backdate = DateHelper.InsertTimeSpan(DateHelper.ConvertToAD(dtDetail.Rows[i]["Serial_no"].ToString().Substring(1, 7))) ;  //退件日期
                         CardBackInfo.Reason = dtDetail.Rows[i]["Reason"].ToString();    //退件原因
                         CardBackInfo.Madd1 = dtTmp.Rows[0]["add1"].ToString();    //郵寄地址1
                         CardBackInfo.Madd2 = dtTmp.Rows[0]["add2"].ToString();    //郵寄地址2

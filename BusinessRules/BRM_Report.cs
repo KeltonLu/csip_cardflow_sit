@@ -4,6 +4,7 @@
 //*  創建日期：2010/06/23
 //*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Collections.Generic;
@@ -33,11 +34,12 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchHoldCard(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool SearchHoldCard(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
                 StringBuilder sbSql = new StringBuilder();
+                //20210120 (U)by Joe, 增加羅馬拼音
                 sbSql.Append("SELECT distinct a.id,a.custname,a.custname_roma,a.cardno,a.indate1,a.action,a.Trandate,c.UpdDate,c.CNote,datediff(d,c.UpdDate,getdate()) kktimeA ");
                 sbSql.Append("FROM ");
                 sbSql.Append("tbl_Card_BaseInfo a join ");
@@ -91,11 +93,12 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchHoldCard(string strCondition, ref DataTable dtCardBaseInfo)
+        public static bool SearchHoldCard(string strCondition, ref  DataTable dtCardBaseInfo)
         {
             try
             {
                 StringBuilder sbSql = new StringBuilder();
+                //20210120 (U)by Joe, 增加羅馬拼音
                 sbSql.Append("SELECT a.id,a.custname,a.cardno,a.indate1,a.action,a.Trandate,c.UpdDate,c.CNote,a.custname_roma,datediff(d,c.UpdDate,getdate()) kktimeA ");
                 sbSql.Append("FROM ");
                 sbSql.Append("tbl_Card_BaseInfo a join ");
@@ -169,7 +172,7 @@ namespace BusinessRules
         /// 功能說明:寫入tbl_HoldCard表
         /// 作    者:linda
         /// 創建時間:2010/09/14
-        /// 修改記錄:
+        /// 修改記錄:20210120 (U)by Joe, 增加羅馬拼音
         /// </summary>
         /// <returns></returns>
         public static bool InsetHoldCard(string strId, string strCustname, string strCustname_Roma, string strCardno, string strIndate1, string strUpdDate, string strCNote, string strkktime)
@@ -219,7 +222,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchSendStatus(string dateFrom, string dateTo, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool SearchSendStatus(string dateFrom,string dateTo, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -301,7 +304,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchSendDetail(string strCondition, ref DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool SearchSendDetail(string strCondition, ref  DataTable dtCardBaseInfo, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -354,7 +357,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtPost"></param>
         /// <returns></returns>
-        public static bool SearchRole(string strCondition, ref DataTable dtCode, ref string strMsgID)
+        public static bool SearchRole(string strCondition, ref  DataTable dtCode, ref string strMsgID)
         {
             try
             {
@@ -403,7 +406,7 @@ namespace BusinessRules
         /// <param name="iTotalCount"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool SearchLogMail(string strCondition, ref DataTable dtLogMail, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
+        public static bool SearchLogMail(string strCondition, ref  DataTable dtLogMail, int iPageIndex, int iPageSize, ref int iTotalCount, ref string strMsgID)
         {
             try
             {
@@ -450,7 +453,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtPost"></param>
         /// <returns></returns>
-        public static bool SearchUser(string strCondition, ref DataTable dtCode, ref string strMsgID)
+        public static bool SearchUser(string strCondition, ref  DataTable dtCode, ref string strMsgID)
         {
             try
             {
@@ -459,7 +462,7 @@ namespace BusinessRules
                 if (strCondition != "")
                 {
                     strCondition = strCondition.Replace("UPPER(", "UPPER(m.");
-                    sql += strCondition;
+                    sql +=strCondition;
                 }
 
                 SqlCommand sqlcmd = new SqlCommand();
@@ -496,7 +499,7 @@ namespace BusinessRules
         /// <param name="strCondition"></param>
         /// <param name="strMsgID"></param>
         /// <returns></returns>
-        public static bool update(EntityM_CallMail callMail, string strCondition, ref string strMsgID, params string[] FiledSpit)
+        public static bool update(EntityM_CallMail callMail, string strCondition, ref string strMsgID, params  string[] FiledSpit)
         {
             try
             {
@@ -532,7 +535,7 @@ namespace BusinessRules
         /// <param name="strCondition">SQL語句，若遇到條件查詢需要拼寫SQL</param>
         /// <param name="dtCode"></param>
         /// <returns></returns>
-        public static bool SearchOASAG(string strCondition, ref DataTable dtCode, ref string strMsgID)
+        public static bool SearchOASAG(string strCondition, ref  DataTable dtCode, ref string strMsgID)
         {
             try
             {

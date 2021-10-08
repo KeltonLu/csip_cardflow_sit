@@ -4,6 +4,7 @@
 //*  創建日期：2010/05/19
 //*  修改記錄：2021/01/21 陳永銘
 //*<author>            <time>            <TaskID>            <desc>
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 //20190315 (U) by Nash, 姓名欄位改為姓名全名
 
@@ -646,7 +647,7 @@ public class AutoOutputDataChange : Quartz.IJob
                         }
                         //*異動取卡方式
 
-                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) &&
+                        if ((!string.IsNullOrEmpty(rowDataChange["Newway"].ToString()) && !string.IsNullOrEmpty(rowDataChange["Oldway"].ToString()) && 
                              rowDataChange["Newway"].ToString().Equals(rowDataChange["Oldway"].ToString())) &&
                             (rowDataChange["Urgency_Flg"].ToString() == rowDataChange["NewUrgencyFlg"].ToString()))
                         {

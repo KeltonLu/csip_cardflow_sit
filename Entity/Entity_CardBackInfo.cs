@@ -7,6 +7,7 @@
 //     變更將會遺失。
 // </auto-generated>
 //------------------------------------------------------------------------------
+//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ using Framework.Data.OM.Collections;
 
 namespace EntityLayer
 {
-
-
+    
+    
     /// <summary>
     /// tbl_Card_BackInfo
     /// </summary>
@@ -965,7 +966,7 @@ namespace EntityLayer
         }
         // 2020/12/30  陳永銘 新增欄位:羅馬拼音 END                                         
     }
-
+    
     /// <summary>
     /// tbl_Card_BackInfo
     /// </summary>
