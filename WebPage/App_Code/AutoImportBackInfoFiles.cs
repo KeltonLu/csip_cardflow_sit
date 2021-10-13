@@ -182,7 +182,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                         strFtpPwd = rowFileInfo["FtpPwd"].ToString();
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
                         //*檔案存在
-                        if (objFtp.isInFolderList(strFtpFileInfo, false))
+                        if (objFtp.isInFolderList(strFtpFileInfo, true))
                         {
                             JobHelper.SaveLog("開始下載檔案！", LogState.Info);
                             //*下載檔案
