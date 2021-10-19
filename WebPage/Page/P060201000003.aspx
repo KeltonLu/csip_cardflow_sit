@@ -153,7 +153,6 @@
                                 IsCurrency="False" NeedDateFormat="False" NumBreak="0" NumOmit="0" SetBreak="False"
                                 SetOmit="False" StickHeight="False" ShowID="06_06020102_010" CurAlign="left"
                                 CurSymbol="£"></cc1:CustLabel>
-                        <BR>(簽帳金融卡單位為百)
                         </td>
                         <td style="width: 35%">
                             <cc1:CustTextBox ID="txtMonlimit" MaxLength="8" runat="server" InputType="Int" Width="150px"></cc1:CustTextBox></td>

@@ -134,7 +134,7 @@ public class AutoImportReplyBackInfo : Quartz.IJob
 
                         objFtp = new FTPFactory(strFtpIp, ".", strFtpUserName, strFtpPwd, "21", @"C:\CS09", "Y");
 
-                        string[] arrFileList = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString(), false);
+                        string[] arrFileList = objFtp.GetFileList(rowFileInfo["FtpPath"].ToString(), true);
 
                         if (null != arrFileList)
                         {
