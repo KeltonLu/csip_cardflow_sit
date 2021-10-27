@@ -597,17 +597,22 @@ public class AutoOutputDataChange : Quartz.IJob
                 {
                     foreach (DataRow rowDataChange in rowTempDataChanges)
                     {
+                        bool bolNameChange = false;
+                        bool bolNameRomaChange = false;
                         bool bolAddNOChange1 = false;
                         bool bolAddNOChange2 = false;
                         bool bolAddNOChange3 = false;
                         //*異動姓名
                         if (!string.IsNullOrEmpty(rowDataChange["NewName"].ToString()) && !string.IsNullOrEmpty(rowDataChange["OldName"].ToString()) && rowDataChange["NewName"].ToString().Equals(rowDataChange["OldName"].ToString()))
                         {
-                            dtDataChange.Rows.Remove(rowDataChange);
-                            continue;
+                            bolNameChange = true;
                         }
                         //*2021/01/21 陳永銘 異動姓名_羅馬拼音
                         if (!string.IsNullOrEmpty(rowDataChange["NewName_Roma"].ToString()) && !string.IsNullOrEmpty(rowDataChange["OldName_Roma"].ToString()) && rowDataChange["NewName_Roma"].ToString().Equals(rowDataChange["OldName_Roma"].ToString()))
+                        {
+                            bolNameRomaChange = true;
+                        }
+                        if (bolNameChange && bolNameRomaChange)
                         {
                             dtDataChange.Rows.Remove(rowDataChange);
                             continue;
@@ -857,21 +862,15 @@ public class AutoOutputDataChange : Quartz.IJob
             string strAdd2 = BaseHelper.ObjToString(drTempData["NewAdd2"]);  //地址二
             string strAdd3 = BaseHelper.ObjToString(drTempData["NewAdd3"]);  //地址三  
 
+            //2021/01/21 陳永銘 增加羅馬拼音
             if (!string.IsNullOrEmpty(strNewName))
             {
                 CCrow["NewName"] = strNewName;//新用戶名
-            }
-            else
-            {
-                CCrow["NewName"] = strCustName;//用戶名
-            }
-            //2021/01/21 陳永銘 增加羅馬拼音
-            if (!string.IsNullOrEmpty(strNewName_Roma))
-            {
                 CCrow["NewName_Roma"] = strNewName_Roma;//新用戶名_羅馬拼音
             }
             else
             {
+                CCrow["NewName"] = strCustName;//用戶名
                 CCrow["NewName_Roma"] = strCustName_Roma;//用戶名_羅馬拼音
             }
 
@@ -1412,19 +1411,15 @@ public class AutoOutputDataChange : Quartz.IJob
             sqlhelp.AddCondition(Entity_CardBaseInfo.M_indate1, Operator.Equal, DataTypeUtils.Integer, BaseInfo.indate1);
             sqlhelp.AddCondition(Entity_CardBaseInfo.M_cardno, Operator.Equal, DataTypeUtils.String, BaseInfo.cardno);
             sqlhelp.AddCondition(Entity_CardBaseInfo.M_action, Operator.Equal, DataTypeUtils.String, BaseInfo.action);
-
+            
+            //2021/01/21 陳永銘 增加羅馬拼音
+            //*姓名_羅馬拼音
             //*姓名
             if (!String.IsNullOrEmpty(drDetail["NewName"].ToString().Trim()) && !drDetail["NewName"].ToString().Equals("NULL"))
             {
                 BaseInfo.custname = drDetail["NewName"].ToString().Trim();
-                UpdateColName.Add("custname");
-            }
-
-            //2021/01/21 陳永銘 增加羅馬拼音
-            //*姓名_羅馬拼音
-            if (!String.IsNullOrEmpty(drDetail["NewName_Roma"].ToString().Trim()) && !drDetail["NewName_Roma"].ToString().Equals("NULL"))
-            {
                 BaseInfo.custname_roma = drDetail["NewName_Roma"].ToString().Trim();
+                UpdateColName.Add("custname");
                 UpdateColName.Add("custname_roma");
             }
 
