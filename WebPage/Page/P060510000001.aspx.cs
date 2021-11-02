@@ -161,7 +161,7 @@ public partial class P060510000001 : PageBase
             this.Session["Factory0510"] = this.ddlFactory.SelectedValue;
 
             //* 傳遞參數加密
-            Response.Redirect("P060201000002.aspx?flag=View&action=" + RedirectHelper.GetEncryptParam(strAction) + " &id=" + RedirectHelper.GetEncryptParam(strId) + "&cardno=" + RedirectHelper.GetEncryptParam(strCardNo) + "&trandate=" + RedirectHelper.GetEncryptParam(strTrandate) + "", false);
+            Response.Redirect("P060201000002_NewWorkOrder.aspx?flag=View&action=" + RedirectHelper.GetEncryptParam(strAction) + " &id=" + RedirectHelper.GetEncryptParam(strId) + "&cardno=" + RedirectHelper.GetEncryptParam(strCardNo) + "&trandate=" + RedirectHelper.GetEncryptParam(strTrandate) + "", false);
         }
         catch (Exception exp)
         {

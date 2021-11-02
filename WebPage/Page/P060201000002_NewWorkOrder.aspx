@@ -880,7 +880,7 @@
                                     SetBreak="False" SetOmit="False" ShowID="06_06020101_043" StickHeight="False"></cc1:CustLabel></td>
                             <%--2020/12/30 陳永銘 新收件人姓名:新增欄位寬度--%>
                             <td align="left" style="width: 50%;">
-                                <cc1:CustTextBox ID="txtName1Ajax" runat="server" Width="94%"></cc1:CustTextBox></td>
+                                <cc1:CustTextBox ID="txtName1Ajax" runat="server" Width="94%" MaxLength="50"></cc1:CustTextBox></td>
                         </tr>
                         <%--2020/12/30 陳永銘 新增欄位:新收件人姓名_羅馬拼音 BEGIN--%>
                         <tr class="trEven">
