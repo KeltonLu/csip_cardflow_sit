@@ -885,7 +885,8 @@ public partial class P06020101_NewWorkOrder : PageBase
             if (!ValidateHelper.ValidRoma(this.txtName1Ajax_Roma.Text.Trim(), ref txtName1AjaxRoma))
             {
                 txtName1Ajax_Roma.Focus();
-                jsBuilder.RegScript(this.Page, "alert('" + MessageHelper.GetMessage("06_06020102_017") + "')");
+                MessageHelper.ShowMessage(this.Page, "06_06020102_017");
+                this.ModalPopupExtenderN.Show();
                 return;
             }
             this.txtName1Ajax_Roma.Text = txtName1AjaxRoma;
