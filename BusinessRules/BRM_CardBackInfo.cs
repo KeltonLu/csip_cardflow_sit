@@ -692,12 +692,9 @@ namespace BusinessRules
                     CardBackInfo.Mailno = dtCardBackInfo.Rows[i]["mailno"].ToString();
                     CardBackInfo.Maildate = DateTime.Now.ToString("yyyy/MM/dd");
                     CardBackInfo.serial_no = dtCardBackInfo.Rows[i]["serial_no"].ToString();
-                    //20210120 (U)by Joe, 新增長姓名及羅馬拼音
-                    CardBackInfo.NewName = dtCardBackInfo.Rows[i]["Name"].ToString();
-                    CardBackInfo.NewName_Roma = dtCardBackInfo.Rows[i]["Name_Roma"].ToString();
 
                     sqlhelp.AddCondition(Entity_CardBackInfo.M_serial_no, Operator.Equal, DataTypeUtils.String, CardBackInfo.serial_no);
-                    if (!Update(CardBackInfo, sqlhelp.GetFilterCondition(), "Mailno", "Maildate", "NewName", "NewName_Roma"))//*更新條件設置
+                    if (!Update(CardBackInfo, sqlhelp.GetFilterCondition(), "Mailno", "Maildate"))//*更新條件設置
                     {
                         blnResult = false;
                         break;

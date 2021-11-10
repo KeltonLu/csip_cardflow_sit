@@ -571,7 +571,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
 
         try
         {
-            string strSql = "SELECT top 1 id,custname,trandate,cardtype,add1,add2,add3 FROM tbl_Card_BaseInfo WHERE cardno=@CardNo and action=@Action ORDER BY trandate DESC ";
+            string strSql = "SELECT top 1 id,custname,custname_roma,trandate,cardtype,add1,add2,add3 FROM tbl_Card_BaseInfo WHERE cardno=@CardNo and action=@Action ORDER BY trandate DESC ";
             sqlConn = new SqlConnection(UtilHelper.GetConnectionStrings("Connection_System"));
             sqlCmd = new SqlCommand();
             sqlCmd.Connection = sqlConn;
@@ -637,6 +637,7 @@ public class AutoImportBackInfoFiles : Quartz.IJob
                         CardBackInfo.serial_no = dtDetail.Rows[i]["Serial_no"].ToString();    //流水號
                         CardBackInfo.Id = dtTmp.Rows[0]["id"].ToString();   //身份證字號
                         CardBackInfo.CustName = dtTmp.Rows[0]["custname"].ToString();   //姓名
+                        CardBackInfo.CustName_Roma = dtTmp.Rows[0]["custname_roma"].ToString(); //羅馬拼音
                         CardBackInfo.Kind = dtDetail.Rows[i]["Kind"].ToString();    //退件類別
                         CardBackInfo.CardNo = dtDetail.Rows[i]["CardNo"].ToString();    //卡號
                         CardBackInfo.Action = dtDetail.Rows[i]["Action"].ToString();    //action
