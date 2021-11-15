@@ -839,6 +839,7 @@ order by id,CardNo,UpdDate
 Select ROW_NUMBER() OVER (ORDER BY IntoStore_Date desc) AS ROWID,
        IntoStore_Date,
        custname,
+       custname_roma,
        OutStore_Status,
        IntoStoreCount,
        OutStoreFCount,
@@ -4103,14 +4104,14 @@ WHERE CANCELOASAFILE = @STRFILE
                                 sumIntoStoreCount;
             //設定欄位資料
             ISheet sheet1 = wb.GetSheet("test1");
-            sheet1.GetRow(1).GetCell(3).SetCellValue(DateTime.Now.ToString("yyyy/MM/dd"));
-            sheet1.GetRow(2).GetCell(3).SetCellValue(dailyCloseDate);
-            sheet1.GetRow(2).GetCell(4).SetCellValue(preDailyCount);
-            sheet1.GetRow(2).GetCell(6).SetCellValue(sumIntoStoreCount);
-            sheet1.GetRow(2).GetCell(8).SetCellValue(sumOutStoreFCount);
-            sheet1.GetRow(2).GetCell(10).SetCellValue(sumOutStoreMCount);
-            sheet1.GetRow(2).GetCell(12).SetCellValue(sumOutStoreDCount);
-            sheet1.GetRow(2).GetCell(14).SetCellValue(sumDailyCloseCount);
+            sheet1.GetRow(1).GetCell(4).SetCellValue(DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(4).SetCellValue(dailyCloseDate);
+            sheet1.GetRow(2).GetCell(5).SetCellValue(preDailyCount);
+            sheet1.GetRow(2).GetCell(7).SetCellValue(sumIntoStoreCount);
+            sheet1.GetRow(2).GetCell(9).SetCellValue(sumOutStoreFCount);
+            sheet1.GetRow(2).GetCell(11).SetCellValue(sumOutStoreMCount);
+            sheet1.GetRow(2).GetCell(13).SetCellValue(sumOutStoreDCount);
+            sheet1.GetRow(2).GetCell(15).SetCellValue(sumDailyCloseCount);
             //設定自動欄寬
             for (int i = 0; i < 4; i++) { sheet1.AutoSizeColumn(i); }
             #region 文字格式cs

@@ -43,7 +43,7 @@
 						<td colspan="20">
 							<cc1:CustGridView ID="grvUserView" runat="server" AllowSorting="True" AllowPaging="False"
 								PagerID="gpList" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="1"
-								BorderStyle="Solid">
+								BorderStyle="Solid" OnRowDataBound="grvUserView_RowDataBound">
 								<RowStyle CssClass="Grid_Item" Wrap="True" />
 								<SelectedRowStyle CssClass="Grid_SelectedItem" />
 								<HeaderStyle CssClass="Grid_Header" Wrap="False" />
@@ -58,6 +58,9 @@
 										<ItemStyle Width="25%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="custname">
+										<ItemStyle Width="25%" HorizontalAlign="Center" />
+									</asp:BoundField>
+									<asp:BoundField DataField="custname_roma">
 										<ItemStyle Width="25%" HorizontalAlign="Center" />
 									</asp:BoundField>
 									<asp:BoundField DataField="OutStore_Status">

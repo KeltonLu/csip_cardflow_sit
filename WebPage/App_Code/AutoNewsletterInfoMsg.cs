@@ -2,9 +2,8 @@
 //*  功能說明：自動化簡訊處理-簡訊檔匯出
 //*  作    者：zhiyuan
 //*  創建日期：2010/06/9
-//*  修改記錄：2021/01/13 陳永銘
+//*  修改記錄：
 //*<author>            <time>            <TaskID>            <desc>
-//  Joe               20210120        RQ-2019-008159-003     配合長姓名作業修改
 //*******************************************************************
 using System;
 using System.Data;
@@ -381,40 +380,35 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
                 strTmp = JobHelper.SetStrngValue(dr["ID"].ToString(), 16);     //身份證號碼
                 strTmp += JobHelper.SetStrngValue(dr["Mobil"].ToString(), 10); //行動電話
                 //strTmp += JobHelper.SetStrngValue(dr["Name"].ToString().Replace(" ", ""), 10); //姓名
-                //string strName = JobHelper.SetStrngValue(dr["Name"].ToString().Replace(" ", ""), 10); //姓名
+                string strName = JobHelper.SetStrngValue(dr["Name"].ToString().Replace(" ", ""), 10); //姓名
 
-                ////中文姓名加隱碼
-                //string pattern = @"^[\u4E00-\u9fa5]+$";
-                //int ibyte_len;
-                //if (dr["Name"].ToString().Trim() == "")
-                //{
-                //    ibyte_len = 0;
-                //}
-                //else
-                //{
-                //    ibyte_len = System.Text.Encoding.Default.GetByteCount(dr["Name"].ToString().Substring(0, 1));
-                //}
+                //中文姓名加隱碼
+                string pattern = @"^[\u4E00-\u9fa5]+$";
+                int ibyte_len;
+                if (dr["Name"].ToString().Trim() == "")
+                {
+                    ibyte_len = 0;
+                }
+                else
+                {
+                    ibyte_len = System.Text.Encoding.Default.GetByteCount(dr["Name"].ToString().Substring(0, 1));
+                }
 
-                //if (ibyte_len > 1)  //判斷是否為中文或全形符號 
-                //{
-                //    if (Regex.IsMatch(dr["Name"].ToString().Substring(0, 1), pattern))    //判斷是否為中文
-                //    {
-                //        strTmp += strName.Substring(0, 1) + strName.Substring(2);
-                //        //strTmp += strName;
-                //    }
-                //    else
-                //    {
-                //        strTmp += JobHelper.SetStrngValue(strName, 10);
-                //    }
-                //}
-                //else
-                //{
-                //    strTmp += JobHelper.SetStrngValue(strName, 10);
-                //}
-
-                //2021/01/13 陳永銘 姓名修改為空白
-                strTmp += JobHelper.SetStrngValue(string.Empty, 10); //姓名
-
+                if (ibyte_len > 1)  //判斷是否為中文或全形符號 
+                {
+                    if (Regex.IsMatch(dr["Name"].ToString().Substring(0, 1), pattern))    //判斷是否為中文
+                    {
+                        strTmp += strName.Substring(0, 1) + "○" + strName.Substring(2);
+                    }
+                    else
+                    {
+                        strTmp += JobHelper.SetStrngValue(strName, 10);
+                    }
+                }
+                else
+                {
+                    strTmp += JobHelper.SetStrngValue(strName, 10);
+                }
                 switch (strCardType)
                 {
                     case "447757":
@@ -478,9 +472,6 @@ public class AutoNewsletterInfoMsg : Quartz.IJob
                     }
                     strTmp += JobHelper.SetStrngValue("", 26);
                 }
-
-                //2021/01/13 陳永銘 增加換行
-                strTmp += Environment.NewLine;
 
                 sbFileInfo.Append(strTmp);
             }

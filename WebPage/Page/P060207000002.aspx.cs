@@ -5,6 +5,7 @@ using Framework.Common.Utility;
 using System.Collections.Generic;
 using System.IO;
 using System.Data;
+using System.Web.UI.WebControls;
 
 public partial class P060207000002 : PageBase
 {
@@ -44,7 +45,8 @@ public partial class P060207000002 : PageBase
         this.grvUserView.Columns[0].HeaderText = BaseHelper.GetShowText("06_06020701_003");
         this.grvUserView.Columns[1].HeaderText = BaseHelper.GetShowText("06_06020701_004");
         this.grvUserView.Columns[2].HeaderText = BaseHelper.GetShowText("06_06020701_005");
-        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06020701_006");
+        this.grvUserView.Columns[3].HeaderText = BaseHelper.GetShowText("06_06020701_007");
+        this.grvUserView.Columns[4].HeaderText = BaseHelper.GetShowText("06_06020701_006");
 
         //* 設置一頁顯示最大筆數
         this.gpList.PageSize = int.Parse(UtilHelper.GetAppSettings("PageSize"));
@@ -193,6 +195,30 @@ public partial class P060207000002 : PageBase
             catch (Exception exp)
             {
                 MessageHelper.ShowMessage(this, "06_06020701_000" + exp.Message);
+            }
+        }
+    }
+
+    protected void grvUserView_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        string name = e.Row.Cells[2].Text.Replace("&nbsp;", "").Trim();
+        string name_roma = e.Row.Cells[3].Text.Replace("&nbsp;", "").Trim();
+
+        if (e.Row.RowType == DataControlRowType.Header)
+        {
+            e.Row.Cells[3].Visible = false;
+        }
+
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            e.Row.Cells[3].Visible = false;
+
+            if (name.Length >= 5 || name_roma != string.Empty)
+            {
+                int length = name.Length >= 5 ? 5 : name.Length;
+                e.Row.Cells[2].Text = name.Substring(0, length) + "...";
+                name += Environment.NewLine + name_roma;
+                e.Row.Cells[2].Attributes.Add("title", name);
             }
         }
     }
