@@ -4492,8 +4492,8 @@ WHERE CANCELOASAFILE = @STRFILE
             //刪除頁尾sheet
             wb.RemoveSheetAt(wb.GetSheetIndex("頁尾"));
             //新增欄位資料
-            sheet1.GetRow(1).GetCell(10).SetCellValue("自取時間：" + DateTime.Now.ToString("yyyy/MM/dd"));
-            sheet1.GetRow(2).GetCell(10).SetCellValue("列印日期：" + param["strMerchDate"]);
+            sheet1.GetRow(1).GetCell(12).SetCellValue("自取時間：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(2).GetCell(12).SetCellValue("列印日期：" + param["strMerchDate"]);
             //設置儲存格格式為文字
             for (int i =4; i < sheet1.LastRowNum-3; i++)
             {
@@ -4622,8 +4622,8 @@ WHERE CANCELOASAFILE = @STRFILE
                 }
             }
             wb.RemoveSheetAt(wb.GetSheetIndex("頁尾"));
-            sheet1.GetRow(1).GetCell(10).SetCellValue("逾期時間："+param["strFetchDate"]);
-            sheet1.GetRow(2).GetCell(10).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
+            sheet1.GetRow(1).GetCell(12).SetCellValue("逾期時間："+param["strFetchDate"]);
+            sheet1.GetRow(2).GetCell(12).SetCellValue("列印日期：" + DateTime.Now.ToString("yyyy/MM/dd"));
 
             for (int i = 4; i < sheet1.LastRowNum - 3; i++)
             {
